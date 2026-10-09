@@ -6,6 +6,7 @@
 #define PRACTICA1_LISTADENLAZADA_H
 #include <stdexcept>
 #include <iostream>
+#include <random>
 
 
 template <class T>
@@ -162,6 +163,9 @@ T& ListaDEnlazada<T>::Iterador::dato() {
     if (nodo==nullptr)
         throw std::invalid_argument("Iterador nulo");
     return nodo->_dato;
+
+
+    
 }
 
 template <class T>
