@@ -65,6 +65,7 @@ public:
     void borrar(Iterador &i);
     int tam() const;
     ListaDEnlazada<T> concatena(const ListaDEnlazada<T> &lista)const;
+    ListaDEnlazada<T> operator+(const ListaDEnlazada<T> &l) const;
 };
 
 
@@ -195,7 +196,26 @@ int ListaDEnlazada<T>::tam()const {
 
 template <class T>
 ListaDEnlazada<T> ListaDEnlazada<T>::concatena(const ListaDEnlazada<T> &lista)const {
+    ListaDEnlazada<T>resultado;
 
+    Nodo<T>* p1=_cabecera;
+    while (p1!=nullptr) {
+        resultado.insertarFin(p1->dato);
+        p1=p1->sig;
+    }
+
+    Nodo<T>*p2=p1->lista._cabecera;
+    while (p2!=nullptr) {
+        resultado.insertarFin(p2->dato);
+        p2=p2->_sig;
+    }
+    return resultado;
+}
+
+
+template <class T>
+ListaDEnlazada<T> ListaDEnlazada<T>::operator+(const ListaDEnlazada<T> &lista) const {
+    return concatena(lista);
 }
 
 
