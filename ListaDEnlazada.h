@@ -11,33 +11,27 @@
 
 template <class T>
 class Nodo {
-
 public:
     T _dato;
     Nodo *_sig,*_ant;
 
     Nodo();
     Nodo(T &dato,Nodo *sig,Nodo *ant);
-
 };
+
+//IMPLEMENTACIONES CLASE NODO
 template <class T>
 Nodo<T>::Nodo():_dato(),_sig(nullptr),_ant(nullptr){};
 
 template <class T>
 Nodo<T>::Nodo(T &dato,Nodo *sig,Nodo *ant):_dato(dato),_sig(sig),_ant(ant){};
 
-
-
-
-
-
-
+//CLASE LISTA ENLAZADA
 template <class T>
 class ListaDEnlazada {
 private:
-    Nodo<T> *_cabecera,*_cola;
+    Nodo<T> *_cabecera, *_cola;
     unsigned int _numelementos;
-
 
 public:
     ListaDEnlazada();
@@ -45,12 +39,15 @@ public:
     ListaDEnlazada& operator=(const ListaDEnlazada<T>& arr);
     T& inicio();
     T& fin();
+    void insertarInicio(T& dato);
+    void insertarFin(T& dato);
 
-
+    // 1. LA CLASE ITERADOR VA  DENTRO
     class Iterador {
-
+    private:
         Nodo<T> *nodo;
         friend class ListaDEnlazada<T>;
+
     public:
         Iterador(Nodo<T> *aNodo=nullptr);
         bool hayAnterior();
@@ -58,15 +55,21 @@ public:
         void anterior();
         void siguiente();
         T &dato();
+    }; // acaba clase iterador
 
-    };
-
+    // 2. Estos  son  de la lista, no del iterador
     Iterador iterador();
-    void insertarInicio(T& dato);
-    void insertarFin(T& dato);
     void inserta(Iterador &i, T &dato);
-
+    void borrarAlInicio();
+    void borrarAlFinal();
+    void borrar(Iterador &i);
+    int tam() const;
+    ListaDEnlazada<T> concatena(const ListaDEnlazada<T> &lista)const;
 };
+
+
+//IMPLEMENTACIONES CLASE LISTADENLAZADA
+
 template <class T>
 ListaDEnlazada<T>::ListaDEnlazada():_cabecera(nullptr),_cola(nullptr),_numelementos(0){};
 
@@ -124,7 +127,80 @@ T& ListaDEnlazada<T>::fin() {
     return _cola->_dato;
 }
 
-//Aqui añado las de la clase Iterador
+template<class T>
+void ListaDEnlazada<T>::insertarInicio(T& dato) {
+    Nodo<T> *nuevo= new Nodo<T>(dato,0,_cabecera);
+    if (_cola==0)
+        _cola=nuevo;
+    if (_cabecera!=0)
+        _cabecera->_ant=nuevo;
+    _cabecera=nuevo;
+    _numelementos++;
+}
+
+template<class T>
+void ListaDEnlazada<T>::insertarFin(T& dato) {
+    Nodo<T> *nuevo;
+    nuevo=new Nodo<T>(dato,_cola,0);
+    if (_cabecera==0)
+        _cabecera=nuevo;
+    if (_cola!=0)
+        _cola->_sig=nuevo;
+    _cola=nuevo;
+    _numelementos++;
+}
+
+template<class T>
+void ListaDEnlazada<T>::borrarAlInicio() {
+    Nodo<T>*borra=_cabecera;
+    _cabecera=_cabecera->_sig;
+    _cabecera->_ant=nullptr;
+    delete borra;
+}
+
+template<class T>
+void ListaDEnlazada<T>::borrarAlFinal() {
+    Nodo<T>*borra=_cola;
+    _cola=borra->_ant;
+    _cola->_sig=nullptr;
+    delete borra;
+}
+
+
+template<class T>
+void ListaDEnlazada<T>::borrar(Iterador &i) {
+    Nodo<T> *borra=i.nodo;
+
+    if (borra==nullptr) return;
+
+    if (borra->_ant!=nullptr)
+        borra->_ant->_sig=borra->_sig;
+    else
+        _cabecera=borra->_sig;
+
+    if (borra->_sig!=nullptr)
+        borra->_sig->ant=borra->_ant;
+    else _cola=borra->_ant;
+
+    i.nodo = borra->_sig;
+    delete borra;
+    _numelementos--;
+
+}
+
+template <class T>
+int ListaDEnlazada<T>::tam()const {
+    return _numelementos;
+}
+
+template <class T>
+ListaDEnlazada<T> ListaDEnlazada<T>::concatena(const ListaDEnlazada<T> &lista)const {
+
+}
+
+
+
+//Aqui añado los metodos de la clase Iterador
 
 template<class T>
 ListaDEnlazada<T>::Iterador::Iterador(Nodo<T> *aNodo):nodo (aNodo) {}
@@ -163,9 +239,6 @@ T& ListaDEnlazada<T>::Iterador::dato() {
     if (nodo==nullptr)
         throw std::invalid_argument("Iterador nulo");
     return nodo->_dato;
-
-
-    
 }
 
 template <class T>
@@ -174,31 +247,6 @@ typename ListaDEnlazada<T>::Iterador ListaDEnlazada<T>::iterador() {
 }
 
 
-//Insertar al inicio y al final
-
-template<class T>
-void ListaDEnlazada<T>::insertarInicio(T& dato) {
-    Nodo<T> *nuevo;
-    nuevo= new Nodo<T>(dato,0,_cabecera);
-    if (_cola==0)
-        _cola=nuevo;
-    if (_cabecera!=0)
-        _cabecera->_ant=nuevo;
-    _cabecera=nuevo;
-    _numelementos++;
-}
-
-template<class T>
-void ListaDEnlazada<T>::insertarFin(T& dato) {
-    Nodo<T> *nuevo;
-    nuevo=new Nodo<T>(dato,_cola,0);
-    if (_cabecera==0)
-        _cabecera=nuevo;
-    if (_cola!=0)
-        _cola->_sig=nuevo;
-    _cola=nuevo;
-    _numelementos++;
-}
 
 
 
