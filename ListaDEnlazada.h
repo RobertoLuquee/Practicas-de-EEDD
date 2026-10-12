@@ -66,6 +66,7 @@ public:
     int tam() const;
     ListaDEnlazada<T> concatena(const ListaDEnlazada<T> &lista)const;
     ListaDEnlazada<T> operator+(const ListaDEnlazada<T> &l) const;
+    ~ListaDEnlazada();
 };
 
 
@@ -200,13 +201,13 @@ ListaDEnlazada<T> ListaDEnlazada<T>::concatena(const ListaDEnlazada<T> &lista)co
 
     Nodo<T>* p1=_cabecera;
     while (p1!=nullptr) {
-        resultado.insertarFin(p1->dato);
-        p1=p1->sig;
+        resultado.insertarFin(p1->_dato);
+        p1=p1->_sig;
     }
 
-    Nodo<T>*p2=p1->lista._cabecera;
+    Nodo<T>*p2=lista._cabecera;
     while (p2!=nullptr) {
-        resultado.insertarFin(p2->dato);
+        resultado.insertarFin(p2->_dato);
         p2=p2->_sig;
     }
     return resultado;
@@ -216,6 +217,19 @@ ListaDEnlazada<T> ListaDEnlazada<T>::concatena(const ListaDEnlazada<T> &lista)co
 template <class T>
 ListaDEnlazada<T> ListaDEnlazada<T>::operator+(const ListaDEnlazada<T> &lista) const {
     return concatena(lista);
+}
+
+template <class T>
+ListaDEnlazada<T>::~ListaDEnlazada() {
+    Nodo<T> *actual = _cabecera;
+    while (actual != nullptr) {
+        Nodo<T> *aBorrar = actual;
+        actual = actual->_sig; // Avanzo al siguiente antes de liberar el actual
+        delete aBorrar;        // Libero la memoria
+    }
+    _cabecera = nullptr;
+    _cola = nullptr;
+    _numelementos = 0;
 }
 
 
