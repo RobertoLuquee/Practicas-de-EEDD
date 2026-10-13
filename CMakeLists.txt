@@ -7,4 +7,6 @@ set(CMAKE_CXX_STANDARD 14)
 add_executable(Practica1 main.cpp Especie.cpp
         ListaDEnlazada.cpp
         Parque.cpp
-        Parque.h)
+        Parque.h
+        ControlParques.cpp
+        ControlParques.h)
