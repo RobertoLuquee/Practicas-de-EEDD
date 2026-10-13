@@ -10,7 +10,6 @@
 /** @author Roberto Luque Peña rlp00041@red.ujaen.es
  * @author Oier Fernandez De Leceta Villalmanzo ofv00003@red.ujaen.es
  */
-
 void ordenarBurbuja(VDinamico<Especie>& v) {
 
     unsigned int n=v.get__tlogico();
