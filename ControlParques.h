@@ -15,8 +15,8 @@ class ControlParques {
 
     void asignarEspecieParque(Especie e, Parque p);
     int contarEspecieParque(std::string ncomun);
-    VDinamico<Especie> listadoEspecieSubNombre(std::string cadena);
-    Parque buscarParque(std::string nombre_parque);
+    VDinamico<Especie*> listadoEspecieSubNombre(std::string cadena);
+    Parque* buscarParque(std::string nombre_parque);
 
 
 };

@@ -9,17 +9,21 @@ void ControlParques::asignarEspecieParque(Especie e, Parque p) {
 
     bool acabado=false;
 
-    while (acabado) {
+    while (!acabado) {
         try {
-            Parque& actual= iter.dato();
-            if (actual.getCodParque!=p.getCodParque) {
-
+            Parque& actual= iter.dato();// el & lo q hace es darle un apodo "actual" a la posicion de
+            //memoria original del objeto original en ves de una copia
+            if (actual.get_cod_parque()!=p.get_cod_parque()) {
+                actual.insertaEspecie(&e);
+                return;//aqui me acaba si la encuentro
             }
 
-
-
-
-
+            if (iter.haySiguiente()) {
+                iter.siguiente();
+            }
+            else {
+                acabado=true;
+            }
         }
         catch (const std::invalid_argument& ex) {
             acabado=true;
@@ -29,10 +33,70 @@ void ControlParques::asignarEspecieParque(Especie e, Parque p) {
 
 
 int ControlParques::contarEspecieParque(std::string ncomun) {
+
+    int contador=0;
+
+    ListaDEnlazada<Parque>::Iterador iter=ld_parques.iterador();
+
+    bool acabado=false;
+    while (!acabado) {
+        try {
+
+            Parque& actual= iter.dato();
+            if (actual.existeNbreCom(ncomun)) {
+                contador++;
+            }
+
+            if (iter.haySiguiente()) {
+                iter.siguiente();
+            }
+            else {
+                acabado=true;
+            }
+
+        }
+        catch (const std::invalid_argument &ex) {
+            acabado=true;
+        }
+
+    }
+
+
 }
 
-VDinamico<Especie> ControlParques::listadoEspecieSubNombre(std::string cadena) {
+VDinamico<Especie*> ControlParques::listadoEspecieSubNombre(std::string cadena) {
+
+    VDinamico<Especie*> resultado;
+    for (int i=0; i<v_especies.get__tlogico();i++) {
+        std::string actual= v_especies[i].getnombre_cientifico();
+
+        if (actual.find(cadena)!= std::string::npos) {
+            resultado.insertar(&v_especies[i]);
+        }
+    }
 }
 
-Parque ControlParques::buscarParque(std::string nombre_parque) {
+
+Parque* ControlParques::buscarParque(std::string nombre_parque) {
+
+    ListaDEnlazada<Parque>::Iterador iter=ld_parques.iterador();
+    bool acabado=false;
+
+    while (!acabado) {
+
+        try {
+            Parque& actual =iter.dato();
+            if (actual.get_nbre_parque()==nombre_parque) {
+                return &actual;
+            }
+
+            if (iter.haySiguiente()) {
+                iter.siguiente();
+            }
+            else acabado=true;
+        }
+        catch (const std::invalid_argument &ex) {
+            acabado=true;
+        }
+    }
 }
