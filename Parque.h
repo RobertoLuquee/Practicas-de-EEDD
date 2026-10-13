@@ -72,6 +72,7 @@ void Parque::insertaEspecie(Especie *esp) {
     _contains.insertar(esp);
 }
 
+// Búsqueda por nombre común
 bool Parque::existeNbreCom(const std::string &nombrecomun)  {
     for (unsigned int i = 0; i < _contains.get__tlogico(); ++i) {
         if (_contains[i] != nullptr && _contains[i]->getnombre_comun() == nombrecomun) {
