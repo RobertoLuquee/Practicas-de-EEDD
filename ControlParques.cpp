@@ -156,11 +156,7 @@ void ControlParques::enlazarAutomatico() {
 
 
 
-    }
 
-
-
-}
 
 
 

@@ -285,6 +285,9 @@ int main()
 
     std::cout << "Enlaces generados con exito." << std::endl;
 
+
+//Ejercicio 1
+
   Parque* parqueleonor = cp2.buscarParque("PARQUE PRINCESA LEONOR");
     if (parqueleonor!=nullptr) {
         if (parqueleonor->existeNbreCom("Eucalipto Rojo")) {
@@ -306,6 +309,68 @@ int main()
         std::cerr<<"No existe el parque"<<std::endl;
         return 0;
     }
+
+
+//Ejercicio 2
+
+    Parque* parquemadridrio= cp2.buscarParque("PARQUE MADRID RIO");
+    if (parquemadridrio!=nullptr) {
+        if (parquemadridrio->existeNbreCie("Hebe floribunda")) {
+            cout<<"Si tiene la especie Hebe floribunda"<<std::endl;
+        }
+        else {
+            cerr << "No tiene la especie Hebe floribunda" << std::endl;
+        }
+
+        if (parquemadridrio->existeNbreCie("Ananas comosa")) {
+            cout<<"Si tiene la especie Ananas Comosa"<<std::endl;
+        }
+        else {
+            cerr << "NO tiene la especie Ananas Comosa"<<std::endl;
+        }
+    }
+    else {
+        std::cerr<<"No existe el parque" <<std::endl;
+    }
+
+    //Ejercicio 3
+
+    Parque* parquejuancarlosIII=cp2.buscarParque("PARQUE JUAN CARLOS III");
+
+    if (parquejuancarlosIII!=nullptr) {
+        std::cout << parquejuancarlosIII->get_cod_parque()<<std::endl;
+    }
+    else {
+        cerr << "No existe el parque"<<std::endl;
+    }
+
+    Parque* parquevivero=cp2.buscarParque("VIVERO MIGAS CALIENTES");
+    if (parquevivero!=nullptr) {
+        cout << parquevivero->get_cod_parque()<<std::endl;
+    }
+    else {
+        cerr << "No existe el parque"<<std::endl;
+    }
+
+    //Ejercicio 4
+
+    VDinamico<Especie*> especiesrosa= cp2.listadoEspecieSubNombre("rosa");
+    std::cout <<"El numero de especies que tiene rosa de subcadena es: "<<especiesrosa.get__tlogico()<<std::endl;
+    std::cout << "Especies subcvadena rosa:" << std::endl;
+    for (int i=0;i<especiesrosa.get__tlogico();i++) {
+        especiesrosa[i]->mostrarInfo();
+    }
+
+    //Ejercicio 5
+
+    int totalParquesAbeto = cp.contarEspecieParque("Abeto");
+    std::cout << "  Total de parques que contienen Abeto: " << totalParquesAbeto << std::endl;
+
+
+
+
+
+
 
     return 0;
 
