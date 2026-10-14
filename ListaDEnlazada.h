@@ -50,6 +50,7 @@ public:
 
     public:
         Iterador(Nodo<T> *aNodo=nullptr);
+        bool fin() const;
         bool hayAnterior();
         bool haySiguiente();
         void anterior();
@@ -59,7 +60,7 @@ public:
 
     // 2. Estos  son  de la lista, no del iterador
     Iterador iterador();
-    void inserta(Iterador &i, T &dato);
+    void inserta(Iterador &i,const T &dato);
     void borrarAlInicio();
     void borrarAlFinal();
     void borrar(Iterador &i);
@@ -152,6 +153,24 @@ void ListaDEnlazada<T>::insertarFin(T& dato) {
     _numelementos++;
 }
 
+template <class T>
+void ListaDEnlazada<T>::inserta(Iterador &i, const T &dato) {
+    if (i.nodo == nullptr) {
+        insertarFin(dato);
+        return;
+    }
+    if (i.nodo == _cabecera) {
+        insertarInicio(dato);
+        return;
+    }
+    Nodo<T> *nuevo = new Nodo<T>(dato, i.nodo, i.nodo->_ant);
+    if (i.nodo->_ant != nullptr) {
+        i.nodo->_ant->_sig = nuevo;
+    }
+    i.nodo->_ant = nuevo;
+    _numelementos++;
+}
+
 template<class T>
 void ListaDEnlazada<T>::borrarAlInicio() {
     Nodo<T>*borra=_cabecera;
@@ -238,6 +257,11 @@ ListaDEnlazada<T>::~ListaDEnlazada() {
 
 template<class T>
 ListaDEnlazada<T>::Iterador::Iterador(Nodo<T> *aNodo):nodo (aNodo) {}
+
+template <class T>
+bool ListaDEnlazada<T>::Iterador::fin() const {
+    return nodo == nullptr;
+}
 
 template<class T>
 bool ListaDEnlazada<T>::Iterador::hayAnterior() {

@@ -10,6 +10,7 @@
 
 
 class ControlParques {
+
     VDinamico<Especie> v_especies;
     ListaDEnlazada<Parque> ld_parques;
 

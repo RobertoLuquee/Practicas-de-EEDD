@@ -24,6 +24,8 @@ public:
     std::string getnombre_comun() const;
 
     std::string getnombre_cientifico() const;
+
+    void mostrarInfo() const;
 };
 
 inline std::string Especie::getnombre_comun() const {

@@ -5,177 +5,263 @@
 #include <stdexcept>
 #include "Especie.h"
 #include "VDinamico.h"
+#include <iostream>
+//#include <conio.h>
+#include "ControlParques.h"
+//#include "LectorCSV.h"
+#include "ListaDEnlazada.h"
+#include "Parque.h"
 
 
 /** @author Roberto Luque Peña rlp00041@red.ujaen.es
  * @author Oier Fernandez De Leceta Villalmanzo ofv00003@red.ujaen.es
  */
-void ordenarBurbuja(VDinamico<Especie>& v) {
 
-    unsigned int n=v.get__tlogico();
-    for (unsigned int i=0;i<n-1;i++) {
-        for (unsigned int j=0;j<n-i-1;j++) {
-            if (v[j+1]<v[j]) {
-                Especie aux=v[j];
-                v[j]=v[j+1];
-                v[j+1]=aux;
-            }
-        }
+template <class T>
+using Iterador = typename ListaDEnlazada<T>::Iterador;
+
+template <class T>
+void mostrarLista(ListaDEnlazada<T> l)
+{
+    for (Iterador<T> it = l.iterador(); !it.fin(); it.avanza())
+    {
+        std::cout << std::to_string(it.getdato()) << "  ";
     }
-}
-
-VDinamico<Especie*>BuscarPorNombre(VDinamico<Especie>&catalogoarboles,const string& palabraquesebusca) {
-    VDinamico<Especie*> resultado;
-    for (unsigned int i=0;i<catalogoarboles.get__tlogico();i++) {
-        std::string nombreArbolCientifico=catalogoarboles[i].getnombre_cientifico();
-        std::string aux="";
-
-        bool espacioEncontrado=false;
-        for (int j=0;j<nombreArbolCientifico.length() && !espacioEncontrado;j++) {
-            if (nombreArbolCientifico[j]==' ') {
-                espacioEncontrado=true; //uso esta variable para salir del bucle
-            }else
-                aux+=nombreArbolCientifico[j]; //Como no he encontrado un espacio, almaceno los caracteres en este vector
-        }
-
-        if (aux==palabraquesebusca)
-            resultado.insertar(&catalogoarboles[i]); //Si coincide, lo añado a mi vector creado de punteros
-
-    }
-
-    return resultado;
+    cout << endl;
 }
 
 
- VDinamico<Especie*> getEspNComun(VDinamico<Especie>& catalogoarboles) {
-    //Buscar los "" y omitirlos y los q si tienen nombre metyerlos en un vector
-    VDinamico<Especie*> aux;
-
-
-    for (int i=0;i<catalogoarboles.get__tlogico();i++) {
-        if(catalogoarboles[i].getnombre_comun()!="") {
-            aux.insertar(&catalogoarboles[i]);
+Iterador<Parque> buscaParque(ListaDEnlazada<Parque>& lista, string nombre)
+{
+    Iterador<Parque> it = lista.iterador();
+    for (it; !it.fin(); it.siguiente())
+    {
+        if (it.dato().get_nbre_parque() == nombre)
+        {
+            return it;
         }
     }
-    return aux;
+    return it;
 }
 
-
-
-
-
-
-int main(int argc, const char * argv[]) {
-try {
-    std::ifstream is;
-    std::stringstream  columnas;
-    std::string fila;
-    int contador=0;
-    char delimitador = ',';
-
-    std::string _codigoEspecie = "";
-    std::string _nombreComun = "";
-    std::string _nombreCientifico = "";
-    std::string _tipoPlanta = "";
-
-
-
-
-
-    VDinamico<Especie> catalogoarboles;
-
-    is.open("../arbolado-especies.csv"); //carpeta de proyecto
-    if ( is.good() ) {
-
-        clock_t t_ini = clock();
-        getline(is, fila ); //salto la cabecera
-
-        while ( getline(is, fila ) ) {
-
-            //¿Se ha leído una nueva fila?
-            if (fila!="") {
-
-                columnas.str(fila);
-
-                //Código - Nombre común - Nombre científico - Tipo de planta
-
-                getline(columnas, _codigoEspecie, delimitador);
-                getline(columnas, _nombreComun, delimitador);
-                getline(columnas, _nombreCientifico, delimitador);
-                getline(columnas, _tipoPlanta, delimitador);
-
-                fila="";
-                columnas.clear();
-
-                Especie nuevoregistro(_codigoEspecie,_nombreComun,_nombreCientifico,_tipoPlanta);
-                catalogoarboles.insertar(nuevoregistro);
-
-                /*std::cout << ++contador
-                          << " Codigo Especie= " << _codigoEspecie
-                          << " Nombre comun= " << _nombreComun << " Nombre Cientifico= " << _nombreCientifico
-                          << " Tipo planta= " << _tipoPlanta << std::endl;*/
-            }
+bool buscaEspecieNbrComun(VDinamico<Especie*>& vector, string nombreComun)
+{
+    int n = vector.get__tlogico();
+    for (int i = 0; i < n; ++i)
+    {
+        if (vector[i]->getnombre_comun() == nombreComun)
+        {
+            return true;
         }
-
-        is.close();
-
-        std::cout<< "Primeros 50 registros de especie: "<<std::endl;
-        for (int i=0;i<50;i++) {
-            std::cout <<i+1<<"- "<<catalogoarboles[i].getCodigo()<<std::endl;
-        }
-        std::cout << std::endl;
-        catalogoarboles.ordenar();
-        std::cout<< "Primeros 50 registros ORDENADOS: "<<std::endl;
-        for (int i=0;i<50;i++) {
-            std::cout <<i+1<<"- "<<catalogoarboles[i].getCodigo()<<std::endl;
-        }
-        std::cout << std::endl;
-
-        std::string encontrarCodigos[]={"CTA","DMD","HCN","NDOF","JAX"};
-        for (int i=0;i<5;i++) {
-            Especie especiesEncontrar(encontrarCodigos[i],"","","");
-
-            int posicion = catalogoarboles.busquedaBinaria(especiesEncontrar);
-
-            if (posicion!=-1) {
-                std::cout<< "Encontrada la especie de codigo: " <<encontrarCodigos[i]<<" en la posicion: "<<posicion<<std::endl;
-            }
-            else {
-                std::cout << "No se ha encontrado ninguna especie de codigo: "<<encontrarCodigos[i]<<std::endl;
-            }
-        }
-        std::cout << std::endl;
-
-        VDinamico<Especie*> arbolesconnombre=getEspNComun(catalogoarboles);
-        std::cout <<"Tamanio logico del vector de Arboles que si contienen nombre comun: "<<arbolesconnombre.get__tlogico()<<std::endl;
-        std::cout << std::endl;
-        for (int i=0;i<50;i++) {
-            std::cout <<i+1<<"- "<< arbolesconnombre[i]->getnombre_comun()<<std::endl;
-        }
-
-        std::cout << std::endl;
-
-        std::cout << "Tiempo de lectura: " << ((clock() - t_ini) / (float) CLOCKS_PER_SEC) << " segs." << std::endl;
-    } else {
-        std::cout << "Error de apertura en archivo" << std::endl;
     }
-
-    ordenarBurbuja(catalogoarboles);
-
-    int total=catalogoarboles.get__tlogico();
-    for (int i=total-1;i<total-50;i--) {
-        std::cout<<i+1<<"- "<<catalogoarboles[i].getCodigo()<<std::endl;
-    }
-
-    std::cout << std::endl;
-
-    VDinamico<Especie*> nombrePalabra= BuscarPorNombre(catalogoarboles,"Koelreuteria");
-    std::cout << "Numero de especies encontradas: " << nombrePalabra.get__tlogico()<<std::endl;
-
-}catch (const std::exception& e) {
-    std::cerr << "Excepcion capturada: " << e.what() << std::endl;
-    //Lo hago para capturar cualquier excecion de las declaradas en la clase VDinamico
+    return false;
 }
+
+bool buscaEspecieNbrCientif(VDinamico<Especie*>& vector, string nombreCentif)
+{
+    int n = vector.get__tlogico();
+    for (int i = 0; i < n; ++i)
+    {
+        string s = vector[i]->getnombre_cientifico();
+        if (vector[i]->getnombre_cientifico() == nombreCentif)
+        {
+            return true;
+        }
+    }
+    return false;
+}
+
+const string RUTA_ESPECIES = "data/arbolado-especies.csv";
+const string RUTA_PARQUES = "data/parques.csv";
+
+int main()
+{
+
+    cout << "PROGRAMA DE PRUEBA 1" << endl;
+
+    //Crear la lista vacía
+    ListaDEnlazada<int> lista;
+
+    cout<<"Insetar al final del 101 al 200"<<endl;
+
+    for (int i = 101; i <= 200; ++i)
+    {
+        lista.insertarFin(i);
+    }
+    mostrarLista(lista);
+
+    cout<<endl<<"Insertar por el comienzo del 1 al 98"<<endl;
+    for (int i = 98; i >= 1; --i)
+    {
+        lista.insertarInicio(i);
+    }
+    mostrarLista(lista);
+
+    cout<<endl<<"insertar el dato 100 delante del 101"<<endl;
+    Iterador<int> itint = lista.iterador();
+    while (itint.dato() != 102)
+    {
+        itint.siguiente();
+    }
+    lista.inserta(itint, 100);
+    mostrarLista(lista);
+
+    itint = lista.iterador();
+    while (itint.dato() != 98)
+    {
+        itint.siguiente();
+    }
+    lista.inserta(itint, 99);
+    mostrarLista(lista);
+
+    cout<<endl<<"Borrar los 10 primeros y los 10 últimos"<<endl;
+    for (int i = 0; i < 10; ++i)
+    {
+        lista.borrarAlInicio();
+        lista.borrarAlFinal();
+    }
+    mostrarLista(lista);
+
+    cout<<endl<<"PULSAR CUALQUIER TECLA PARA CONTINUAR"<<endl;
+    std::cin.get();// Me da error -> getch();
+
+    cout << "PROGRAMA DE PRUEBA 2" << endl;
+    ControlParques cp(RUTA_ESPECIES, RUTA_PARQUES);
+
+    //Variables fuera del bucle por eficiencia
+    VDinamico<Especie>* especies = &cp.get_varieties();
+    ListaDEnlazada<Parque>* parques = &cp.get_parks();
+
+    for (int i = 0; i < especies->get__tlogico(); ++i)
+    {
+        Iterador<Parque> it = parques->iterador();
+        Especie& esp = (*especies)[i];
+        int tipo = esp.get_tipo_planta();
+        for (it; !it.fin(); it.siguiente())
+        {
+            Parque& pq = it.dato();
+            int resto = pq.get_cod_parque() % 2;
+
+            //parques con codigo par
+            if ((tipo == ARBUSTO || tipo == CONIFERA || tipo == PALMACEA ||
+                tipo == HERB_PERENNES || tipo == FRONDOSA) && (resto == 0))
+            {
+                pq.insertaEspecie(&esp);
+                //Parques con codigo impar
+            }
+            else if ((tipo == TAPIZANTE_TREPADORA || tipo == CACTACEA_SUCULENTA ||
+                tipo == SUBTROPICAL_TROPICAL ||
+                tipo == HERB_ANUAL || tipo == HERB_ANUALES) && (resto == 1))
+            {
+                pq.insertaEspecie(&esp);
+            }
+        }
+    }
+
+    cout << endl << "ASIGNACIÓN DE ESPECIES A LOS PARQUES" << endl;
+    for (Iterador<Parque> it = parques->iterador(); !it.fin(); it.siguiente())
+    {
+        cout << "  Codigo: " << to_string(it.dato().get_cod_parque()) << " nombre: " << it.dato().
+            get_nbre_parque() << " total especies: " << to_string(
+                it.dato().get_contains().get__tlogico()) << endl;
+    }
+
+
+    cout << endl << "BUSCAR EN PARQUE PRINCESA LEONOR LOS NOMBRES COMUNES EUCALIPTO ROJO Y ARCE DE SIERRA" << endl;
+    Parque& princLeonor = buscaParque(cp.get_parks(), "PARQUE PRINCESA LEONOR").dato();
+    //Debe estar
+    if (buscaEspecieNbrComun(princLeonor.get_contains(), "Eucalipto rojo"))
+    {
+        cout << "  Encontrado Eucalipto rojo" << endl;
+    }
+    else
+    {
+        cout << "  No se ha encontrado Eucalipto rojo" << endl;
+    }
+
+    //No debe estar
+    if (buscaEspecieNbrComun(princLeonor.get_contains(), "Arce de sierra"))
+    {
+        cout << "  Encontrado Arce de sierra" << endl;
+    }
+    else
+    {
+        cout << "  No se ha encontrado Arce de sierra" << endl;
+    }
+
+    cout << endl << "BUSCAR EN PARQUE MADRID RIO LOS NOMBRES CIENTÍFICOS HEBE FLORIBUNDA Y ANANAS COMOSA" << endl;
+    Parque& madridRio = buscaParque(cp.get_parks(), "PARQUE MADRID RIO").dato();
+    //No debe estar
+    if (buscaEspecieNbrCientif(madridRio.get_contains(), "Hebe floribunda"))
+    {
+        cout << "  Encontrado Hebe floribunda" << endl;
+    }
+    else
+    {
+        cout << "  No se ha encontrado Hebe floribunda" << endl;
+    }
+
+    //No debe estar
+    if (buscaEspecieNbrComun(madridRio.get_contains(), "Ananas comosa"))
+    {
+        cout << "  Encontrado Ananas comosa" << endl;
+    }
+    else
+    {
+        cout << "  No se ha encontrado Ananas comosa" << endl;
+    }
+
+    cout << endl << "BUSCAR PARQUES JUAN CARLOS III Y VIVERO DE MIGAS CALIENTES" << endl;
+    //No debe estar
+    Iterador<Parque> it = buscaParque(cp.get_parks(), "JUAN CARLOS III");
+    if (it.fin())
+    {
+        cout << "  No se ha encontrado parque JUAN CARLOS III" << endl;
+    }
+    else
+    {
+        cout<<"  codigo: " << to_string(it.dato().get_cod_parque()) <<" nombre: "<< it.dato().get_nbre_parque()<< endl;
+    }
+
+    Iterador<Parque> it2 = buscaParque(cp.get_parks(), "VIVERO DE MIGAS CALIENTES");
+    //Sí debe estar
+    if (it.fin())
+    {
+        cout << "  No se ha encontrado parque VIVERO DE MIGAS CALIENTES" << endl;
+    }
+    else
+    {
+        cout<<"  codigo: " << to_string(it.dato().get_cod_parque()) <<" nombre: "<< it.dato().get_nbre_parque()<< endl;
+    }
+
+    cout<< endl<<"BUSCAR ESPECIES CON LA SUBCADENA ROSA EN SU NOMBRE CIENTÍFICO"<<endl;
+    for (int i =0; i < especies->get__tlogico(); ++i)
+    {
+        string ncientif = (*especies)[i].getnombre_cientifico();
+        if (ncientif.find("rosa") != string::npos)
+        {
+            (*especies)[i].mostrarInfo();
+        }
+    }
+
+    cout<< endl<<"CONTAR CUÁNTOS PARQUES TIENEN LA ESPECIE CON NOMBRE COMÚN ABETO"<<endl;
+    it = cp.get_parks().iterador();
+    int total = 0;
+    for (it; !it.fin(); it.siguiente())
+    {
+       VDinamico<Especie*>  esp = it.dato().get_contains();
+        for (int i =0; i < esp.get__tlogico(); ++i)
+        {
+            string nombreComun = esp[i]->getnombre_comun();
+            if (nombreComun.find("Abeto") != string::npos)
+            {
+                ++total;
+                break;
+            }
+        }
+    }
+    cout<<"  Total: "<<total<<endl;
+
 
 
     return 0;
