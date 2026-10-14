@@ -32,6 +32,8 @@ class ListaDEnlazada {
 private:
     Nodo<T> *_cabecera,*_cola;
     unsigned int _numelementos;
+    void copiar(const ListaDEnlazada<T>& origen);
+    void destruye();
 
 public:
     ListaDEnlazada();
@@ -76,43 +78,62 @@ public:
 template <class T>
 ListaDEnlazada<T>::ListaDEnlazada():_cabecera(nullptr),_cola(nullptr),_numelementos(0){};
 
+
 template <class T>
-ListaDEnlazada<T>::ListaDEnlazada(const ListaDEnlazada<T>& origen): _cabecera(nullptr),
-_cola(nullptr), _numelementos(0) {
+void ListaDEnlazada<T>::destruye() {
+    Nodo<T> *actual = _cabecera;
+    while (actual != nullptr) {
+        Nodo<T> *aBorrar = actual;
+        actual = actual->_sig;
+        delete aBorrar;
+    }
+    _cabecera = nullptr;
+    _cola = nullptr;
+    _numelementos = 0;
+}
+
+template <class T>
+void ListaDEnlazada<T>::copiar(const ListaDEnlazada<T>& origen) {
+    _cabecera = nullptr;
+    _cola = nullptr;
+    _numelementos = 0;
+
     Nodo<T> *p = origen._cabecera;
     while (p != nullptr) {
-        insertarFin(p->_dato);
+
+        Nodo<T> *nuevo = new Nodo<T>(p->_dato, nullptr, _cola);
+        if (_cola != nullptr) {
+            _cola->_sig = nuevo;
+        } else {
+            _cabecera = nuevo;
+        }
+        _cola = nuevo;
+        _numelementos++;
         p = p->_sig;
     }
 }
 
-template <class T>
-ListaDEnlazada<T>& ListaDEnlazada<T>:: operator=(const ListaDEnlazada<T>& arr) {
-    if (this!=&arr) {
-        Nodo<T>*actual=_cabecera;
-        while (actual!=nullptr) {
-            Nodo<T>*aBorrar=actual;  //Guardo la dirección del nodo a borrar
-            actual=actual->_sig; //Avanzo al siguiente antes de borrarlo
-            delete aBorrar;
-        }
-        _cabecera=nullptr;
-        _cola=nullptr;
-        _numelementos=0;
 
-        Nodo<T>*parr=arr._cabecera;
-        while (parr!=nullptr) {
-            Nodo<T>*nuevo= new Nodo<T>(parr->_dato,nullptr,_cola);
-            if (_cola!=nullptr) {
-                _cola->_sig=nuevo;
-            }else {
-                _cabecera=nuevo; //Si la lista esta vacia, este nuevo nodo es tmabien la cabecera
-            }
-            _cola=nuevo;
-            _numelementos++;
-            parr=parr->_sig;
-        }
+// 1. Operador de asignación
+template <class T>
+ListaDEnlazada<T>& ListaDEnlazada<T>::operator=(const ListaDEnlazada<T>& arr) {
+    if (this != &arr) {
+        destruye();   // Llama a liberar la memoria actual
+        copiar(arr);  // Llama a copiar los nuevos nodos
     }
     return *this;
+}
+
+// 2. Constructor de copia
+template <class T>
+ListaDEnlazada<T>::ListaDEnlazada(const ListaDEnlazada<T>& origen) {
+    copiar(origen);
+}
+
+// 3. Destructor
+template <class T>
+ListaDEnlazada<T>::~ListaDEnlazada() {
+    destruye();
 }
 
 template <class T>
@@ -256,19 +277,6 @@ ListaDEnlazada<T> ListaDEnlazada<T>::concatena(const ListaDEnlazada<T> &lista)co
 template <class T>
 ListaDEnlazada<T> ListaDEnlazada<T>::operator+(const ListaDEnlazada<T> &lista) const {
     return concatena(lista);
-}
-
-template <class T>
-ListaDEnlazada<T>::~ListaDEnlazada() {
-    Nodo<T> *actual = _cabecera;
-    while (actual != nullptr) {
-        Nodo<T> *aBorrar = actual;
-        actual = actual->_sig; // Avanzo al siguiente antes de liberar el actual
-        delete aBorrar;        // Libero la memoria
-    }
-    _cabecera = nullptr;
-    _cola = nullptr;
-    _numelementos = 0;
 }
 
 

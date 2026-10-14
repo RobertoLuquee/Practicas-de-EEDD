@@ -21,7 +21,7 @@ template <class T>
 using Iterador = typename ListaDEnlazada<T>::Iterador;
 
 template <class T>
-void mostrarLista(ListaDEnlazada<T> l)
+void mostrarLista(ListaDEnlazada<T>& l)
 {
     for (Iterador<T> it = l.iterador(); !it.fin(); it.siguiente())
     {
@@ -71,8 +71,8 @@ bool buscaEspecieNbrCientif(VDinamico<Especie*>& vector, string nombreCentif)
     return false;
 }
 
-const string RUTA_ESPECIES = "data/arbolado-especies.csv";
-const string RUTA_PARQUES = "data/parques.csv";
+const string RUTA_ESPECIES = "arbolado-especies.csv";
+const string RUTA_PARQUES = "parques.csv";
 
 int main()
 {
