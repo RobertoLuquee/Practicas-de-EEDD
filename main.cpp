@@ -5,8 +5,6 @@
 #include <stdexcept>
 #include "Especie.h"
 #include "VDinamico.h"
-#include <iostream>
-//#include <conio.h>
 #include "ControlParques.h"
 //#include "LectorCSV.h"
 #include "ListaDEnlazada.h"
@@ -274,6 +272,43 @@ int main()
         }
     }
     cout<<"  Total: "<<total<<endl;
+
+
+    cout << "PROGRAMA DE PRUEBA 2" << endl;
+    std::cout << "INICIANDO SISTEMA DE PARQUES..." << std::endl;
+
+    // 1. Esto lee los CSV automáticamente si lo pusiste en el constructor
+    ControlParques cp2(RUTA_ESPECIES, RUTA_PARQUES);
+
+    // 2. Enlazamos las especies con sus parques
+    cp.enlazarAutomatico();
+
+    std::cout << "Enlaces generados con exito." << std::endl;
+
+  Parque* parqueleonor = cp2.buscarParque("PARQUE PRINCESA LEONOR");
+    if (parqueleonor!=nullptr) {
+        if (parqueleonor->existeNbreCom("Eucalipto Rojo")) {
+            cout << "Si tiene la especie Eucalipto rojo." << std::endl;
+        }
+        else {
+            cerr << "No tiene la especie Eucalipto rojo." << std::endl;
+        }
+
+        if (parqueleonor->existeNbreCom("ARCE DE SIERRA")) {
+            cout << "Si tiene la especie Arce de Sierra"<<std::endl;
+        }
+        else {
+            cerr << "No tiene la especie Arde de Sierra"<<std::endl;
+        }
+    }
+    else {
+
+        std::cerr<<"No existe el parque"<<std::endl;
+        return 0;
+    }
+
+    return 0;
+
 
 
 

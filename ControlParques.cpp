@@ -3,6 +3,9 @@
 //
 
 #include "ControlParques.h"
+#include <fstream>
+#include <sstream>
+#include <iostream>
 
 
 VDinamico<Especie>& ControlParques::get_varieties() {
@@ -14,8 +17,153 @@ ListaDEnlazada<Parque>& ControlParques::get_parks() {
 }
 
 ControlParques::ControlParques(const std::string &rutaEspecies, const std::string &rutaParques) {
-    // Aquí va tu código de lectura de archivos especies y parques si la tienes implementada
+    std::ifstream esEspecie(rutaEspecies);
+    std::string fila;
+    std::stringstream columna;
+    char separador = ',';
+
+    std::string _codigoEspecie, _nombreComun, _nombreCientifico, _tipoStr;
+
+
+    if (esEspecie.good()) {
+        getline(esEspecie,fila);
+        while (getline(esEspecie, fila)) {
+            if (fila!="") {
+                columna.str(fila);
+
+                getline(columna, _codigoEspecie,separador);
+                getline(columna,_nombreCientifico,separador);
+                getline(columna,_nombreComun,separador);
+                getline(columna,_tipoStr,separador);
+
+                columna.clear();
+
+                if (!_tipoStr.empty() && _tipoStr.back() == '\r') {
+                    _tipoStr.pop_back();
+                }
+
+                TipoPlanta tipoEnum = ARBUSTO; // Valor por defecto
+                if (_tipoStr == "ARBUSTO") tipoEnum = ARBUSTO;
+                else if (_tipoStr == "CONIFERA") tipoEnum = CONIFERA;
+                else if (_tipoStr == "PALMACEA") tipoEnum = PALMACEA;
+                else if (_tipoStr == "HERB_PERENNES") tipoEnum = HERB_PERENNES;
+                else if (_tipoStr == "FRONDOSA") tipoEnum = FRONDOSA;
+                else if (_tipoStr == "TAPIZANTE/TREPADORA") tipoEnum = TAPIZANTE_TREPADORA;
+                else if (_tipoStr == "CACTACEA/SUCULENTA") tipoEnum = CACTACEA_SUCULENTA;
+                else if (_tipoStr == "SUBTROPICAL/TROPICAL") tipoEnum = SUBTROPICAL_TROPICAL;
+                else if (_tipoStr == "HERB_ANUAL") tipoEnum = HERB_ANUAL;
+                else if (_tipoStr == "HERB_ANUALES") tipoEnum = HERB_ANUALES;
+
+                Especie nuevoregistro(_codigoEspecie, _nombreComun, _nombreCientifico, tipoEnum);
+                v_especies.insertar(nuevoregistro);
+            }
+        }
+        esEspecie.close();
+        v_especies.ordenar();
+    }
+    else {
+        std::cerr << "Error de apertura en archivo: " << rutaEspecies << std::endl;
+    }
+
+
+    std::ifstream esParque(rutaParques);
+    std::string filaparque;
+    std::stringstream columnaparque;
+
+    std::string _codigoParqueStr,_nombreParque;
+
+    if (esParque.good()) {
+        getline(esParque,filaparque);
+
+        while (getline(esParque,filaparque)) {
+            if (filaparque!="") {
+                columnaparque.str(filaparque);
+
+                getline(esParque,_codigoParqueStr,separador);
+                getline(esParque,_nombreParque,separador);
+
+                columnaparque.clear();
+
+                if (!_nombreParque.empty() && _nombreParque.back()=='\r') {
+                    _nombreParque.pop_back();
+                }
+                if (!_nombreParque.empty() && _nombreParque.front() == '"') {
+                    _nombreParque.erase(0, 1); // Borramos la primera comilla
+                    if (_nombreParque.back() == '"') {
+                        _nombreParque.pop_back(); // Borramos la última comilla
+                    }
+                }
+
+                int codParqueInt = 0;
+                try {
+                    codParqueInt = std::stoi(_codigoParqueStr);
+                } catch (const std::exception& e) {
+                    std::cerr << "Error al convertir codigo de parque a numero: " << _codigoParqueStr << std::endl;
+                    continue;
+                }
+
+                // Creamos el objeto Parque y lo insertamos al FINAL de la lista
+                Parque nuevoParque(codParqueInt, _nombreParque);
+                ld_parques.insertarFin(nuevoParque);
+            }
+        }
+        esParque.close();
+
+        std::cout << "Parques cargados correctamente. Total: "
+                  << ld_parques.tam() << " parques." << std::endl;
+
+    } else {
+        std::cerr << "Error de apertura en archivo de parques: " << rutaParques << std::endl;
+
+    }
 }
+
+void ControlParques::enlazarAutomatico() {
+    for (int i=0;i<v_especies.get__tlogico();i++) {
+        Especie& actual=v_especies[i];
+        int tipo=actual.get_tipo_planta();
+
+        ListaDEnlazada<Parque>::Iterador iter=ld_parques.iterador();
+
+        while (!iter.fin()) {
+            Parque& p_actual=iter.dato();
+            int codParque=p_actual.get_cod_parque();
+
+            bool esPar=(codParque%2==0);//el resto de la division entre 2 es=0
+
+            if (esPar && (tipo == ARBUSTO || tipo == CONIFERA ||
+                          tipo == PALMACEA || tipo == HERB_PERENNES ||
+                          tipo == FRONDOSA)) {
+                p_actual.insertaEspecie(&actual);
+                          }
+
+            else if (!esPar && (tipo == TAPIZANTE_TREPADORA ||
+                                tipo == CACTACEA_SUCULENTA ||
+                                tipo == SUBTROPICAL_TROPICAL ||
+                                tipo == HERB_ANUAL ||
+                                tipo == HERB_ANUALES)) {
+
+                p_actual.insertaEspecie(&actual); // Insertamos el puntero
+                                }
+
+            iter.siguiente();
+        }
+    }
+}
+
+
+
+
+
+
+    }
+
+
+
+}
+
+
+
 
 void ControlParques::asignarEspecieParque(Especie e, Parque p) {
     ListaDEnlazada<Parque>::Iterador iter=ld_parques.iterador();
@@ -73,8 +221,7 @@ int ControlParques::contarEspecieParque(std::string ncomun) {
         }
 
     }
-
-
+    return contador;
 }
 
 VDinamico<Especie*> ControlParques::listadoEspecieSubNombre(std::string cadena) {
@@ -87,6 +234,7 @@ VDinamico<Especie*> ControlParques::listadoEspecieSubNombre(std::string cadena) 
             resultado.insertar(&v_especies[i]);
         }
     }
+    return resultado;
 }
 
 
