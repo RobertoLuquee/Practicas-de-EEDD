@@ -30,7 +30,7 @@ Nodo<T>::Nodo(const T &dato,Nodo *sig,Nodo *ant):_dato(dato),_sig(sig),_ant(ant)
 template <class T>
 class ListaDEnlazada {
 private:
-    Nodo<T> *_cabecera, *_cola;
+    Nodo<T> *_cabecera,*_cola;
     unsigned int _numelementos;
 
 public:
@@ -132,7 +132,7 @@ T& ListaDEnlazada<T>::fin() {
 
 template<class T>
 void ListaDEnlazada<T>::insertarInicio(const T& dato){
-    Nodo<T> *nuevo= new Nodo<T>(dato,0,_cabecera);
+    Nodo<T> *nuevo= new Nodo<T>(dato,_cabecera,0);
     if (_cola==0)
         _cola=nuevo;
     if (_cabecera!=0)
@@ -144,7 +144,7 @@ void ListaDEnlazada<T>::insertarInicio(const T& dato){
 template<class T>
 void ListaDEnlazada<T>::insertarFin(const T& dato) {
     Nodo<T> *nuevo;
-    nuevo=new Nodo<T>(dato,_cola,0);
+    nuevo=new Nodo<T>(dato,0,_cola);
     if (_cabecera==0)
         _cabecera=nuevo;
     if (_cola!=0)
@@ -203,7 +203,7 @@ void ListaDEnlazada<T>::borrar(Iterador &i) {
         _cabecera=borra->_sig;
 
     if (borra->_sig!=nullptr)
-        borra->_sig->ant=borra->_ant;
+        borra->_sig->_ant=borra->_ant;
     else _cola=borra->_ant;
 
     i.nodo = borra->_sig;

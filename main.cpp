@@ -122,7 +122,7 @@ int main()
     }
     mostrarLista(lista);
 
-    cout << "6. Borrar todos los múltiplos de 10:" << endl;
+    cout << "Borrar todos los múltiplos de 10:" << endl;
     Iterador<int> itBorrar = lista.iterador();
     while (!itBorrar.fin()) {
         if (itBorrar.dato() % 10 == 0) {
