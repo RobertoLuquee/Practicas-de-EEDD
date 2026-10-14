@@ -77,11 +77,12 @@ template <class T>
 ListaDEnlazada<T>::ListaDEnlazada():_cabecera(nullptr),_cola(nullptr),_numelementos(0){};
 
 template <class T>
-ListaDEnlazada<T>::ListaDEnlazada(const ListaDEnlazada<T>& origen) {
-    Nodo<T> *p=origen._cabecera;
-    while (p!=nullptr) {
-        Nodo<T>* nuevo = new Nodo<T> (p->_dato,nullptr,_cabecera);
-        _cola=p->_sig;
+ListaDEnlazada<T>::ListaDEnlazada(const ListaDEnlazada<T>& origen): _cabecera(nullptr),
+_cola(nullptr), _numelementos(0) {
+    Nodo<T> *p = origen._cabecera;
+    while (p != nullptr) {
+        insertarFin(p->_dato);
+        p = p->_sig;
     }
 }
 
