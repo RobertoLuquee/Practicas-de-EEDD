@@ -4,6 +4,19 @@
 
 #include "ControlParques.h"
 
+
+VDinamico<Especie>& ControlParques::get_varieties() {
+    return v_especies;
+}
+
+ListaDEnlazada<Parque>& ControlParques::get_parks() {
+    return ld_parques;
+}
+
+ControlParques::ControlParques(const std::string &rutaEspecies, const std::string &rutaParques) {
+    // Aquí va tu código de lectura de archivos especies y parques si la tienes implementada
+}
+
 void ControlParques::asignarEspecieParque(Especie e, Parque p) {
     ListaDEnlazada<Parque>::Iterador iter=ld_parques.iterador();
 
@@ -99,4 +112,5 @@ Parque* ControlParques::buscarParque(std::string nombre_parque) {
             acabado=true;
         }
     }
+    return nullptr;
 }

@@ -16,7 +16,7 @@ public:
     Nodo *_sig,*_ant;
 
     Nodo();
-    Nodo(T &dato,Nodo *sig,Nodo *ant);
+    Nodo(const T &dato,Nodo *sig,Nodo *ant);
 };
 
 //IMPLEMENTACIONES CLASE NODO
@@ -24,7 +24,7 @@ template <class T>
 Nodo<T>::Nodo():_dato(),_sig(nullptr),_ant(nullptr){};
 
 template <class T>
-Nodo<T>::Nodo(T &dato,Nodo *sig,Nodo *ant):_dato(dato),_sig(sig),_ant(ant){};
+Nodo<T>::Nodo(const T &dato,Nodo *sig,Nodo *ant):_dato(dato),_sig(sig),_ant(ant){};
 
 //CLASE LISTA ENLAZADA
 template <class T>
@@ -39,8 +39,8 @@ public:
     ListaDEnlazada& operator=(const ListaDEnlazada<T>& arr);
     T& inicio();
     T& fin();
-    void insertarInicio(T& dato);
-    void insertarFin(T& dato);
+    void insertarInicio(const T& dato);
+    void insertarFin(const T& dato);
 
     // 1. LA CLASE ITERADOR VA  DENTRO
     class Iterador {
@@ -131,7 +131,7 @@ T& ListaDEnlazada<T>::fin() {
 }
 
 template<class T>
-void ListaDEnlazada<T>::insertarInicio(T& dato) {
+void ListaDEnlazada<T>::insertarInicio(const T& dato){
     Nodo<T> *nuevo= new Nodo<T>(dato,0,_cabecera);
     if (_cola==0)
         _cola=nuevo;
@@ -142,7 +142,7 @@ void ListaDEnlazada<T>::insertarInicio(T& dato) {
 }
 
 template<class T>
-void ListaDEnlazada<T>::insertarFin(T& dato) {
+void ListaDEnlazada<T>::insertarFin(const T& dato) {
     Nodo<T> *nuevo;
     nuevo=new Nodo<T>(dato,_cola,0);
     if (_cabecera==0)
@@ -177,6 +177,8 @@ void ListaDEnlazada<T>::borrarAlInicio() {
     _cabecera=_cabecera->_sig;
     _cabecera->_ant=nullptr;
     delete borra;
+    _numelementos--;
+
 }
 
 template<class T>
@@ -185,6 +187,7 @@ void ListaDEnlazada<T>::borrarAlFinal() {
     _cola=borra->_ant;
     _cola->_sig=nullptr;
     delete borra;
+    _numelementos--;
 }
 
 

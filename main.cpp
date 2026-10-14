@@ -23,9 +23,9 @@ using Iterador = typename ListaDEnlazada<T>::Iterador;
 template <class T>
 void mostrarLista(ListaDEnlazada<T> l)
 {
-    for (Iterador<T> it = l.iterador(); !it.fin(); it.avanza())
+    for (Iterador<T> it = l.iterador(); !it.fin(); it.siguiente())
     {
-        std::cout << std::to_string(it.getdato()) << "  ";
+        std::cout << std::to_string(it.dato()) << "  ";
     }
     cout << endl;
 }
@@ -121,6 +121,18 @@ int main()
         lista.borrarAlFinal();
     }
     mostrarLista(lista);
+
+    cout << "6. Borrar todos los múltiplos de 10:" << endl;
+    Iterador<int> itBorrar = lista.iterador();
+    while (!itBorrar.fin()) {
+        if (itBorrar.dato() % 10 == 0) {
+            lista.borrar(itBorrar); // borrar() desengancha el nodo y avanza itBorrar automáticamente al siguiente
+        } else {
+            itBorrar.siguiente();
+        }
+    }
+    mostrarLista(lista);
+    cout << endl;
 
     cout<<endl<<"PULSAR CUALQUIER TECLA PARA CONTINUAR"<<endl;
     std::cin.get();// Me da error -> getch();
@@ -224,6 +236,7 @@ int main()
     }
 
     Iterador<Parque> it2 = buscaParque(cp.get_parks(), "VIVERO DE MIGAS CALIENTES");
+
     //Sí debe estar
     if (it.fin())
     {

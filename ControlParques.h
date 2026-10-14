@@ -11,8 +11,16 @@
 
 class ControlParques {
 
+private:
+
     VDinamico<Especie> v_especies;
     ListaDEnlazada<Parque> ld_parques;
+
+public:
+
+    VDinamico<Especie>& get_varieties();
+    ListaDEnlazada<Parque>& get_parks();
+    ControlParques(const std::string &rutaEspecies, const std::string &rutaParques);
 
     void asignarEspecieParque(Especie e, Parque p);
     int contarEspecieParque(std::string ncomun);

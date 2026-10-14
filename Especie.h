@@ -6,16 +6,29 @@
 #define INC_B9580CB4EF714E6CA853FC0D5FAEC9CB
 #include <string>
 
+enum TipoPlanta {
+    ARBUSTO,
+    CONIFERA,
+    PALMACEA,
+    HERB_PERENNES,
+    FRONDOSA,
+    TAPIZANTE_TREPADORA,
+    CACTACEA_SUCULENTA,
+    SUBTROPICAL_TROPICAL,
+    HERB_ANUAL,
+    HERB_ANUALES
+};
+
 class Especie {
 private:
     std::string codigoEspecie;
     std::string nombreComun;
     std::string nombreCientifico;
-    std::string tipoPlanta;
+    TipoPlanta tipoPlanta;//  no se que hacer aquí ->std::string tipoPlanta;
 
 public:
     Especie() = default;
-    Especie(std::string codigo,std::string comun,std::string cientifico,std::string tipo);
+    Especie(std::string codigo,std::string comun,std::string cientifico,TipoPlanta tipo);
     bool operator==(const Especie& e)const;
     bool operator<(const Especie& e)const;
 
@@ -26,6 +39,8 @@ public:
     std::string getnombre_cientifico() const;
 
     void mostrarInfo() const;
+
+    int get_tipo_planta() const;
 };
 
 inline std::string Especie::getnombre_comun() const {

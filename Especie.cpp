@@ -20,7 +20,7 @@ std::string Especie::getnombre_cientifico() const {
     return nombreCientifico;
 }
 
-Especie::Especie(std::string codigo, std::string comun, std::string cientifico, std::string tipo):codigoEspecie(codigo),nombreComun(comun),nombreCientifico(cientifico),tipoPlanta(tipo){}
+Especie::Especie(std::string codigo, std::string comun, std::string cientifico, TipoPlanta tipo):codigoEspecie(codigo),nombreComun(comun),nombreCientifico(cientifico),tipoPlanta(tipo){}
 
 
 void Especie::mostrarInfo() const {
@@ -28,4 +28,9 @@ void Especie::mostrarInfo() const {
      std::cout << " | Nombre comun: " << nombreComun;
      std::cout << " | Nombre cientifico: " << nombreCientifico;
      std::cout << " | Tipo: " << tipoPlanta << std::endl;
+ }
+
+
+int Especie::get_tipo_planta() const {
+     return tipoPlanta;
  }
