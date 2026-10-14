@@ -173,19 +173,35 @@ void ListaDEnlazada<T>::inserta(Iterador &i, const T &dato) {
 
 template<class T>
 void ListaDEnlazada<T>::borrarAlInicio() {
-    Nodo<T>*borra=_cabecera;
-    _cabecera=_cabecera->_sig;
-    _cabecera->_ant=nullptr;
+    if (_cabecera == nullptr) return;
+
+    Nodo<T> *borra = _cabecera;
+    _cabecera = _cabecera->_sig;
+
+    if (_cabecera != nullptr) {
+        _cabecera->_ant = nullptr;
+    } else {
+        _cola = nullptr; // La lista se ha quedado vacía
+    }
+
     delete borra;
     _numelementos--;
-
 }
+
 
 template<class T>
 void ListaDEnlazada<T>::borrarAlFinal() {
-    Nodo<T>*borra=_cola;
-    _cola=borra->_ant;
-    _cola->_sig=nullptr;
+    if (_cola == nullptr) return;
+
+    Nodo<T> *borra = _cola;
+    _cola = _cola->_ant;
+
+    if (_cola != nullptr) {
+        _cola->_sig = nullptr;
+    } else {
+        _cabecera = nullptr; // La lista se ha quedado vacía
+    }
+
     delete borra;
     _numelementos--;
 }
