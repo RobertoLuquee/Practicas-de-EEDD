@@ -24,7 +24,7 @@ private:
     std::string codigoEspecie;
     std::string nombreComun;
     std::string nombreCientifico;
-    TipoPlanta tipoPlanta;//  no se que hacer aquí ->std::string tipoPlanta;
+    TipoPlanta tipoPlanta;
 
 public:
     Especie() = default;

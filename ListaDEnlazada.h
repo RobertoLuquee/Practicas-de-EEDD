@@ -177,6 +177,7 @@ void ListaDEnlazada<T>::insertarFin(const T& dato) {
 
 template <class T>
 void ListaDEnlazada<T>::inserta(Iterador &i, const T &dato) {
+   // Nodo<T> *p = i.nodo;
     if (i.nodo == nullptr) {
         insertarFin(dato);
         return;

@@ -8,13 +8,6 @@
 #include <iostream>
 
 
-VDinamico<Especie>& ControlParques::get_varieties() {
-    return v_especies;
-}
-
-ListaDEnlazada<Parque>& ControlParques::get_parks() {
-    return ld_parques;
-}
 
 ControlParques::ControlParques(const std::string &rutaEspecies, const std::string &rutaParques) {
     std::ifstream esEspecie(rutaEspecies);
@@ -151,6 +144,13 @@ void ControlParques::enlazarAutomatico() {
         }
     }
 }
+void ControlParques::mostrarParques() {
+    for (ListaDEnlazada<Parque>::Iterador it = ld_parques.iterador(); !it.fin(); it.siguiente()) {
+        std::cout << "  Codigo: " << std::to_string(it.dato().get_cod_parque())
+                  << " nombre: " << it.dato().get_nbre_parque()
+                  << " total especies: " << std::to_string(it.dato().get_contains().get__tlogico()) << std::endl;
+    }
+}
 
 bool ControlParques::borrarEspecie(std::string ncomun) {
     bool encontrado=false;
@@ -179,7 +179,7 @@ bool ControlParques::borrarEspecie(std::string ncomun) {
 }
 
 
-void ControlParques::asignarEspecieParque(Especie e, Parque p) {
+void ControlParques::asignarEspecieParque(Especie *e, Parque *p) {
     ListaDEnlazada<Parque>::Iterador iter=ld_parques.iterador();
 
     bool acabado=false;
@@ -188,8 +188,8 @@ void ControlParques::asignarEspecieParque(Especie e, Parque p) {
         try {
             Parque& actual= iter.dato();// el & lo q hace es darle un apodo "actual" a la posicion de
             //memoria original del objeto original en ves de una copia
-            if (actual.get_cod_parque()!=p.get_cod_parque()) {
-                actual.insertaEspecie(&e);
+            if (actual.get_cod_parque()!=p->get_cod_parque()) {
+                actual.insertaEspecie(e);
                 return;//aqui me acaba si la encuentro
             }
 
