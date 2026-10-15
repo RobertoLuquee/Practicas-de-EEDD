@@ -60,7 +60,6 @@ bool buscaEspecieNbrCientif(VDinamico<Especie*>& vector, string nombreCentif)
     int n = vector.get__tlogico();
     for (int i = 0; i < n; ++i)
     {
-        string s = vector[i]->getnombre_cientifico();
         if (vector[i]->getnombre_cientifico() == nombreCentif)
         {
             return true;
@@ -72,9 +71,7 @@ bool buscaEspecieNbrCientif(VDinamico<Especie*>& vector, string nombreCentif)
 const string RUTA_ESPECIES = "arbolado-especies.csv";
 const string RUTA_PARQUES = "parques.csv";
 
-int main()
-{
-
+int main() {
     cout << "PROGRAMA DE PRUEBA 1" << endl;
 
     //Crear la lista vacía
@@ -142,31 +139,11 @@ int main()
     VDinamico<Especie>* especies = &cp.get_varieties();
     ListaDEnlazada<Parque>* parques = &cp.get_parks();
 
-    for (int i = 0; i < especies->get__tlogico(); ++i)
-    {
-        Iterador<Parque> it = parques->iterador();
-        Especie& esp = (*especies)[i];
-        int tipo = esp.get_tipo_planta();
-        for (it; !it.fin(); it.siguiente())
-        {
-            Parque& pq = it.dato();
-            int resto = pq.get_cod_parque() % 2;
 
-            //parques con codigo par
-            if ((tipo == ARBUSTO || tipo == CONIFERA || tipo == PALMACEA ||
-                tipo == HERB_PERENNES || tipo == FRONDOSA) && (resto == 0))
-            {
-                pq.insertaEspecie(&esp);
-                //Parques con codigo impar
-            }
-            else if ((tipo == TAPIZANTE_TREPADORA || tipo == CACTACEA_SUCULENTA ||
-                tipo == SUBTROPICAL_TROPICAL ||
-                tipo == HERB_ANUAL || tipo == HERB_ANUALES) && (resto == 1))
-            {
-                pq.insertaEspecie(&esp);
-            }
-        }
-    }
+    // 2. Enlazamos las especies con sus parques
+    cp.enlazarAutomatico();
+
+    std::cout << "Enlaces generados con exito." << std::endl;
 
     cout << endl << "ASIGNACIÓN DE ESPECIES A LOS PARQUES" << endl;
     for (Iterador<Parque> it = parques->iterador(); !it.fin(); it.siguiente())
@@ -176,21 +153,20 @@ int main()
                 it.dato().get_contains().get__tlogico()) << endl;
     }
 
-
+    //Ejercicio1
     cout << endl << "BUSCAR EN PARQUE PRINCESA LEONOR LOS NOMBRES COMUNES EUCALIPTO ROJO Y ARCE DE SIERRA" << endl;
-    Parque& princLeonor = buscaParque(cp.get_parks(), "PARQUE PRINCESA LEONOR").dato();
-    //Debe estar
-    if (buscaEspecieNbrComun(princLeonor.get_contains(), "Eucalipto rojo"))
+    Parque* princLeonor = cp.buscarParque("PARQUE PRINCESA LEONOR");
+    if (princLeonor->existeNbreCom("Eucalipto rojo"))
     {
-        cout << "  Encontrado Eucalipto rojo" << endl;
+        cout << "Encontrado Eucalipto rojo" << endl;
     }
     else
     {
-        cout << "  No se ha encontrado Eucalipto rojo" << endl;
+        cout << "No se ha encontrado Eucalipto rojo" << endl;
     }
 
     //No debe estar
-    if (buscaEspecieNbrComun(princLeonor.get_contains(), "Arce de sierra"))
+    if (princLeonor->existeNbreCom("Arce de sierra"))
     {
         cout << "  Encontrado Arce de sierra" << endl;
     }
@@ -198,11 +174,11 @@ int main()
     {
         cout << "  No se ha encontrado Arce de sierra" << endl;
     }
-
+    //Ejercicio2
     cout << endl << "BUSCAR EN PARQUE MADRID RIO LOS NOMBRES CIENTÍFICOS HEBE FLORIBUNDA Y ANANAS COMOSA" << endl;
-    Parque& madridRio = buscaParque(cp.get_parks(), "PARQUE MADRID RIO").dato();
+    Parque* madridRio = cp.buscarParque("PARQUE MADRID RIO");
     //No debe estar
-    if (buscaEspecieNbrCientif(madridRio.get_contains(), "Hebe floribunda"))
+    if (madridRio->existeNbreCie("Hebe floribunda"))
     {
         cout << "  Encontrado Hebe floribunda" << endl;
     }
@@ -212,7 +188,7 @@ int main()
     }
 
     //No debe estar
-    if (buscaEspecieNbrComun(madridRio.get_contains(), "Ananas comosa"))
+    if (madridRio->existeNbreCie("Ananas comosa"))
     {
         cout << "  Encontrado Ananas comosa" << endl;
     }
@@ -220,162 +196,58 @@ int main()
     {
         cout << "  No se ha encontrado Ananas comosa" << endl;
     }
-
+    //Ejercicio3
     cout << endl << "BUSCAR PARQUES JUAN CARLOS III Y VIVERO DE MIGAS CALIENTES" << endl;
-    //No debe estar
-    Iterador<Parque> it = buscaParque(cp.get_parks(), "JUAN CARLOS III");
-    if (it.fin())
+
+    // No debe estar
+    Parque* p1 = cp.buscarParque("PARQUE JUAN CARLOS III");
+    if (p1 == nullptr)
     {
-        cout << "  No se ha encontrado parque JUAN CARLOS III" << endl;
+        cout << "  No se ha encontrado parque PARQUE JUAN CARLOS III" << endl;
     }
     else
     {
-        cout<<"  codigo: " << to_string(it.dato().get_cod_parque()) <<" nombre: "<< it.dato().get_nbre_parque()<< endl;
+        cout << "  codigo: " << to_string(p1->get_cod_parque())
+             << " nombre: " << p1->get_nbre_parque() << endl;
     }
 
-    Iterador<Parque> it2 = buscaParque(cp.get_parks(), "VIVERO DE MIGAS CALIENTES");
-
-    //Sí debe estar
-    if (it.fin())
+    // Sí debe estar
+    Parque* p2 = cp.buscarParque("VIVERO DE MIGAS CALIENTES");
+    if (p2 == nullptr)
     {
         cout << "  No se ha encontrado parque VIVERO DE MIGAS CALIENTES" << endl;
     }
     else
     {
-        cout<<"  codigo: " << to_string(it.dato().get_cod_parque()) <<" nombre: "<< it.dato().get_nbre_parque()<< endl;
+        cout << "  codigo: " << to_string(p2->get_cod_parque())
+             << " nombre: " << p2->get_nbre_parque() << endl;
     }
 
-    cout<< endl<<"BUSCAR ESPECIES CON LA SUBCADENA ROSA EN SU NOMBRE CIENTÍFICO"<<endl;
-    for (int i =0; i < especies->get__tlogico(); ++i)
+
+    //Ejercicio4
+    cout << endl << "BUSCAR ESPECIES CON LA SUBCADENA ROSA EN SU NOMBRE CIENTÍFICO" << endl;
+    VDinamico<Especie*> especiesRosa = cp.listadoEspecieSubNombre("rosa");
+    for (int i = 0; i < especiesRosa.get__tlogico(); ++i)
     {
-        string ncientif = (*especies)[i].getnombre_cientifico();
-        if (ncientif.find("rosa") != string::npos)
-        {
-            (*especies)[i].mostrarInfo();
-        }
+        especiesRosa[i]->mostrarInfo();
     }
 
-    cout<< endl<<"CONTAR CUÁNTOS PARQUES TIENEN LA ESPECIE CON NOMBRE COMÚN ABETO"<<endl;
-    it = cp.get_parks().iterador();
-    int total = 0;
-    for (it; !it.fin(); it.siguiente())
-    {
-       VDinamico<Especie*>  esp = it.dato().get_contains();
-        for (int i =0; i < esp.get__tlogico(); ++i)
-        {
-            string nombreComun = esp[i]->getnombre_comun();
-            if (nombreComun.find("Abeto") != string::npos)
-            {
-                ++total;
-                break;
-            }
-        }
-    }
-    cout<<"  Total: "<<total<<endl;
 
+    // Ejercicio 5
+    cout << endl << "CONTAR CUÁNTOS PARQUES TIENEN LA ESPECIE CON NOMBRE COMÚN ABETO" << endl;
+    int total = cp.contarEspecieParque("Abeto");
+    cout << "  Total: " << total << endl;
 
-    cout << "PROGRAMA DE PRUEBA 2" << endl;
-    std::cout << "INICIANDO SISTEMA DE PARQUES..." << std::endl;
+    //Parejas
 
-    // 1. Esto lee los CSV automáticamente si lo pusiste en el constructor
-    ControlParques cp2(RUTA_ESPECIES, RUTA_PARQUES);
+    std::cout << "Parques con Madroño antes de borrar: " << cp.contarEspecieParque("Madroño") << std::endl;
 
-    // 2. Enlazamos las especies con sus parques
-    cp.enlazarAutomatico();
-
-    std::cout << "Enlaces generados con exito." << std::endl;
-
-
-//Ejercicio 1
-
-  Parque* parqueleonor = cp2.buscarParque("PARQUE PRINCESA LEONOR");
-    if (parqueleonor!=nullptr) {
-        if (parqueleonor->existeNbreCom("Eucalipto Rojo")) {
-            cout << "Si tiene la especie Eucalipto rojo." << std::endl;
-        }
-        else {
-            cerr << "No tiene la especie Eucalipto rojo." << std::endl;
-        }
-
-        if (parqueleonor->existeNbreCom("ARCE DE SIERRA")) {
-            cout << "Si tiene la especie Arce de Sierra"<<std::endl;
-        }
-        else {
-            cerr << "No tiene la especie Arde de Sierra"<<std::endl;
-        }
+    if (cp.borrarEspecie("Madroño")) {
+        cout<<"Borerada la especie MADROÑO de todos los parques y desenlazada tambien"<<std::endl;
     }
     else {
-
-        std::cerr<<"No existe el parque"<<std::endl;
-        return 0;
+        cout << "No se encuentra la especie MADROÑO";
     }
-
-
-//Ejercicio 2
-
-    Parque* parquemadridrio= cp2.buscarParque("PARQUE MADRID RIO");
-    if (parquemadridrio!=nullptr) {
-        if (parquemadridrio->existeNbreCie("Hebe floribunda")) {
-            cout<<"Si tiene la especie Hebe floribunda"<<std::endl;
-        }
-        else {
-            cerr << "No tiene la especie Hebe floribunda" << std::endl;
-        }
-
-        if (parquemadridrio->existeNbreCie("Ananas comosa")) {
-            cout<<"Si tiene la especie Ananas Comosa"<<std::endl;
-        }
-        else {
-            cerr << "NO tiene la especie Ananas Comosa"<<std::endl;
-        }
-    }
-    else {
-        std::cerr<<"No existe el parque" <<std::endl;
-    }
-
-    //Ejercicio 3
-
-    Parque* parquejuancarlosIII=cp2.buscarParque("PARQUE JUAN CARLOS III");
-
-    if (parquejuancarlosIII!=nullptr) {
-        std::cout << parquejuancarlosIII->get_cod_parque()<<std::endl;
-    }
-    else {
-        cerr << "No existe el parque"<<std::endl;
-    }
-
-    Parque* parquevivero=cp2.buscarParque("VIVERO MIGAS CALIENTES");
-    if (parquevivero!=nullptr) {
-        cout << parquevivero->get_cod_parque()<<std::endl;
-    }
-    else {
-        cerr << "No existe el parque"<<std::endl;
-    }
-
-    //Ejercicio 4
-
-    VDinamico<Especie*> especiesrosa= cp2.listadoEspecieSubNombre("rosa");
-    std::cout <<"El numero de especies que tiene rosa de subcadena es: "<<especiesrosa.get__tlogico()<<std::endl;
-    std::cout << "Especies subcvadena rosa:" << std::endl;
-    for (int i=0;i<especiesrosa.get__tlogico();i++) {
-        especiesrosa[i]->mostrarInfo();
-    }
-
-    //Ejercicio 5
-
-    int totalParquesAbeto = cp.contarEspecieParque("Abeto");
-    std::cout << "  Total de parques que contienen Abeto: " << totalParquesAbeto << std::endl;
-
-
-
-
-
-
-
-    return 0;
-
-
-
-
+    std::cout << "Parques con Madroño despues de borrar: " << cp.contarEspecieParque("Madroño") << std::endl;
     return 0;
 }

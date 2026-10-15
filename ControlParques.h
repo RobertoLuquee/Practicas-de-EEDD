@@ -22,6 +22,7 @@ public:
     ListaDEnlazada<Parque>& get_parks();
     ControlParques(const std::string &rutaEspecies, const std::string &rutaParques);
     void enlazarAutomatico();
+    bool borrarEspecie(std::string ncomun);
 
     void asignarEspecieParque(Especie e, Parque p);
     int contarEspecieParque(std::string ncomun);

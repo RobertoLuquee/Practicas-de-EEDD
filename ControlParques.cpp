@@ -32,8 +32,8 @@ ControlParques::ControlParques(const std::string &rutaEspecies, const std::strin
                 columna.str(fila);
 
                 getline(columna, _codigoEspecie,separador);
-                getline(columna,_nombreCientifico,separador);
                 getline(columna,_nombreComun,separador);
+                getline(columna,_nombreCientifico,separador);
                 getline(columna,_tipoStr,separador);
 
                 columna.clear();
@@ -79,14 +79,15 @@ ControlParques::ControlParques(const std::string &rutaEspecies, const std::strin
             if (filaparque!="") {
                 columnaparque.str(filaparque);
 
-                getline(esParque,_codigoParqueStr,separador);
-                getline(esParque,_nombreParque,separador);
+                getline(columnaparque, _codigoParqueStr, separador);
+                getline(columnaparque, _nombreParque, separador);
 
                 columnaparque.clear();
 
-                if (!_nombreParque.empty() && _nombreParque.back()=='\r') {
+                if (!_nombreParque.empty() && _nombreParque.back() == '\r') {
                     _nombreParque.pop_back();
                 }
+
                 if (!_nombreParque.empty() && _nombreParque.front() == '"') {
                     _nombreParque.erase(0, 1); // Borramos la primera comilla
                     if (_nombreParque.back() == '"') {
@@ -151,14 +152,31 @@ void ControlParques::enlazarAutomatico() {
     }
 }
 
+bool ControlParques::borrarEspecie(std::string ncomun) {
+    bool encontrado=false;
 
+    ListaDEnlazada<Parque>::Iterador iter=ld_parques.iterador();
 
+    while (!iter.fin()) {
+        Parque& actual=iter.dato();
+        VDinamico<Especie*>& especiesparque =actual.get_contains();
 
-
-
-
-
-
+        for (int i=0;i<especiesparque.get__tlogico();i++) {
+            if (especiesparque[i]!=nullptr && especiesparque[i]->getnombre_comun()==ncomun) {
+                especiesparque[i]=nullptr; //desenlazamos la especie del parque
+            }
+        }
+        iter.siguiente();
+    }
+    for (int i=0;i<v_especies.get__tlogico();i++) {
+        if (v_especies[i].getnombre_comun()==ncomun) {
+            v_especies.borrar(i);
+            encontrado=true;
+            i--;
+        }
+    }
+    return encontrado;
+}
 
 
 void ControlParques::asignarEspecieParque(Especie e, Parque p) {
