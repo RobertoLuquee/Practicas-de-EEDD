@@ -134,11 +134,15 @@ int main() {
 
     cout << "PROGRAMA DE PRUEBA 2" << endl;
     ControlParques cp(RUTA_ESPECIES, RUTA_PARQUES);
-
+/*
     //Variables fuera del bucle por eficiencia
     VDinamico<Especie>* especies = &cp.get_varieties();
     ListaDEnlazada<Parque>* parques = &cp.get_parks();
+*/
 
+    cp.enlazarAutomatico();
+
+    std::cout << "Enlaces generados con éxito." << std::endl;
 
     // 2. Enlazamos las especies con sus parques
     cp.enlazarAutomatico();
@@ -146,12 +150,14 @@ int main() {
     std::cout << "Enlaces generados con exito." << std::endl;
 
     cout << endl << "ASIGNACIÓN DE ESPECIES A LOS PARQUES" << endl;
-    for (Iterador<Parque> it = parques->iterador(); !it.fin(); it.siguiente())
+  /*  for (Iterador<Parque> it = parques->iterador(); !it.fin(); it.siguiente())
     {
         cout << "  Codigo: " << to_string(it.dato().get_cod_parque()) << " nombre: " << it.dato().
             get_nbre_parque() << " total especies: " << to_string(
                 it.dato().get_contains().get__tlogico()) << endl;
     }
+    */
+    cp.mostrarParques();
 
     //Ejercicio1
     cout << endl << "BUSCAR EN PARQUE PRINCESA LEONOR LOS NOMBRES COMUNES EUCALIPTO ROJO Y ARCE DE SIERRA" << endl;
