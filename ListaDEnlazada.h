@@ -90,34 +90,109 @@ public:
      * @throw std::invalid_argument Si la lista está vacía.
      */
     T& fin();
+    /**
+     * @brief Inserta un nuevo elemento al principio de la lista.
+     * @param dato Valor a insertar.
+     */
     void insertarInicio(const T& dato);
+    /**
+     * @brief Inserta un nuevo elemento al final de la lista.
+     * @param dato Valor a insertar.
+     */
     void insertarFin(const T& dato);
 
-    // 1. LA CLASE ITERADOR VA  DENTRO
+
+    /**
+     * @brief Clase que implementa un iterador para recorrer la lista doblemente enlazada.
+     */
+    // 1. LA CLASE ITERADOR Q VA  DENTRO PA Q FUNCIONE
     class Iterador {
     private:
         Nodo<T> *nodo;
         friend class ListaDEnlazada<T>;
 
     public:
+        /**
+        * @brief Constructor del iterador.
+        * @param aNodo Puntero al nodo inicial (por defecto nulo).
+        */
         Iterador(Nodo<T> *aNodo=nullptr);
+        /**
+         * @brief Comprueba si el iterador ha llegado al final (nulo).
+         * @return true si es el final, false en caso contrario.
+         */
         bool fin() const;
+        /**
+         * @brief Comprueba si existe un nodo anterior al actual.
+         * @return true si hay nodo anterior, false en caso contrario.
+         */
         bool hayAnterior();
+        /**
+         * @brief Comprueba si existe un nodo siguiente al actual.
+         * @return true si hay nodo siguiente, false en caso contrario.
+         */
         bool haySiguiente();
+        /**
+         * @brief Retrocede el iterador al nodo anterior.
+         */
         void anterior();
+        /**
+         * @brief Avanza el iterador al nodo siguiente.
+         */
         void siguiente();
+        /**
+         * @brief Obtiene el dato del nodo apuntado por el iterador.
+         * @return Referencia al dato.
+         * @throw std::invalid_argument Si el iterador es nulo.
+         */
         T &dato();
     }; // acaba clase iterador
 
     // 2. Estos  son  de la lista, no del iterador
+    /**
+     * @brief Crea un iterador apuntando al inicio de la lista.
+     * @return Objeto Iterador.
+     */
     Iterador iterador();
+    /**
+     * @brief Inserta un elemento justo antes de la posición del iterador.
+     * @param i Iterador que indica la posición de inserción.
+     * @param dato Valor a insertar.
+     */
     void inserta(Iterador &i,const T &dato);
+    /**
+     * @brief Elimina el primer elemento de la lista.
+     */
     void borrarAlInicio();
+    /**
+     * @brief Elimina el último elemento de la lista.
+     */
     void borrarAlFinal();
+    /**
+     * @brief Elimina el elemento apuntado por el iterador y avanza el iterador al siguiente.
+     * @param i Iterador apuntando al nodo a borrar.
+     */
     void borrar(Iterador &i);
+    /**
+     * @brief Obtiene el número total de elementos en la lista.
+     * @return Cantidad de elementos.
+     */
     int tam() const;
+    /**
+     * @brief Concatena esta lista con otra y devuelve el resultado en una nueva lista.
+     * @param lista Lista a concatenar al final.
+     * @return Nueva lista con los elementos concatenados.
+     */
     ListaDEnlazada<T> concatena(const ListaDEnlazada<T> &lista)const;
+    /**
+    * @brief Sobrecarga del operador + para concatenar dos listas.
+    * @param l Lista a sumar/concatenar.
+    * @return Nueva lista resultante de la concatenación.
+    */
     ListaDEnlazada<T> operator+(const ListaDEnlazada<T> &l) const;
+    /**
+    * @brief Destructor de la lista. Libera toda la memoria ocupada.
+    */
     ~ListaDEnlazada();
 };
 
