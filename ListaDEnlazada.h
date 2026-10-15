@@ -8,14 +8,28 @@
 #include <iostream>
 #include <random>
 
-
+/**
+ * @brief Clase que representa un nodo de la lista.
+ * @tparam T Tipo de dato que almacena.
+ */
 template <class T>
 class Nodo {
 public:
     T _dato;
     Nodo *_sig,*_ant;
 
+    /**
+     * @brief Constructor por defecto. Inicializa los punteros a nulo.
+     */
     Nodo();
+
+    /**
+     * @brief Constructor parametrizado.
+     * @param dato Valor a almacenar en el nodo.
+     * @param sig Puntero al siguiente nodo.
+     * @param ant Puntero al nodo anterior.
+     */
+
     Nodo(const T &dato,Nodo *sig,Nodo *ant);
 };
 
@@ -26,20 +40,55 @@ Nodo<T>::Nodo():_dato(),_sig(nullptr),_ant(nullptr){};
 template <class T>
 Nodo<T>::Nodo(const T &dato,Nodo *sig,Nodo *ant):_dato(dato),_sig(sig),_ant(ant){};
 
+/**
+ * @brief Clase que implementa una lista doblemente enlazada.
+ * @tparam T Tipo de dato que almacena la lista.
+ */
+
 //CLASE LISTA ENLAZADA
 template <class T>
 class ListaDEnlazada {
 private:
     Nodo<T> *_cabecera,*_cola;
     unsigned int _numelementos;
+
+    /**
+     * @brief Copia el contenido de otra lista en esta.
+     * @param origen Lista a copiar.
+     */
     void copiar(const ListaDEnlazada<T>& origen);
+    /**
+     * @brief Libera la memoria ocupada por todos los nodos de la lista.
+     */
     void destruye();
 
 public:
+    /**
+     * @brief Constructor por defecto. Crea una lista vacía.
+     */
     ListaDEnlazada();
+    /**
+     * @brief Constructor de copia.
+     * @param origen Lista de la cual se copiarán los elementos.
+     */
     ListaDEnlazada(const ListaDEnlazada<T>& origen);
+    /**
+     * @brief Operador de asignación.
+     * @param arr Lista a asignar.
+     * @return Referencia a la lista actual.
+     */
     ListaDEnlazada& operator=(const ListaDEnlazada<T>& arr);
+    /**
+     * @brief Obtiene el primer elemento de la lista.
+     * @return Referencia al dato del primer nodo.
+     * @throw std::invalid_argument Si la lista está vacía.
+     */
     T& inicio();
+    /**
+     * @brief Obtiene el último elemento de la lista.
+     * @return Referencia al dato del último nodo.
+     * @throw std::invalid_argument Si la lista está vacía.
+     */
     T& fin();
     void insertarInicio(const T& dato);
     void insertarFin(const T& dato);
