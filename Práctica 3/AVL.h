@@ -37,6 +37,7 @@ private:
     void rotIzq(Nodo<T>* &nodo);
     int inserta(Nodo<T>* &c, T &dato);
     void copiar(Nodo<T>*p);
+    void destruye(Nodo<T>* &p);
 
 
 public:
@@ -46,12 +47,13 @@ public:
     void recorreInorden();
     void recorrePostorden();
     bool inserta(T& dato);
+    AVL<T>& operator=(const AVL<T> &origen);
 
 
 };
 
 template<class T>
-AVL<T>::AVL():raiz(nullptr){}
+AVL<T>::AVL():raiz(nullptr),_numelementos(0){}
 
 template <class T>
 void AVL<T>::copiar(Nodo<T> *p) {
@@ -60,6 +62,33 @@ void AVL<T>::copiar(Nodo<T> *p) {
         copiar(p->izq);   // Recorre e inserta la rama izquierda
         copiar(p->der);   // Recorre e inserta la rama derecha
     }
+}
+
+template <class T>
+void AVL<T>::destruye(Nodo<T>* &p) {
+    if (p != nullptr) {
+        destruye(p->izq);
+        destruye(p->der);
+        delete p;
+        p = nullptr;
+    }
+}
+
+// Operador de asignación
+template <class T>
+AVL<T>& AVL<T>::operator=(const AVL<T> &origen) {
+
+    if (this != &origen) {
+
+        // Liberamos la memoria de los nodos que ya tenía el objeto actual
+        destruye(raiz);
+        _numelementos = 0;
+
+        // Copio la estructura del árbol origen en preorden
+        copiar(origen.raiz);
+    }
+
+    return *this;
 }
 
 template <class T>
@@ -143,7 +172,9 @@ int AVL<T>::inserta(Nodo<T>* &c, T &dato) {
     int deltaH = 0;
     if (!p){
         p = new Nodo<T>(dato);
-        c = p; deltaH=1;
+        c = p;
+        deltaH=1;
+        _numelementos++;
     }
     else if (dato > p->dato){
         if (inserta(p->der, dato)){
