@@ -1,0 +1,123 @@
+{
+	"configurations" : 
+	[
+		{
+			"directories" : 
+			[
+				{
+					"build" : ".",
+					"childIndexes" : 
+					[
+						1,
+						2
+					],
+					"jsonFile" : "directory-.-Debug-f5ebdc15457944623624.json",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.10"
+					},
+					"projectIndex" : 0,
+					"source" : "."
+				},
+				{
+					"build" : "PRACTICA2",
+					"jsonFile" : "directory-PRACTICA2-Debug-9cef553027d9e4cd265a.json",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.10"
+					},
+					"parentIndex" : 0,
+					"projectIndex" : 1,
+					"source" : "PRACTICA2",
+					"targetIndexes" : 
+					[
+						0
+					]
+				},
+				{
+					"build" : "Pr\u00e1ctica 3",
+					"jsonFile" : "directory-Pr\u00e1ctica 3-Debug-b9cb754ba432505bba37.json",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.10"
+					},
+					"parentIndex" : 0,
+					"projectIndex" : 2,
+					"source" : "Pr\u00e1ctica 3",
+					"targetIndexes" : 
+					[
+						1
+					]
+				}
+			],
+			"name" : "Debug",
+			"projects" : 
+			[
+				{
+					"childIndexes" : 
+					[
+						1,
+						2
+					],
+					"directoryIndexes" : 
+					[
+						0
+					],
+					"name" : "Practicas_EEDD"
+				},
+				{
+					"directoryIndexes" : 
+					[
+						1
+					],
+					"name" : "Practica2",
+					"parentIndex" : 0,
+					"targetIndexes" : 
+					[
+						0
+					]
+				},
+				{
+					"directoryIndexes" : 
+					[
+						2
+					],
+					"name" : "Practica3",
+					"parentIndex" : 0,
+					"targetIndexes" : 
+					[
+						1
+					]
+				}
+			],
+			"targets" : 
+			[
+				{
+					"directoryIndex" : 1,
+					"id" : "Practica2::@6beba1e02830724a0e7d",
+					"jsonFile" : "target-Practica2-Debug-60f2dff141b943b8a5c1.json",
+					"name" : "Practica2",
+					"projectIndex" : 1
+				},
+				{
+					"directoryIndex" : 2,
+					"id" : "Practica3::@24aa0d2cdb46af689e30",
+					"jsonFile" : "target-Practica3-Debug-db85a7ec6ca4c60303e2.json",
+					"name" : "Practica3",
+					"projectIndex" : 2
+				}
+			]
+		}
+	],
+	"kind" : "codemodel",
+	"paths" : 
+	{
+		"build" : "/Users/robertoluque/Desktop/2\u00ba Carrera/Estructura de datos/Github/Practicas-de-EEDD/cmake-build-debug",
+		"source" : "/Users/robertoluque/Desktop/2\u00ba Carrera/Estructura de datos/Github/Practicas-de-EEDD"
+	},
+	"version" : 
+	{
+		"major" : 2,
+		"minor" : 8
+	}
+}
