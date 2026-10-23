@@ -9,4 +9,6 @@ add_executable(Practica3 main.cpp Especie.cpp
         Parque.cpp
         Parque.h
         ControlParques.cpp
-        ControlParques.h)
+        ControlParques.h
+        AVL.h
+        AVL.h)

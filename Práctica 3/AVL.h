@@ -6,6 +6,8 @@
 #define PRACTICA1_AVL_H
 #include <iostream>
 
+#include "VDinamico.h"
+
 
 template <class T>
 class Nodo {
@@ -31,23 +33,27 @@ private:
     unsigned int _numelementos;
 
     void preorden(Nodo<T> *p, int nivel);
-    void inorden(Nodo<T> *p, int nivel);
+    void inorden(Nodo<T> *p, VDinamico<T*> &vector);
     void postorden(Nodo<T> *p, int nivel);
     void rotDer(Nodo<T>* &nodo);
     void rotIzq(Nodo<T>* &nodo);
     int inserta(Nodo<T>* &c, T &dato);
     void copiar(Nodo<T>*p);
     void destruye(Nodo<T>* &p);
+    T* habitacion(Nodo<T>* p, T &dato);
+
 
 
 public:
     AVL();
     AVL(const AVL<T> &origen);
     void recorrePreorden();
-    void recorreInorden();
+    VDinamico<T*> recorreInorden();
     void recorrePostorden();
     bool inserta(T& dato);
     AVL<T>& operator=(const AVL<T> &origen);
+    T* buscarecursiva(T &dato);
+    T* buscariterativo(T &dato);
 
 
 };
@@ -74,6 +80,23 @@ void AVL<T>::destruye(Nodo<T>* &p) {
     }
 }
 
+template<class T>
+T* AVL<T>::habitacion(Nodo<T> *p, T &dato) {
+    while (p!=nullptr) {
+        if (dato == p->dato) {
+            return &p->dato;
+        }
+
+        if (dato<p->dato) {
+            return  habitacion(p->izq,dato);
+        }
+        else{ return habitacion(p->der,dato);}
+    }
+    return nullptr;
+}
+
+}
+
 // Operador de asignación
 template <class T>
 AVL<T>& AVL<T>::operator=(const AVL<T> &origen) {
@@ -89,6 +112,29 @@ AVL<T>& AVL<T>::operator=(const AVL<T> &origen) {
     }
 
     return *this;
+}
+
+template<class T>
+T * AVL<T>::buscarecursiva(T &dato) {
+    return habitacion(raiz,dato);
+}
+
+template<class T>
+T * AVL<T>::buscariterativo(T &dato) {
+    Nodo <T> *actual=raiz;
+    while (actual!=nullptr) {
+        if (actual->dato==dato) {
+            return &actual->dato;
+        }
+        else if (actual->dato<dato) {
+            actual=actual->izq;
+        }
+        else {
+            actual=actual->der;
+        }
+    }
+    return nullptr;
+
 }
 
 template <class T>
@@ -107,7 +153,7 @@ void AVL<T>::preorden(Nodo<T> *p, int nivel) {
 }
 
 template<class T>
-void AVL<T>::inorden(Nodo<T> *p, int nivel) {
+void AVL<T>::inorden(Nodo<T> *p, VDinamico<T*> &vector) {
     if (p){
         inorden (p->izq, nivel+1);
         std::cout << "Procesando nodo " << p->dato;
@@ -134,7 +180,9 @@ void AVL<T>::recorrePreorden() {
 
 template<class T>
 void AVL<T>::recorreInorden() {
-    inorden(raiz,0);
+    VDinamico<T*> resultado;
+    inorden(raiz,resultado);
+    return resultado;
 }
 
 template<class T>

@@ -11,4 +11,5 @@ add_executable(Practica2 main.cpp Especie.cpp
         ControlParques.cpp
         ControlParques.h
         "../Práctica 3/AVL.cpp"
-        "../Práctica 3/AVL.h")
+        "../Práctica 3/AVL.h"
+        "../Práctica 3/AVL.h")
