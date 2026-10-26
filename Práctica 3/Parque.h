@@ -7,15 +7,19 @@
 #include <iostream>
 #include "VDinamico.h"
 #include "Especie.h"
+#include "Arbol.h"
 
 /**
  * @brief Clase que representa un parque y gestiona la colección de especies que lo habitan.
  */
 class Parque {
 private:
+    std::string nombre;
     int _cod_parque;
     std::string _nbre_parque;
-    VDinamico<Especie*> _contains;
+    VDinamico<Arbol*> _contains;
+
+
 
 public:
 
@@ -57,7 +61,7 @@ public:
      * @brief Obtiene el vector dinámico que contiene las especies del parque.
      * @return Referencia al vector de punteros a Especie.
      */
-    VDinamico<Especie*>& get_contains();
+    VDinamico<Arbol*>& get_contains();
     /**
      * @brief Añade una nueva especie al parque.
      * @param especie Puntero a la especie que se desea insertar en el vector del parque.
@@ -75,6 +79,12 @@ public:
      * @return true si la especie está en el parque, false en caso contrario.
      */
     bool existeNbreCie(const std::string &nombrecientifico) ;
+
+    bool existeNbreCom(std::string nbreCom);
+    void insertarArbol(Arbol* a);
+    Arbol* arbolMasAlto();
+    int contarEspecies();
+    int contarTipos();
 
 };
 
