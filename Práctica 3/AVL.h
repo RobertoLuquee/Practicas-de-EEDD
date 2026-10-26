@@ -41,7 +41,7 @@ private:
     void copiar(Nodo<T>*p);
     void destruye(Nodo<T>* &p);
     T* habitacion(Nodo<T>* p, T &dato);
-
+    unsigned int calculaAltura(Nodo<T>* p) const;
 
 
 public:
@@ -54,6 +54,9 @@ public:
     AVL<T>& operator=(const AVL<T> &origen);
     T* buscarecursiva(T &dato);
     T* buscariterativo(T &dato);
+    unsigned int nelementos()const;
+    unsigned int altura()const;
+    ~AVL();
 
 
 };
@@ -252,7 +255,37 @@ bool AVL<T>::inserta(T &dato) {
 }
 
 
+template <class T>
+unsigned int AVL<T>::nelementos() const {
+    return _numelementos;
+}
 
+template <class T>
+unsigned int AVL<T>::calculaAltura(Nodo<T>* p) const {
+    if (p == nullptr) {
+        return 0;
+    }
+
+    unsigned int altIzq = calculaAltura(p->izq);
+    unsigned int altDer = calculaAltura(p->der);
+
+    if (altIzq > altDer) {
+        return 1 + altIzq;
+    } else {
+        return 1 + altDer;
+    }
+}
+
+template <class T>
+unsigned int AVL<T>::altura() const {
+    return calculaAltura(raiz);
+}
+
+template <class T>
+AVL<T>::~AVL() {
+    destruye(raiz);
+    _numelementos = 0;
+}
 
 
 #endif //PRACTICA1_AVL_H
