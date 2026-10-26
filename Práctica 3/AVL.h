@@ -33,7 +33,7 @@ private:
     unsigned int _numelementos;
 
     void preorden(Nodo<T> *p, int nivel);
-    void inorden(Nodo<T> *p, VDinamico<T*> &vector);
+    void inordenVector(Nodo<T> *p, VDinamico<T*> &nivel);
     void postorden(Nodo<T> *p, int nivel);
     void rotDer(Nodo<T>* &nodo);
     void rotIzq(Nodo<T>* &nodo);
@@ -95,7 +95,6 @@ T* AVL<T>::habitacion(Nodo<T> *p, T &dato) {
     return nullptr;
 }
 
-}
 
 // Operador de asignación
 template <class T>
@@ -153,7 +152,7 @@ void AVL<T>::preorden(Nodo<T> *p, int nivel) {
 }
 
 template<class T>
-void AVL<T>::inorden(Nodo<T> *p, VDinamico<T*> &vector) {
+void AVL<T>::inordenVector(Nodo<T> *p, VDinamico<T*> &nivel) {
     if (p){
         inorden (p->izq, nivel+1);
         std::cout << "Procesando nodo " << p->dato;
@@ -179,7 +178,7 @@ void AVL<T>::recorrePreorden() {
 }
 
 template<class T>
-void AVL<T>::recorreInorden() {
+VDinamico<T*> AVL<T>::recorreInorden() {
     VDinamico<T*> resultado;
     inorden(raiz,resultado);
     return resultado;
