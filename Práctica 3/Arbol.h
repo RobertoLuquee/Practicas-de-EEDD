@@ -10,10 +10,12 @@
 
 class Arbol {
 private:
-    int assetnum;
-    std::string nombreParque;
-    std::string distrito;
+    std::string assetnum;
+    int parque_id;
+    int distrito_id;
     std::string barrio;
+    int codEspecie;
+    std::string nombreEspecie;
     double latitud;
     double longitud;
     float perimetro;
@@ -22,20 +24,35 @@ private:
     Especie* especie;
 
 public:
-
-
+    // Constructores
     Arbol();
-    Arbol(int assetnum, std::string parque, std::string distrito, std::string barrio,
+    Arbol(std::string id);
+    Arbol(std::string id, std::string parque, std::string distrito, std::string barrio,
           double latitud, double longitud, float perimetro, float altura);
+    Arbol(std::string id, int parc, int dist, std::string barr, int codEsp,
+          std::string nomEsp, double lat, double lon, float perim, float alt);
 
-    int get_assetnum() const;
+    // Getters y Setters
+    std::string getAssetnum() const;
+    void setAssetnum(const std::string& id);
+    int getNumParque() const;
+    float getAltura() const;
+    Especie* getEspecie() const;
+    void setEspecie(Especie* esp);
+    std::string getNbreComun() const;
+    std::string getNbreCientifico() const;
+    std::string getTipo() const;
+
+    // Getters (snake_case para compatibilidad previa)
+    std::string get_assetnum() const;
     float get_altura() const;
-    Especie * get_especie() const;
-
-    void setEspecie(Especie* especie);
+    Especie* get_especie() const;
     std::string getCodEspecie() const;
     int getTipoEspecie() const;
+
+    // Operadores de comparación
+    bool operator<(const Arbol &otro) const;
+    bool operator>(const Arbol &otro) const;
+    bool operator==(const Arbol &otro) const;
 };
-
-
 #endif //PRACTICA3_ARBOL_H

@@ -131,3 +131,7 @@ int Parque::contarTipos() {
     return tiposUnicos.get__tlogico();
 }
 
+    std::string Parque::getNombre() const {
+        return _nbre_parque;
+    }
+

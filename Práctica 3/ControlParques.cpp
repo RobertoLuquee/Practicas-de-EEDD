@@ -6,8 +6,10 @@
 #include <fstream>
 #include <sstream>
 #include <iostream>
+#include <algorithm>
+#include <stdexcept>
 
-
+ControlParques::ControlParques() {}
 
 ControlParques::ControlParques(const std::string &rutaEspecies, const std::string &rutaParques) {
     std::ifstream esEspecie(rutaEspecies);
@@ -17,17 +19,16 @@ ControlParques::ControlParques(const std::string &rutaEspecies, const std::strin
 
     std::string _codigoEspecie, _nombreComun, _nombreCientifico, _tipoStr;
 
-
     if (esEspecie.good()) {
-        getline(esEspecie,fila);
+        getline(esEspecie, fila);
         while (getline(esEspecie, fila)) {
-            if (fila!="") {
+            if (fila != "") {
                 columna.str(fila);
 
-                getline(columna, _codigoEspecie,separador);
-                getline(columna,_nombreComun,separador);
-                getline(columna,_nombreCientifico,separador);
-                getline(columna,_tipoStr,separador);
+                getline(columna, _codigoEspecie, separador);
+                getline(columna, _nombreComun, separador);
+                getline(columna, _nombreCientifico, separador);
+                getline(columna, _tipoStr, separador);
 
                 columna.clear();
 
@@ -53,23 +54,21 @@ ControlParques::ControlParques(const std::string &rutaEspecies, const std::strin
         }
         esEspecie.close();
         v_especies.ordenar();
-    }
-    else {
+    } else {
         std::cerr << "Error de apertura en archivo: " << rutaEspecies << std::endl;
     }
-
 
     std::ifstream esParque(rutaParques);
     std::string filaparque;
     std::stringstream columnaparque;
 
-    std::string _codigoParqueStr,_nombreParque;
+    std::string _codigoParqueStr, _nombreParque;
 
     if (esParque.good()) {
-        getline(esParque,filaparque);
+        getline(esParque, filaparque);
 
-        while (getline(esParque,filaparque)) {
-            if (filaparque!="") {
+        while (getline(esParque, filaparque)) {
+            if (filaparque != "") {
                 columnaparque.str(filaparque);
 
                 getline(columnaparque, _codigoParqueStr, separador);
@@ -82,9 +81,9 @@ ControlParques::ControlParques(const std::string &rutaEspecies, const std::strin
                 }
 
                 if (!_nombreParque.empty() && _nombreParque.front() == '"') {
-                    _nombreParque.erase(0, 1); // Borramos la primera comilla
+                    _nombreParque.erase(0, 1);
                     if (_nombreParque.back() == '"') {
-                        _nombreParque.pop_back(); // Borramos la última comilla
+                        _nombreParque.pop_back();
                     }
                 }
 
@@ -96,7 +95,6 @@ ControlParques::ControlParques(const std::string &rutaEspecies, const std::strin
                     continue;
                 }
 
-                // Creamos el objeto Parque y lo insertamos al FINAL de la lista
                 Parque nuevoParque(codParqueInt, _nombreParque);
                 ld_parques.insertarFin(nuevoParque);
             }
@@ -105,45 +103,107 @@ ControlParques::ControlParques(const std::string &rutaEspecies, const std::strin
 
         std::cout << "Parques cargados correctamente. Total: "
                   << ld_parques.tam() << " parques." << std::endl;
-
     } else {
         std::cerr << "Error de apertura en archivo de parques: " << rutaParques << std::endl;
-
     }
 }
 
-void ControlParques::enlazarAutomatico() {
-    for (int i=0;i<v_especies.get__tlogico();i++) {
-        Especie& actual=v_especies[i];
-        int tipo=actual.get_tipo_planta();
+// Constructor de 3 ficheros CSV exigido por main.cpp
+ControlParques::ControlParques(const std::string &rutaEspecies,
+                               const std::string &rutaParques,
+                               const std::string &rutaArboles)
+    : ControlParques(rutaEspecies, rutaParques) {
 
-        ListaDEnlazada<Parque>::Iterador iter=ld_parques.iterador();
+    std::ifstream ficheroArboles(rutaArboles);
+    if (!ficheroArboles.is_open()) {
+        std::cerr << "Error al abrir el archivo de arboles: " << rutaArboles << std::endl;
+        return;
+    }
+
+    std::string linea;
+    std::getline(ficheroArboles, linea); // Saltar cabecera
+
+    while (std::getline(ficheroArboles, linea)) {
+        if (!linea.empty() && linea.back() == '\r') {
+            linea.pop_back();
+        }
+        if (linea.empty()) continue;
+
+        std::stringstream registro(linea);
+        std::string campos[12];
+
+        for (unsigned int i = 0; i < 12; ++i) {
+            std::getline(registro, campos[i], ';');
+        }
+
+        std::replace(campos[6].begin(), campos[6].end(), ',', '.');
+        std::replace(campos[7].begin(), campos[7].end(), ',', '.');
+
+        float perim = campos[10].empty() ? -1.0f : std::stof(campos[10]);
+        float alt = campos[11].empty() ? -1.0f : std::stof(campos[11]);
+
+        Arbol arbol(campos[0], std::stoi(campos[1]), std::stoi(campos[2]), campos[3],
+                    std::stoi(campos[4]), campos[5], std::stod(campos[6]),
+                    std::stod(campos[7]), perim, alt);
+
+        // Enlazar puntero a Especie si existe en v_especies
+        std::string codEspStr = std::to_string(std::stoi(campos[4]));
+        for (unsigned int i = 0; i < v_especies.get__tlogico(); ++i) {
+            if (v_especies[i].getCodigo() == codEspStr) {
+                arbol.setEspecie(&v_especies[i]);
+                break;
+            }
+        }
+
+        // Insertar en AVL
+        avl_arboles.inserta(arbol);
+
+        // Insertar puntero en el parque correspondiente
+        Arbol* ptrArbol = avl_arboles.buscaIt(arbol);
+        if (ptrArbol != nullptr) {
+            ListaDEnlazada<Parque>::Iterador it = ld_parques.iterador();
+            while (!it.fin()) {
+                if (it.dato().get_cod_parque() == arbol.getNumParque()) {
+                    it.dato().insertarArbol(ptrArbol);
+                    break;
+                }
+                it.siguiente();
+            }
+        }
+    }
+    ficheroArboles.close();
+}
+
+void ControlParques::enlazarAutomatico() {
+    for (int i = 0; i < v_especies.get__tlogico(); i++) {
+        Especie& actual = v_especies[i];
+        int tipo = actual.get_tipo_planta();
+
+        ListaDEnlazada<Parque>::Iterador iter = ld_parques.iterador();
 
         while (!iter.fin()) {
-            Parque& p_actual=iter.dato();
-            int codParque=p_actual.get_cod_parque();
+            Parque& p_actual = iter.dato();
+            int codParque = p_actual.get_cod_parque();
 
-            bool esPar=(codParque%2==0);//el resto de la division entre 2 es=0
+            bool esPar = (codParque % 2 == 0);
 
             if (esPar && (tipo == ARBUSTO || tipo == CONIFERA ||
                           tipo == PALMACEA || tipo == HERB_PERENNES ||
                           tipo == FRONDOSA)) {
                 p_actual.insertaEspecie(&actual);
-                          }
-
-            else if (!esPar && (tipo == TAPIZANTE_TREPADORA ||
+            } else if (!esPar && (tipo == TAPIZANTE_TREPADORA ||
                                 tipo == CACTACEA_SUCULENTA ||
                                 tipo == SUBTROPICAL_TROPICAL ||
                                 tipo == HERB_ANUAL ||
                                 tipo == HERB_ANUALES)) {
-
-                p_actual.insertaEspecie(&actual); // Insertamos el puntero
-                                }
+                p_actual.insertaEspecie(&actual);
+            }
 
             iter.siguiente();
         }
     }
 }
+
 void ControlParques::mostrarParques() {
     for (ListaDEnlazada<Parque>::Iterador it = ld_parques.iterador(); !it.fin(); it.siguiente()) {
         std::cout << "  Codigo: " << std::to_string(it.dato().get_cod_parque())
@@ -153,126 +213,194 @@ void ControlParques::mostrarParques() {
 }
 
 bool ControlParques::borrarEspecie(std::string ncomun) {
-    bool encontrado=false;
+    bool encontrado = false;
 
-    ListaDEnlazada<Parque>::Iterador iter=ld_parques.iterador();
+    ListaDEnlazada<Parque>::Iterador iter = ld_parques.iterador();
 
     while (!iter.fin()) {
-        Parque& actual=iter.dato();
-        VDinamico<Especie*>& especiesparque =actual.get_contains();
+        Parque& actual = iter.dato();
+        VDinamico<Arbol*>& arbolesparque = actual.get_contains();
 
-        for (int i=0;i<especiesparque.get__tlogico();i++) {
-            if (especiesparque[i]!=nullptr && especiesparque[i]->getnombre_comun()==ncomun) {
-                especiesparque[i]=nullptr; //desenlazamos la especie del parque
+        for (int i = 0; i < arbolesparque.get__tlogico(); i++) {
+            if (arbolesparque[i] != nullptr &&
+                arbolesparque[i]->getEspecie() != nullptr &&
+                arbolesparque[i]->getEspecie()->getnombre_comun() == ncomun) {
+
+                arbolesparque[i]->setEspecie(nullptr);
+                arbolesparque[i] = nullptr;
             }
         }
         iter.siguiente();
     }
-    for (int i=0;i<v_especies.get__tlogico();i++) {
-        if (v_especies[i].getnombre_comun()==ncomun) {
+
+    for (int i = 0; i < v_especies.get__tlogico(); i++) {
+        if (v_especies[i].getnombre_comun() == ncomun) {
             v_especies.borrar(i);
-            encontrado=true;
+            encontrado = true;
             i--;
         }
     }
     return encontrado;
 }
 
-
 void ControlParques::asignarEspecieParque(Especie *e, Parque *p) {
-    ListaDEnlazada<Parque>::Iterador iter=ld_parques.iterador();
+    ListaDEnlazada<Parque>::Iterador iter = ld_parques.iterador();
 
-    bool acabado=false;
+    bool acabado = false;
 
     while (!acabado) {
         try {
-            Parque& actual= iter.dato();// el & lo q hace es darle un apodo "actual" a la posicion de
-            //memoria original del objeto original en ves de una copia
-            if (actual.get_cod_parque()!=p->get_cod_parque()) {
+            Parque& actual = iter.dato();
+            if (actual.get_cod_parque() != p->get_cod_parque()) {
                 actual.insertaEspecie(e);
-                return;//aqui me acaba si la encuentro
+                return;
             }
 
             if (iter.haySiguiente()) {
                 iter.siguiente();
+            } else {
+                acabado = true;
             }
-            else {
-                acabado=true;
-            }
-        }
-        catch (const std::invalid_argument& ex) {
-            acabado=true;
+        } catch (const std::invalid_argument& ex) {
+            acabado = true;
         }
     }
 }
 
-
 int ControlParques::contarEspecieParque(std::string ncomun) {
+    int contador = 0;
 
-    int contador=0;
+    ListaDEnlazada<Parque>::Iterador iter = ld_parques.iterador();
 
-    ListaDEnlazada<Parque>::Iterador iter=ld_parques.iterador();
-
-    bool acabado=false;
+    bool acabado = false;
     while (!acabado) {
         try {
-
-            Parque& actual= iter.dato();
+            Parque& actual = iter.dato();
             if (actual.existeNbreCom(ncomun)) {
                 contador++;
             }
 
             if (iter.haySiguiente()) {
                 iter.siguiente();
+            } else {
+                acabado = true;
             }
-            else {
-                acabado=true;
-            }
-
+        } catch (const std::invalid_argument &ex) {
+            acabado = true;
         }
-        catch (const std::invalid_argument &ex) {
-            acabado=true;
-        }
-
     }
     return contador;
 }
 
 VDinamico<Especie*> ControlParques::listadoEspecieSubNombre(std::string cadena) {
-
     VDinamico<Especie*> resultado;
-    for (int i=0; i<v_especies.get__tlogico();i++) {
-        std::string actual= v_especies[i].getnombre_cientifico();
+    for (int i = 0; i < v_especies.get__tlogico(); i++) {
+        std::string actual = v_especies[i].getnombre_cientifico();
 
-        if (actual.find(cadena)!= std::string::npos) {
+        if (actual.find(cadena) != std::string::npos) {
             resultado.insertar(&v_especies[i]);
         }
     }
     return resultado;
 }
 
-
 Parque* ControlParques::buscarParque(std::string nombre_parque) {
-
-    ListaDEnlazada<Parque>::Iterador iter=ld_parques.iterador();
-    bool acabado=false;
-
-    while (!acabado) {
-
-        try {
-            Parque& actual =iter.dato();
-            if (actual.get_nbre_parque()==nombre_parque) {
-                return &actual;
-            }
-
-            if (iter.haySiguiente()) {
-                iter.siguiente();
-            }
-            else acabado=true;
+    ListaDEnlazada<Parque>::Iterador iter = ld_parques.iterador();
+    while (!iter.fin()) {
+        if (iter.dato().getNombre() == nombre_parque) {
+            return &(iter.dato());
         }
-        catch (const std::invalid_argument &ex) {
-            acabado=true;
-        }
+        iter.siguiente();
     }
     return nullptr;
+}
+
+// 1. Buscar árbol en el AVL por assetnum (string)
+Arbol* ControlParques::buscarArbol(const std::string &assetnum) {
+    Arbol aux(assetnum);
+    return avl_arboles.buscaIt(aux);
+}
+
+// 2. Obtener lista de árboles de un parque específico
+VDinamico<Arbol*> ControlParques::listaArbParque(const std::string &nombreParque) {
+    ListaDEnlazada<Parque>::Iterador it = ld_parques.iterador();
+    while (!it.fin()) {
+        if (it.dato().getNombre() == nombreParque) {
+            return it.dato().get_contains();
+        }
+        it.siguiente();
+    }
+    return VDinamico<Arbol*>();
+}
+
+// 3. Obtener el árbol más alto de todos los parques del sistema
+Arbol* ControlParques::arbolMasAlto() {
+    Arbol* masAltoGlobal = nullptr;
+    ListaDEnlazada<Parque>::Iterador it = ld_parques.iterador();
+
+    while (!it.fin()) {
+        Arbol* masAltoParque = it.dato().arbolMasAlto();
+        if (masAltoParque != nullptr) {
+            if (masAltoGlobal == nullptr || masAltoParque->getAltura() > masAltoGlobal->getAltura()) {
+                masAltoGlobal = masAltoParque;
+            }
+        }
+        it.siguiente();
+    }
+    return masAltoGlobal;
+}
+
+// 4. Contar especies distintas en un parque por su nombre
+int ControlParques::contarEspecies(const std::string &nombreParque) {
+    ListaDEnlazada<Parque>::Iterador it = ld_parques.iterador();
+    while (!it.fin()) {
+        if (it.dato().getNombre() == nombreParque) {
+            return it.dato().contarEspecies();
+        }
+        it.siguiente();
+    }
+    return 0;
+}
+
+// 5. Contar tipos de plantas distintos en todos los parques
+int ControlParques::contarTipos() {
+    VDinamico<int> tiposUnicos;
+    ListaDEnlazada<Parque>::Iterador it = ld_parques.iterador();
+
+    while (!it.fin()) {
+        VDinamico<Arbol*>& arboles = it.dato().get_contains();
+        for (unsigned int i = 0; i < arboles.get__tlogico(); ++i) {
+            if (arboles[i] != nullptr) {
+                int tipo = arboles[i]->getTipoEspecie();
+                if (tipo != 0) {
+                    bool yaExiste = false;
+                    for (unsigned int j = 0; j < tiposUnicos.get__tlogico() && !yaExiste; ++j) {
+                        if (tiposUnicos[j] == tipo) {
+                            yaExiste = true;
+                        }
+                    }
+                    if (!yaExiste) {
+                        tiposUnicos.insertar(tipo);
+                    }
+                }
+            }
+        }
+        it.siguiente();
+    }
+    return tiposUnicos.get__tlogico();
+}
+
+// 6. Búsqueda por rango (ejercicio por parejas)
+VDinamico<Arbol*> ControlParques::buscarArbolesRango(const std::string &inicio, const std::string &fin) {
+    VDinamico<Arbol*> resultado;
+    VDinamico<Arbol*> ordenados = avl_arboles.recorreInorden();
+    for (unsigned int i = 0; i < ordenados.get__tlogico(); ++i) {
+        if (ordenados[i] != nullptr) {
+            std::string id = ordenados[i]->getAssetnum();
+            if (id >= inicio && id <= fin) {
+                resultado.insertar(ordenados[i]);
+            }
+        }
+    }
+    return resultado;
 }

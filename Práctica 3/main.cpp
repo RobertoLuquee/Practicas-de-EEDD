@@ -8,10 +8,10 @@
 #include <stdexcept>
 #include <string>
 
-#include "header/ControlParques.h"
-#include "header/Arbol.h"
-#include "header/Especie.h"
-#include "header/AVL.h"
+#include "ControlParques.h"
+#include "Arbol.h"
+#include "Especie.h"
+#include "AVL.h"
 
 using namespace std;
 
@@ -74,7 +74,7 @@ void cargarAVL(const std::string &ruta, AVL<Arbol> &avl)
 
         if (!avl.inserta(arbol))
             throw std::runtime_error(
-                "Identificador duplicado: " + arbol.getAssetnum());
+                "Identificador duplicado: " + arbol.get_assetnum());
     }
 }
 
@@ -122,12 +122,12 @@ int main()
         cargarVector(ruta, arboles);
 
         std::cout << "Arboles en el AVL: "
-                  << avl.numElementos() << '\n';
+                  << avl._numelementos() << '\n';
 
         std::cout << "Arboles en el vector: "
-                  << arboles.tamLog() << '\n';
+                  << arboles.get__tlogico() << '\n';
 
-        if (avl.numElementos() != arboles.tamLog())
+        if (avl._numelementos() != arboles.get__tlogico())
             throw std::runtime_error(
                 "Las estructuras contienen cantidades diferentes");
 
@@ -136,13 +136,13 @@ int main()
         const unsigned int numeroBusquedas = 500;
         const unsigned int salto = 250;
 
-        if (arboles.tamLog() <= (numeroBusquedas - 1) * salto)
+        if (arboles.get__tlogico() <= (numeroBusquedas - 1) * salto)
             throw std::runtime_error(
                 "No hay suficientes arboles para seleccionar la muestra");
 
         for (unsigned int i = 0; i < numeroBusquedas; ++i)
         {
-            std::string id = arboles[i * salto].getAssetnum();
+            std::string id = arboles[i * salto].get_assetnum();
             identificadores.insertar(id);
         }
 
@@ -175,7 +175,7 @@ int main()
 
         for (unsigned int i = 0; i < numeroBusquedas; ++i)
         {
-            for (unsigned int j = 0; j < arboles.tamLog(); ++j)
+            for (unsigned int j = 0; j < arboles.get__tlogico(); ++j)
             {
                 if (arboles[j] == claves[i])
                 {
@@ -232,12 +232,12 @@ int main()
         std::cout << "\nPrimeros 100 arboles en inorden:\n";
 
         for (unsigned int i = 0;
-             i < 100 && i < ordenados.tamLog(); ++i)
+             i < 100 && i < ordenados.get__tlogico(); ++i)
         {
             Arbol *arbol = ordenados[i];
 
             std::cout << i + 1
-                      << ". ID: " << arbol->getAssetnum() << endl;
+                      << ". ID: " << arbol->get_assetnum() << endl;
         }
 
         std::cout << "\nPROGRAMA DE PRUEBA II\n"
@@ -265,7 +265,7 @@ int main()
                 continue;
             }
 
-            std::cout << "\nIdentificador: " << arbol->getAssetnum()
+            std::cout << "\nIdentificador: " << arbol->get_assetnum()
                       << "\nCodigo de parque: " << arbol->getNumParque()
                       << "\nNombre comun: " << arbol->getNbreComun()
                       << "\nNombre cientifico: " << arbol->getNbreCientifico()
@@ -280,14 +280,14 @@ int main()
             control.listaArbParque("JARDINES DEL BUEN RETIRO");
 
         std::cout << "Numero de arboles: "
-                  << arbolesRetiro.tamLog() << '\n';
+                  << arbolesRetiro.get__tlogico() << '\n';
 
         for (unsigned int i = 0;
-             i < 10 && i < arbolesRetiro.tamLog(); ++i)
+             i < 10 && i < arbolesRetiro.get__tlogico(); ++i)
         {
             Arbol *arbol = arbolesRetiro[i];
 
-            std::cout << "\nIdentificador: " << arbol->getAssetnum()
+            std::cout << "\nIdentificador: " << arbol->get_assetnum()
                       << "\nNombre comun: " << arbol->getNbreComun()
                       << "\nNombre cientifico: " << arbol->getNbreCientifico()
                       << "\nTipo de planta: " << arbol->getTipo()
@@ -301,10 +301,10 @@ int main()
         unsigned int correctos = 0;
 
         for (unsigned int i = 0;
-             i < 10 && i < arbolesRetiro.tamLog(); ++i)
+             i < 10 && i < arbolesRetiro.get__tlogico(); ++i)
         {
             Arbol *listado = arbolesRetiro[i];
-            Arbol *encontrado = control.buscarArbol(listado->getAssetnum());
+            Arbol *encontrado = control.buscarArbol(listado->get_assetnum());
 
             bool coincide = (encontrado == listado);
 
@@ -313,7 +313,7 @@ int main()
             if (coincide)
                 ++correctos;
 
-            std::cout << "Arbol " << listado->getAssetnum()
+            std::cout << "Arbol " << listado->get_assetnum()
                       << ": " << (coincide ? "CORRECTO" : "ERROR")
                       << '\n';
         }
@@ -411,7 +411,7 @@ int main()
         }
         else
         {
-            std::cout << "Identificador: " << masAlto->getAssetnum()
+            std::cout << "Identificador: " << masAlto->get_assetnum()
                       << "\nAltura: " << masAlto->getAltura() << " m"
                       << "\nEspecie: " << masAlto->getNbreComun()
                       << " (" << masAlto->getNbreCientifico() << ")\n";
@@ -425,14 +425,14 @@ int main()
             control.buscarArbolesRango("5700000", "5709999");
 
         std::cout << "Numero de arboles encontrados: "
-                  << resultadoRango.tamLog() << '\n';
+                  << resultadoRango.get__tlogico() << '\n';
 
         for (unsigned int i = 0;
-             i < 10 && i < resultadoRango.tamLog(); ++i)
+             i < 10 && i < resultadoRango.get__tlogico(); ++i)
         {
             Arbol *arbol = resultadoRango[i];
 
-            std::cout << "\nIdentificador: " << arbol->getAssetnum()
+            std::cout << "\nIdentificador: " << arbol->get_assetnum()
                       << "\nCodigo de parque: " << arbol->getNumParque()
                       << "\nNombre comun: " << arbol->getNbreComun()
                       << "\nNombre cientifico: " << arbol->getNbreCientifico()

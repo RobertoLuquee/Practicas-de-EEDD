@@ -10,71 +10,78 @@
 
 
 template <class T>
-class Nodo {
+class NodoAVL {
 public:
-    Nodo<T> *izq;
-    Nodo<T> *der;
+    NodoAVL<T> *izq;
+    NodoAVL<T> *der;
     T dato;
     char bal;
-    Nodo();
-    Nodo(T& ele);
-
+    NodoAVL();
+    NodoAVL(const T& ele);
 };
-template <class T>
-Nodo<T>::Nodo(): izq(0),der(0),dato(),bal(0){}
 
 template <class T>
-Nodo<T>::Nodo(T& ele): izq(0),der(0),bal(0),dato(ele){}
+NodoAVL<T>::NodoAVL(): izq(0), der(0), dato(), bal(0) {}
+
+template <class T>
+NodoAVL<T>::NodoAVL(const T& ele): izq(0), der(0), bal(0), dato(ele) {}
 
 template <class T>
 class AVL {
 private:
-    Nodo<T> *raiz;
-    unsigned int _numelementos;
+    NodoAVL<T> *raiz;
+    unsigned int _numelementos_cnt;
 
-    void preorden(Nodo<T> *p, int nivel);
-    void inordenVector(Nodo<T> *p, VDinamico<T*> &nivel);
-    void postorden(Nodo<T> *p, int nivel);
-    void rotDer(Nodo<T>* &nodo);
-    void rotIzq(Nodo<T>* &nodo);
-    int inserta(Nodo<T>* &c, T &dato);
-    void copiar(Nodo<T>*p);
-    void destruye(Nodo<T>* &p);
-    T* habitacion(Nodo<T>* p, T &dato);
-    unsigned int calculaAltura(Nodo<T>* p) const;
-
+    void preorden(NodoAVL<T> *p, int nivel);
+    void inordenVector(NodoAVL<T> *p, VDinamico<T*> &v);
+    void postorden(NodoAVL<T> *p, int nivel);
+    void rotDer(NodoAVL<T>* &nodo);
+    void rotIzq(NodoAVL<T>* &nodo);
+    int inserta(NodoAVL<T>* &c, const T &dato);
+    void copiar(NodoAVL<T> *p);
+    void destruye(NodoAVL<T>* &p);
+    T* habitacion(NodoAVL<T>* p, const T &dato);
+    unsigned int calculaAltura(NodoAVL<T>* p) const;
 
 public:
     AVL();
     AVL(const AVL<T> &origen);
+    ~AVL();
+
     void recorrePreorden();
     VDinamico<T*> recorreInorden();
     void recorrePostorden();
-    bool inserta(T& dato);
+
+    bool inserta(const T& dato);
     AVL<T>& operator=(const AVL<T> &origen);
-    T* buscarecursiva(T &dato);
-    T* buscariterativo(T &dato);
-    unsigned int nelementos()const;
-    unsigned int altura()const;
-    ~AVL();
+
+    // Búsqueda recursiva e iterativa
+    T* buscarecursiva(const T &dato);
+    T* buscariterativo(const T &dato);
+    T* buscaRec(const T &dato);
+    T* buscaIt(const T &dato);
 
 
+    unsigned int nelementos() const;
+    unsigned int _numelementos() const;
+    unsigned int numElementos() const;
+    unsigned int altura() const;
 };
 
 template<class T>
-AVL<T>::AVL():raiz(nullptr),_numelementos(0){}
+AVL<T>::AVL(): raiz(nullptr), _numelementos_cnt(0) {}
 
 template <class T>
-void AVL<T>::copiar(Nodo<T> *p) {
+void AVL<T>::copiar(NodoAVL<T> *p) {
     if (p != nullptr) {
-        inserta(p->dato); // Inserta el dato en la raiz actual
-        copiar(p->izq);   // Recorre e inserta la rama izquierda
-        copiar(p->der);   // Recorre e inserta la rama derecha
+        inserta(p->dato);
+        copiar(p->izq);
+        copiar(p->der);
     }
 }
 
 template <class T>
-void AVL<T>::destruye(Nodo<T>* &p) {
+void AVL<T>::destruye(NodoAVL<T>* &p) {
     if (p != nullptr) {
         destruye(p->izq);
         destruye(p->der);
@@ -84,196 +91,189 @@ void AVL<T>::destruye(Nodo<T>* &p) {
 }
 
 template<class T>
-T* AVL<T>::habitacion(Nodo<T> *p, T &dato) {
-    while (p!=nullptr) {
-        if (dato == p->dato) {
-            return &p->dato;
-        }
-
-        if (dato<p->dato) {
-            return  habitacion(p->izq,dato);
-        }
-        else{ return habitacion(p->der,dato);}
-    }
-    return nullptr;
+T* AVL<T>::habitacion(NodoAVL<T> *p, const T &dato) {
+    if (p == nullptr) return nullptr;
+    if (dato == p->dato) return &p->dato;
+    if (dato < p->dato) return habitacion(p->izq, dato);
+    return habitacion(p->der, dato);
 }
 
-
-// Operador de asignación
 template <class T>
 AVL<T>& AVL<T>::operator=(const AVL<T> &origen) {
-
     if (this != &origen) {
-
-        // Liberamos la memoria de los nodos que ya tenía el objeto actual
         destruye(raiz);
-        _numelementos = 0;
-
-        // Copio la estructura del árbol origen en preorden
+        _numelementos_cnt = 0;
         copiar(origen.raiz);
     }
-
     return *this;
 }
 
 template<class T>
-T * AVL<T>::buscarecursiva(T &dato) {
-    return habitacion(raiz,dato);
+T* AVL<T>::buscarecursiva(const T &dato) {
+    return habitacion(raiz, dato);
 }
 
 template<class T>
-T * AVL<T>::buscariterativo(T &dato) {
-    Nodo <T> *actual=raiz;
-    while (actual!=nullptr) {
-        if (actual->dato==dato) {
+T* AVL<T>::buscaRec(const T &dato) {
+    return buscarecursiva(dato);
+}
+
+template<class T>
+T* AVL<T>::buscariterativo(const T &dato) {
+    NodoAVL<T> *actual = raiz;
+    while (actual != nullptr) {
+        if (actual->dato == dato) {
             return &actual->dato;
         }
-        else if (actual->dato<dato) {
-            actual=actual->izq;
-        }
-        else {
-            actual=actual->der;
+        if (dato < actual->dato) {
+            actual = actual->izq;
+        } else {
+            actual = actual->der;
         }
     }
     return nullptr;
+}
 
+template<class T>
+T* AVL<T>::buscaIt(const T &dato) {
+    return buscariterativo(dato);
 }
 
 template <class T>
-AVL<T>::AVL(const AVL<T> &origen) : raiz(nullptr), _numelementos(0) {
-    copiar(origen.raiz); // Se iniicia la copia desde la raíz del árbol origen
+AVL<T>::AVL(const AVL<T> &origen) : raiz(nullptr), _numelementos_cnt(0) {
+    copiar(origen.raiz);
 }
 
 template<class T>
-void AVL<T>::preorden(Nodo<T> *p, int nivel) {
-    if (p){
-        std::cout << "Procesando nodo "<< p->dato ;
-        std::cout << "en el nivel " << nivel << std::endl;
-        preorden (p->izq, nivel+1);
-        preorden (p->der, nivel+1);
-    }
-}
-
-template<class T>
-void AVL<T>::inordenVector(Nodo<T> *p, VDinamico<T*> &nivel) {
-    if (p){
-        inorden (p->izq, nivel+1);
+void AVL<T>::preorden(NodoAVL<T> *p, int nivel) {
+    if (p) {
         std::cout << "Procesando nodo " << p->dato;
         std::cout << "en el nivel " << nivel << std::endl;
-        inorden (p->der, nivel+1);
+        preorden(p->izq, nivel + 1);
+        preorden(p->der, nivel + 1);
     }
 }
 
 template<class T>
-void AVL<T>::postorden(Nodo<T> *p, int nivel) {
-    if (p){
-        postorden (p->izq, nivel+1);
-        postorden (p->der, nivel+1);
-        // Sustituir por procesamiento ----
-        std::cout << "Procesando nodo "<< p->dato;
+void AVL<T>::inordenVector(NodoAVL<T> *p, VDinamico<T*> &v) {
+    if (p) {
+        inordenVector(p->izq, v);
+        v.insertar(&(p->dato));
+        inordenVector(p->der, v);
+    }
+}
+
+template<class T>
+void AVL<T>::postorden(NodoAVL<T> *p, int nivel) {
+    if (p) {
+        postorden(p->izq, nivel + 1);
+        postorden(p->der, nivel + 1);
+        std::cout << "Procesando nodo " << p->dato;
         std::cout << "en el nivel " << nivel << std::endl;
     }
 }
 
 template<class T>
 void AVL<T>::recorrePreorden() {
-    preorden(raiz,0);
+    preorden(raiz, 0);
 }
 
 template<class T>
 VDinamico<T*> AVL<T>::recorreInorden() {
     VDinamico<T*> resultado;
-    inorden(raiz,resultado);
+    inordenVector(raiz, resultado);
     return resultado;
 }
 
 template<class T>
 void AVL<T>::recorrePostorden() {
-    postorden(raiz,0);
+    postorden(raiz, 0);
 }
 
 template<class T>
-void AVL<T>::rotDer(Nodo<T>* &nodo) {
-    Nodo<T> *q = nodo, *l;
+void AVL<T>::rotDer(NodoAVL<T>* &nodo) {
+    NodoAVL<T> *q = nodo, *l;
     nodo = l = q->izq;
     q->izq = l->der;
     l->der = q;
     q->bal--;
     if (l->bal > 0) q->bal -= l->bal;
     l->bal--;
-    if(q->bal < 0) l->bal -= -q->bal;
+    if (q->bal < 0) l->bal -= -q->bal;
 }
 
 template<class T>
-void AVL<T>::rotIzq(Nodo<T>* &nodo) {
-    Nodo<T> *q = nodo, *r;
+void AVL<T>::rotIzq(NodoAVL<T>* &nodo) {
+    NodoAVL<T> *q = nodo, *r;
     nodo = r = q->der;
     q->der = r->izq;
     r->izq = q;
     q->bal++;
     if (r->bal < 0) q->bal += -r->bal;
     r->bal++;
-    if(q->bal > 0) r->bal += q->bal;
+    if (q->bal > 0) r->bal += q->bal;
 }
 
 template<typename T>
-int AVL<T>::inserta(Nodo<T>* &c, T &dato) {
-    Nodo<T> *p = c;
+int AVL<T>::inserta(NodoAVL<T>* &c, const T &dato) {
+    NodoAVL<T> *p = c;
     int deltaH = 0;
-    if (!p){
-        p = new Nodo<T>(dato);
+    if (!p) {
+        p = new NodoAVL<T>(dato);
         c = p;
-        deltaH=1;
-        _numelementos++;
-    }
-    else if (dato > p->dato){
-        if (inserta(p->der, dato)){
+        deltaH = 1;
+        _numelementos_cnt++;
+    } else if (dato > p->dato) {
+        if (inserta(p->der, dato)) {
             p->bal--;
-            if (p->bal == -1) deltaH=1;
+            if (p->bal == -1) deltaH = 1;
             else if (p->bal == -2) {
                 if (p->der->bal == 1) rotDer(p->der);
                 rotIzq(c);
-            } } }
-    else if (dato < p->dato){
-        if (inserta(p->izq, dato)){
+            }
+        }
+    } else if (dato < p->dato) {
+        if (inserta(p->izq, dato)) {
             p->bal++;
-            if (p->bal==1) deltaH = 1;
-            else if (p->bal == 2){
+            if (p->bal == 1) deltaH = 1;
+            else if (p->bal == 2) {
                 if (p->izq->bal == -1) rotIzq(p->izq);
                 rotDer(c);
-            } } }
+            }
+        }
+    }
     return deltaH;
 }
 
 template<class T>
-bool AVL<T>::inserta(T &dato) {
+bool AVL<T>::inserta(const T &dato) {
     int insertado = inserta(raiz, dato);
-    if (insertado != 0) {
-        return true;
-    }
-    return false;
+    return (insertado != 0);
 }
-
 
 template <class T>
 unsigned int AVL<T>::nelementos() const {
-    return _numelementos;
+    return _numelementos_cnt;
 }
 
 template <class T>
-unsigned int AVL<T>::calculaAltura(Nodo<T>* p) const {
+unsigned int AVL<T>::_numelementos() const {
+    return _numelementos_cnt;
+}
+
+template <class T>
+unsigned int AVL<T>::numElementos() const {
+    return _numelementos_cnt;
+}
+
+template <class T>
+unsigned int AVL<T>::calculaAltura(NodoAVL<T>* p) const {
     if (p == nullptr) {
         return 0;
     }
-
     unsigned int altIzq = calculaAltura(p->izq);
     unsigned int altDer = calculaAltura(p->der);
-
-    if (altIzq > altDer) {
-        return 1 + altIzq;
-    } else {
-        return 1 + altDer;
-    }
+    return 1 + (altIzq > altDer ? altIzq : altDer);
 }
 
 template <class T>
@@ -284,8 +284,7 @@ unsigned int AVL<T>::altura() const {
 template <class T>
 AVL<T>::~AVL() {
     destruye(raiz);
-    _numelementos = 0;
+    _numelementos_cnt = 0;
 }
-
 
 #endif //PRACTICA1_AVL_H

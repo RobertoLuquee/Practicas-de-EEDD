@@ -80,11 +80,13 @@ public:
      */
     bool existeNbreCie(const std::string &nombrecientifico) ;
 
-    bool existeNbreCom(std::string nbreCom);
     void insertarArbol(Arbol* a);
     Arbol* arbolMasAlto();
     int contarEspecies();
     int contarTipos();
+    std::string getNombre() const;
+
+
 
 };
 
