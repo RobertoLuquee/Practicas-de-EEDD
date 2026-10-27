@@ -37,11 +37,12 @@ private:
     void postorden(NodoAVL<T> *p, int nivel);
     void rotDer(NodoAVL<T>* &nodo);
     void rotIzq(NodoAVL<T>* &nodo);
-    int inserta(NodoAVL<T>* &c, const T &dato);
+    int inserta(NodoAVL<T>* &c, const T &dato,bool &ok);
     void copiar(NodoAVL<T> *p);
     void destruye(NodoAVL<T>* &p);
     T* habitacion(NodoAVL<T>* p, const T &dato);
     unsigned int calculaAltura(NodoAVL<T>* p) const;
+
 
 public:
     AVL();
@@ -215,7 +216,7 @@ void AVL<T>::rotIzq(NodoAVL<T>* &nodo) {
 }
 
 template<typename T>
-int AVL<T>::inserta(NodoAVL<T>* &c, const T &dato) {
+int AVL<T>::inserta(NodoAVL<T>* &c, const T &dato, bool &ok) {
     NodoAVL<T> *p = c;
     int deltaH = 0;
     if (!p) {
@@ -223,8 +224,9 @@ int AVL<T>::inserta(NodoAVL<T>* &c, const T &dato) {
         c = p;
         deltaH = 1;
         _numelementos_cnt++;
+        ok = true; // Inserción con éxito
     } else if (dato > p->dato) {
-        if (inserta(p->der, dato)) {
+        if (inserta(p->der, dato, ok)) {
             p->bal--;
             if (p->bal == -1) deltaH = 1;
             else if (p->bal == -2) {
@@ -233,7 +235,7 @@ int AVL<T>::inserta(NodoAVL<T>* &c, const T &dato) {
             }
         }
     } else if (dato < p->dato) {
-        if (inserta(p->izq, dato)) {
+        if (inserta(p->izq, dato, ok)) {
             p->bal++;
             if (p->bal == 1) deltaH = 1;
             else if (p->bal == 2) {
@@ -241,14 +243,18 @@ int AVL<T>::inserta(NodoAVL<T>* &c, const T &dato) {
                 rotDer(c);
             }
         }
+    } else {
+        ok = false; // Elemento duplicado
+        deltaH = 0;
     }
     return deltaH;
 }
 
 template<class T>
 bool AVL<T>::inserta(const T &dato) {
-    int insertado = inserta(raiz, dato);
-    return (insertado != 0);
+    bool ok = false;
+    inserta(raiz, dato, ok);
+    return ok;
 }
 
 template <class T>
