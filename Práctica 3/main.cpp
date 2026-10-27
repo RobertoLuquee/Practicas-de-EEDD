@@ -109,7 +109,7 @@ int main()
         std::cout << "PROGRAMA DE PRUEBA I\n"
                   << "-------------------\n\n";
 
-        const std::string ruta = "./data/arboladoMadrid.csv";
+        const std::string ruta = "./arboladoMadrid.csv";
 
         AVL<Arbol> avl;
         VDinamico<Arbol> arboles;
@@ -244,9 +244,9 @@ int main()
                   << "-------------------\n\n";
 
         ControlParques control(
-            "./data/arbolado-especies.csv",
-            "./data/parques.csv",
-            "./data/arboladoMadrid.csv");
+            "./arbolado-especies.csv",
+            "./parques.csv",
+            "./arboladoMadrid.csv");
 
         std::cout << "\nEJERCICIO 5: BUSQUEDA DE ARBOLES\n";
         std::cout << "-------------------------------\n";

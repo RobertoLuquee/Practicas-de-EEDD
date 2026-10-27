@@ -135,3 +135,5 @@ int Parque::contarTipos() {
         return _nbre_parque;
     }
 
+void Parque::insertaEspecie(Especie *especie) {}
+
