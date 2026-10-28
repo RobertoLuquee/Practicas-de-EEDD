@@ -391,16 +391,16 @@ int ControlParques::contarTipos() {
 }
 
 // 6. Búsqueda por rango (ejercicio por parejas)
-VDinamico<Arbol*> ControlParques::buscarArbolesRango(const std::string &inicio, const std::string &fin) {
-    VDinamico<Arbol*> resultado;
-    VDinamico<Arbol*> ordenados = avl_arboles.recorreInorden();
-    for (unsigned int i = 0; i < ordenados.get__tlogico(); ++i) {
-        if (ordenados[i] != nullptr) {
-            std::string id = ordenados[i]->getAssetnum();
-            if (id >= inicio && id <= fin) {
-                resultado.insertar(ordenados[i]);
-            }
-        }
+VDinamico<Arbol*> ControlParques::buscarArbolesRango(const std::string& asNumMin, const std::string& asNumMax) {
+    // Excepción si el límite inferior es mayor
+    if (asNumMin > asNumMax) {
+        throw std::invalid_argument("Error: El límite inferior no puede ser mayor que el superior.");
     }
-    return resultado;
+
+    // Usamos el constructor de 1 parámetro de Arbol para crear objetos de comparación
+    Arbol minArbol(asNumMin);
+    Arbol maxArbol(asNumMax);
+
+    // Asumiendo que tu atributo AVL se llama 'arbolesAVL'
+    return avl_arboles.buscarRango(minArbol, maxArbol);
 }

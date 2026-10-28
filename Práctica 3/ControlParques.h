@@ -127,7 +127,7 @@ public:
      * @param fin Identificador final del rango.
      * @return Vector dinámico con los árboles encontrados dentro del rango.
      */
-    VDinamico<Arbol*> buscarArbolesRango(const std::string &inicio, const std::string &fin);
+    VDinamico<Arbol*> buscarArbolesRango(const std::string& asNumMin, const std::string& asNumMax);
 };
 
 #endif // PRACTICA1_CONTROLPARQUES_H

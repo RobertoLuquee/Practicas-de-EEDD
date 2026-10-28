@@ -43,6 +43,25 @@ private:
     T* habitacion(NodoAVL<T>* p, const T &dato);
     unsigned int calculaAltura(NodoAVL<T>* p) const;
 
+    void buscarRangoRec(NodoAVL<T>* nodo, const T& min, const T& max, VDinamico<T*>& resultado) {
+        if (nodo == nullptr) return;
+
+        // Si el nodo actual es mayor que el mínimo, los elementos válidos podrían estar a la izquierda
+        if (nodo->dato > min) {
+            buscarRangoRec(nodo->izq, min, max, resultado);
+        }
+
+        // Si el nodo está dentro del intervalo (no es menor que el mínimo ni mayor que el máximo), se añade
+        if (!(nodo->dato < min) && !(nodo->dato > max)) {
+            resultado.insertar(&(nodo->dato)); // Almacenamos el puntero para evitar copias
+        }
+
+        // Si el nodo actual es menor que el máximo, los elementos válidos podrían estar a la derecha
+        if (nodo->dato < max) {
+            buscarRangoRec(nodo->der, min, max, resultado);
+        }
+    }
+
 
 public:
     AVL();
@@ -67,6 +86,12 @@ public:
     unsigned int _numelementos() const;
     unsigned int numElementos() const;
     unsigned int altura() const;
+    VDinamico<T*> buscarRango(const T& min, const T& max) {
+        VDinamico<T*> resultado;
+        buscarRangoRec(raiz, min, max, resultado);
+        return resultado;
+    }
+
 };
 
 template<class T>
@@ -292,5 +317,7 @@ AVL<T>::~AVL() {
     destruye(raiz);
     _numelementos_cnt = 0;
 }
+
+
 
 #endif //PRACTICA1_AVL_H
