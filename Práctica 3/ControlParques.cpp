@@ -275,8 +275,9 @@ int ControlParques::contarEspecieParque(std::string ncomun) {
     bool acabado = false;
     while (!acabado) {
         try {
-            Parque& actual = iter.dato();
-            if (actual.existeNbreCom(ncomun)) {
+
+           Parque *actual = &iter.dato();// utilizo mejor esta sintaxis (consejo de lidia)
+            if (actual->existeNbreCom(ncomun)) {
                 contador++;
             }
 
