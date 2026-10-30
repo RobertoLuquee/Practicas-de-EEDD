@@ -14,7 +14,7 @@ private:
     int parque_id;
     int distrito_id;
     std::string barrio;
-    int codEspecie;
+    std::string codEspecie;
     std::string nombreEspecie;
     double latitud;
     double longitud;
@@ -29,7 +29,7 @@ public:
     Arbol(std::string id);
     Arbol(std::string id, std::string parque, std::string distrito, std::string barrio,
           double latitud, double longitud, float perimetro, float altura);
-    Arbol(std::string id, int parc, int dist, std::string barr, int codEsp,
+    Arbol(std::string id, int parc, int dist, std::string barr, std::string codEsp,
           std::string nomEsp, double lat, double lon, float perim, float alt);
 
     // Getters y Setters
