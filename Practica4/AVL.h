@@ -38,7 +38,7 @@ private:
     void rotDer(NodoAVL<T>* &nodo);
     void rotIzq(NodoAVL<T>* &nodo);
     int inserta(NodoAVL<T>* &c, const T &dato,bool &ok);
-    void copiar(NodoAVL<T> *p);
+    NodoAVL<T> copiar(NodoAVL<T> *p);
     void destruye(NodoAVL<T>* &p);
     T* habitacion(NodoAVL<T>* p, const T &dato);
     unsigned int calculaAltura(NodoAVL<T>* p) const;
@@ -98,12 +98,15 @@ template<class T>
 AVL<T>::AVL(): raiz(nullptr), _numelementos_cnt(0) {}
 
 template <class T>
-void AVL<T>::copiar(NodoAVL<T> *p) {
+NodoAVL<T> AVL<T>::copiar(NodoAVL<T> *p) {
     if (p != nullptr) {
-        inserta(p->dato);
-        copiar(p->izq);
-        copiar(p->der);
+        NodoAVL<T> *nuevo= new NodoAVL<T>(p->dato);
+        nuevo->bal=p->bal;
+        nuevo->izq= copiar(p->izq);
+        nuevo->der=copiar(p->der);
+        return nuevo;
     }
+    return nullptr;
 }
 
 template <class T>
@@ -128,8 +131,8 @@ template <class T>
 AVL<T>& AVL<T>::operator=(const AVL<T> &origen) {
     if (this != &origen) {
         destruye(raiz);
-        _numelementos_cnt = 0;
-        copiar(origen.raiz);
+        raiz=copiar(origen.raiz);
+        _numelementos_cnt=origen._numelementos_cnt;
     }
     return *this;
 }

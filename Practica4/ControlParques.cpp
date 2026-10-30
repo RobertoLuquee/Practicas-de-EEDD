@@ -136,18 +136,31 @@ ControlParques::ControlParques(const std::string &rutaEspecies,
             std::getline(registro, campos[i], ';');
         }
 
+        // Reemplazar comas por puntos en TODOS los números flotantes
         std::replace(campos[6].begin(), campos[6].end(), ',', '.');
         std::replace(campos[7].begin(), campos[7].end(), ',', '.');
+        std::replace(campos[10].begin(), campos[10].end(), ',', '.');
+        std::replace(campos[11].begin(), campos[11].end(), ',', '.');
 
         float perim = campos[10].empty() ? -1.0f : std::stof(campos[10]);
         float alt = campos[11].empty() ? -1.0f : std::stof(campos[11]);
 
-        Arbol arbol(campos[0], std::stoi(campos[1]), std::stoi(campos[2]), campos[3],
-                    std::stoi(campos[4]), campos[5], std::stod(campos[6]),
-                    std::stod(campos[7]), perim, alt);
+        // Crear árbol saltándose los barrios y apuntando al 8 (codEsp) y 9 (nomEsp)
+        Arbol arbol(
+            campos[0],
+            campos[1].empty() ? 0 : std::stoi(campos[1]),
+            campos[2].empty() ? 0 : std::stoi(campos[2]),
+            campos[5], // barr
+            campos[8], // codEsp (Este es el que importa)
+            campos[9], // nomEsp
+            campos[6].empty() ? 0.0 : std::stod(campos[6]),
+            campos[7].empty() ? 0.0 : std::stod(campos[7]),
+            perim,
+            alt
+        );
 
         // Enlazar puntero a Especie si existe en v_especies
-        std::string codEspStr = std::to_string(std::stoi(campos[4]));
+        std::string codEspStr = campos[8];
         for (unsigned int i = 0; i < v_especies.get__tlogico(); ++i) {
             if (v_especies[i].getCodigo() == codEspStr) {
                 arbol.setEspecie(&v_especies[i]);
