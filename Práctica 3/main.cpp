@@ -40,16 +40,17 @@ Arbol leerArbol(const std::string &linea)
     std::replace(campos[7].begin(), campos[7].end(), ',', '.');
 
     return Arbol(
-        campos[0],
-        std::stoi(campos[1]),
-        std::stoi(campos[2]),
-        campos[3],
-        std::stoi(campos[4]),
-        campos[5],
-        std::stod(campos[6]),
-        std::stod(campos[7]),
-        leerMedida(campos[10]),
-        leerMedida(campos[11]));
+        campos[0], // ASSETNUM
+        campos[1].empty() ? 0 : std::stoi(campos[1]), // NUM_PARQUE
+        campos[2].empty() ? 0 : std::stoi(campos[2]), // NUM_DISTRITO
+        campos[5], // NBRE_BARRIO (¡Cuidado, es el 5, no el 3!)
+        campos[8], // CODIGO_ESPECIE (Es el 8, no el 4)
+        campos[9], // ESPECIE (Es el 9, no el 5)
+        campos[6].empty() ? 0.0 : std::stod(campos[6]), // X
+        campos[7].empty() ? 0.0 : std::stod(campos[7]), // Y
+        leerMedida(campos[10]), // PERIMETRO
+        leerMedida(campos[11])  // ALTURA_TOTAL
+    );
 }
 
 void cargarAVL(const std::string &ruta, AVL<Arbol> &avl)
