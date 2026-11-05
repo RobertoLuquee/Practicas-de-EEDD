@@ -5,6 +5,8 @@
 #ifndef PRACTICA1_PARQUE_H
 #define PRACTICA1_PARQUE_H
 #include <iostream>
+#include <vector>
+
 #include "VDinamico.h"
 #include "Especie.h"
 #include "Arbol.h"
@@ -17,7 +19,7 @@ private:
     std::string nombre;
     int _cod_parque;
     std::string _nbre_parque;
-    VDinamico<Arbol*> _contains;
+    vector<Arbol*> _contains;
 
 
 
@@ -61,7 +63,7 @@ public:
      * @brief Obtiene el vector dinámico que contiene las especies del parque.
      * @return Referencia al vector de punteros a Especie.
      */
-    VDinamico<Arbol*>& get_contains();
+    vector<Arbol*>& get_contains();
     /**
      * @brief Añade una nueva especie al parque.
      * @param especie Puntero a la especie que se desea insertar en el vector del parque.
@@ -85,6 +87,7 @@ public:
     int contarEspecies();
     int contarTipos();
     std::string getNombre() const;
+    Especie* especieMasComun();
 
 
 

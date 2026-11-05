@@ -8,7 +8,7 @@
 Arbol::Arbol()
     : assetnum(""), parque_id(0), distrito_id(0), barrio(""), codEspecie(""),
       nombreEspecie(""), latitud(0.0), longitud(0.0), perimetro(0.0f),
-      altura(0.0f), especie(nullptr) {}
+      altura(0.0f), especie(nullptr),isInto(nullptr) {}
 
 // Constructor de 1 parámetro
 Arbol::Arbol(std::string id)
@@ -28,7 +28,7 @@ Arbol::Arbol(std::string id, int parc, int dist, std::string barr, std::string c
              std::string nomEsp, double lat, double lon, float perim, float alt)
     : assetnum(id), parque_id(parc), distrito_id(dist), barrio(barr),
       codEspecie(codEsp), nombreEspecie(nomEsp), latitud(lat), longitud(lon),
-      perimetro(perim), altura(alt), especie(nullptr) {}
+      perimetro(perim), altura(alt), especie(nullptr),isInto(nullptr) {}
 
 
 
@@ -117,4 +117,12 @@ bool Arbol::operator>(const Arbol &otro) const {
 
 bool Arbol::operator==(const Arbol &otro) const {
     return assetnum == otro.assetnum;
+}
+
+Parque * Arbol::getParque() {
+    return isInto;
+}
+
+void Arbol::setParque(Parque *p) {
+    isInto=p;
 }

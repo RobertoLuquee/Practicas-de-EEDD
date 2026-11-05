@@ -3,6 +3,7 @@
 //
 
 #include "Parque.h"
+#include <map>
 
 
 
@@ -33,7 +34,7 @@ void Parque::set_nbre_parque(const std::string &nombre) {
     _nbre_parque = nombre;
 }
 
-VDinamico<Arbol*>& Parque::get_contains() {
+vector<Arbol*>& Parque::get_contains() {
     return _contains;
 }
 
@@ -134,6 +135,27 @@ int Parque::contarTipos() {
     std::string Parque::getNombre() const {
         return _nbre_parque;
     }
+
+Especie * Parque::especieMasComun() {
+    if (_contains.empty()) {
+        return nullptr;
+    }
+    std::map<Especie*,int> contadores;
+    Especie* masComun=nullptr;
+    int maxFrecuencia=0;
+
+    for (Arbol* arbol:_contains) { //recorremos todos los elementos de la eedd
+        if (arbol!=nullptr && arbol->getEspecie()!=nullptr) {
+          Especie* esp=arbol->getEspecie();
+          contadores[esp]++;
+          if (contadores[esp]>maxFrecuencia) {
+              maxFrecuencia=contadores[esp];
+              masComun=esp;
+          }
+      }
+    }
+return masComun;
+}
 
 void Parque::insertaEspecie(Especie *especie) {}
 

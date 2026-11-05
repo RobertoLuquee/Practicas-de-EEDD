@@ -7,6 +7,7 @@
 
 #include <string>
 #include "Especie.h"
+#include "Parque.h"
 
 class Arbol {
 private:
@@ -54,5 +55,9 @@ public:
     bool operator<(const Arbol &otro) const;
     bool operator>(const Arbol &otro) const;
     bool operator==(const Arbol &otro) const;
+
+    Parque* getParque();
+    void setParque(Parque* p);
+    Parque* isInto;
 };
 #endif //PRACTICA3_ARBOL_H
