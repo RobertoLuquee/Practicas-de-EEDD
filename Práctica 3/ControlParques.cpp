@@ -169,10 +169,10 @@ ControlParques::ControlParques(const std::string &rutaEspecies,
         }
 
         // Insertar en AVL
-        avl_arboles.inserta(arbol);
+        trees.inserta(arbol);
 
         // Insertar puntero en el parque correspondiente
-        Arbol* ptrArbol = avl_arboles.buscaIt(arbol);
+        Arbol* ptrArbol = trees.buscaIt(arbol);
         if (ptrArbol != nullptr) {
             ListaDEnlazada<Parque>::Iterador it = ld_parques.iterador();
             while (!it.fin()) {
@@ -232,9 +232,9 @@ bool ControlParques::borrarEspecie(std::string ncomun) {
 
     while (!iter.fin()) {
         Parque& actual = iter.dato();
-        VDinamico<Arbol*>& arbolesparque = actual.get_contains();
+        vector<Arbol*>& arbolesparque = actual.get_contains();
 
-        for (int i = 0; i < arbolesparque.get__tlogico(); i++) {
+        for (int i = 0; i < arbolesparque.size(); i++) {
             if (arbolesparque[i] != nullptr &&
                 arbolesparque[i]->getEspecie() != nullptr &&
                 arbolesparque[i]->getEspecie()->getnombre_comun() == ncomun) {
@@ -246,9 +246,9 @@ bool ControlParques::borrarEspecie(std::string ncomun) {
         iter.siguiente();
     }
 
-    for (int i = 0; i < v_especies.get__tlogico(); i++) {
-        if (v_especies[i].getnombre_comun() == ncomun) {
-            v_especies.borrar(i);
+    for (int i = 0; i < varieties.size(); i++) {
+        if (varieties[i].getnombre_comun() == ncomun) {
+            varieties.borrar(i);
             encontrado = true;
             i--;
         }
@@ -257,7 +257,7 @@ bool ControlParques::borrarEspecie(std::string ncomun) {
 }
 
 void ControlParques::asignarEspecieParque(Especie *e, Parque *p) {
-    ListaDEnlazada<Parque>::Iterador iter = ld_parques.iterador();
+    ListaDEnlazada<Parque>::Iterador iter = parks.iterador();
 
     bool acabado = false;
 
@@ -283,7 +283,7 @@ void ControlParques::asignarEspecieParque(Especie *e, Parque *p) {
 int ControlParques::contarEspecieParque(std::string ncomun) {
     int contador = 0;
 
-    ListaDEnlazada<Parque>::Iterador iter = ld_parques.iterador();
+    ListaDEnlazada<Parque>::Iterador iter = parks.iterador();
 
     bool acabado = false;
     while (!acabado) {
@@ -306,20 +306,20 @@ int ControlParques::contarEspecieParque(std::string ncomun) {
     return contador;
 }
 
-VDinamico<Especie*> ControlParques::listadoEspecieSubNombre(std::string cadena) {
-    VDinamico<Especie*> resultado;
-    for (int i = 0; i < v_especies.get__tlogico(); i++) {
-        std::string actual = v_especies[i].getnombre_cientifico();
+vector<Especie*> ControlParques::listadoEspecieSubNombre(std::string cadena) {
+    vector<Especie*> resultado;
+    for (int i = 0; i < varieties.size(); i++) {
+        std::string actual = varieties[i].getnombre_cientifico();
 
         if (actual.find(cadena) != std::string::npos) {
-            resultado.insertar(&v_especies[i]);
+            resultado.push_back(&varieties[i]);
         }
     }
     return resultado;
 }
 
 Parque* ControlParques::buscarParque(std::string nombre_parque) {
-    ListaDEnlazada<Parque>::Iterador iter = ld_parques.iterador();
+    ListaDEnlazada<Parque>::Iterador iter = parks.iterador();
     while (!iter.fin()) {
         if (iter.dato().getNombre() == nombre_parque) {
             return &(iter.dato());
@@ -332,25 +332,25 @@ Parque* ControlParques::buscarParque(std::string nombre_parque) {
 // 1. Buscar árbol en el AVL por assetnum (string)
 Arbol* ControlParques::buscarArbol(const std::string &assetnum) {
     Arbol aux(assetnum);
-    return avl_arboles.buscaIt(aux);
+    return trees.buscaIt(aux);
 }
 
 // 2. Obtener lista de árboles de un parque específico
-VDinamico<Arbol*> ControlParques::listaArbParque(const std::string &nombreParque) {
-    ListaDEnlazada<Parque>::Iterador it = ld_parques.iterador();
+vector<Arbol*> ControlParques::listaArbParque(const std::string &nombreParque) {
+    ListaDEnlazada<Parque>::Iterador it = parks.iterador();
     while (!it.fin()) {
         if (it.dato().getNombre() == nombreParque) {
             return it.dato().get_contains();
         }
         it.siguiente();
     }
-    return VDinamico<Arbol*>();
+    return vector<Arbol*>();
 }
 
 // 3. Obtener el árbol más alto de todos los parques del sistema
 Arbol* ControlParques::arbolMasAlto() {
     Arbol* masAltoGlobal = nullptr;
-    ListaDEnlazada<Parque>::Iterador it = ld_parques.iterador();
+    ListaDEnlazada<Parque>::Iterador it = parks.iterador();
 
     while (!it.fin()) {
         Arbol* masAltoParque = it.dato().arbolMasAlto();
@@ -366,7 +366,7 @@ Arbol* ControlParques::arbolMasAlto() {
 
 // 4. Contar especies distintas en un parque por su nombre
 int ControlParques::contarEspecies(const std::string &nombreParque) {
-    ListaDEnlazada<Parque>::Iterador it = ld_parques.iterador();
+    ListaDEnlazada<Parque>::Iterador it = parks.iterador();
     while (!it.fin()) {
         if (it.dato().getNombre() == nombreParque) {
             return it.dato().contarEspecies();
@@ -379,11 +379,11 @@ int ControlParques::contarEspecies(const std::string &nombreParque) {
 // 5. Contar tipos de plantas distintos en todos los parques
 int ControlParques::contarTipos() {
     VDinamico<int> tiposUnicos;
-    ListaDEnlazada<Parque>::Iterador it = ld_parques.iterador();
+    ListaDEnlazada<Parque>::Iterador it = parks.iterador();
 
     while (!it.fin()) {
-        VDinamico<Arbol*>& arboles = it.dato().get_contains();
-        for (unsigned int i = 0; i < arboles.get__tlogico(); ++i) {
+        vector<Arbol*>& arboles = it.dato().get_contains();
+        for (unsigned int i = 0; i < arboles.size(); ++i) {
             if (arboles[i] != nullptr) {
                 int tipo = arboles[i]->getTipoEspecie();
                 if (tipo != 0) {
@@ -405,7 +405,7 @@ int ControlParques::contarTipos() {
 }
 
 // 6. Búsqueda por rango (ejercicio por parejas)
-VDinamico<Arbol*> ControlParques::buscarArbolesRango(const std::string& asNumMin, const std::string& asNumMax) {
+vector<Arbol*> ControlParques::buscarArbolesRango(const std::string& asNumMin, const std::string& asNumMax) {
     // Excepción si el límite inferior es mayor
     if (asNumMin > asNumMax) {
         throw std::invalid_argument("Error: El límite inferior no puede ser mayor que el superior.");
@@ -416,5 +416,5 @@ VDinamico<Arbol*> ControlParques::buscarArbolesRango(const std::string& asNumMin
     Arbol maxArbol(asNumMax);
 
     // Asumiendo que tu atributo AVL se llama 'arbolesAVL'
-    return avl_arboles.buscarRango(minArbol, maxArbol);
+    return trees.buscarRango(minArbol, maxArbol);
 }

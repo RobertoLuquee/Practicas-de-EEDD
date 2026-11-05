@@ -9,6 +9,9 @@
 #include "Especie.h"
 #include "Parque.h"
 
+class Parque;
+class Especie;
+
 class Arbol {
 private:
     std::string assetnum;

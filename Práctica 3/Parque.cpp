@@ -41,7 +41,7 @@ vector<Arbol*>& Parque::get_contains() {
 
 // Búsqueda por nombre común
 bool Parque::existeNbreCom(const std::string &nombrecomun)  {
-    for (unsigned int i = 0; i < _contains.get__tlogico(); ++i) {
+    for (unsigned int i = 0; i < _contains.size(); ++i) {
             if (_contains[i] != nullptr && _contains[i]->get_especie() != nullptr && _contains[i]->get_especie()->getnombre_comun() == nombrecomun) {
             return true;
         }
@@ -62,15 +62,15 @@ bool Parque::existeNbreCie(const std::string &nombrecientifico)  {
 
 
 void Parque::insertarArbol(Arbol *a) {
-    _contains.insertar(a);
+    _contains.push_back(a);
 }
 
 Arbol * Parque::arbolMasAlto() {
-    if (_contains.get__tlogico()==0) {
+    if (_contains.empty()==0) {
         return nullptr;
     }
     Arbol* masalto=_contains[0];
-    for (int i=1;i<_contains.get__tlogico();i++) {
+    for (int i=1;i<_contains.size();i++) {
         if (_contains[i]->get_altura()>masalto->get_altura()) {
             masalto=_contains[i];
         }

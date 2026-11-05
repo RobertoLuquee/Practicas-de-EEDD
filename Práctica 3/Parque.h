@@ -6,6 +6,7 @@
 #define PRACTICA1_PARQUE_H
 #include <iostream>
 #include <vector>
+#include <string>
 
 #include "VDinamico.h"
 #include "Especie.h"
@@ -14,6 +15,10 @@
 /**
  * @brief Clase que representa un parque y gestiona la colección de especies que lo habitan.
  */
+
+class Arbol;
+class Especie;
+
 class Parque {
 private:
     std::string nombre;
