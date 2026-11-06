@@ -51,7 +51,7 @@ bool Parque::existeNbreCom(const std::string &nombrecomun)  {
 
 // Búsqueda por nombre científico
 bool Parque::existeNbreCie(const std::string &nombrecientifico)  {
-    for (unsigned int i = 0; i < _contains.get__tlogico(); ++i) {
+    for (unsigned int i = 0; i < _contains.size(); ++i) {
         if (_contains[i] != nullptr && _contains[i]->get_especie()->getnombre_cientifico() == nombrecientifico) {
             return true;
         }
@@ -81,7 +81,7 @@ Arbol * Parque::arbolMasAlto() {
 int Parque::contarEspecies() {
     VDinamico<std::string> especiesUnicas;
 
-    for (unsigned int i = 0; i < _contains.get__tlogico(); ++i) {
+    for (unsigned int i = 0; i < _contains.size(); ++i) {
         // Nos aseguramos de que el puntero no sea nulo y tenga especie asociada
         if (_contains[i] != nullptr && _contains[i]->get_especie() != nullptr) {
             std::string codActual = _contains[i]->getCodEspecie();
@@ -109,7 +109,7 @@ int Parque::contarEspecies() {
 int Parque::contarTipos() {
     VDinamico<int> tiposUnicos;
 
-    for (unsigned int i = 0; i < _contains.get__tlogico(); ++i) {
+    for (unsigned int i = 0; i < _contains.size(); ++i) {
         if (_contains[i] != nullptr && _contains[i]->get_especie() != nullptr) {
             int tipoActual = _contains[i]->getTipoEspecie();
             bool encontrado = false;

@@ -364,44 +364,40 @@ Arbol* ControlParques::arbolMasAlto() {
     return masAltoGlobal;
 }
 
-// 4. Contar especies distintas en un parque por su nombre
+
+// Contar especies distintas en un parque por su nombre
 int ControlParques::contarEspecies(const std::string &nombreParque) {
-    ListaDEnlazada<Parque>::Iterador it = parks.iterador();
-    while (!it.fin()) {
-        if (it.dato().getNombre() == nombreParque) {
-            return it.dato().contarEspecies();
+    for (auto& parque : parks) {
+        if (parque.getNombre() == nombreParque) {
+            return parque.contarEspecies();
         }
-        it.siguiente();
     }
     return 0;
 }
 
 // 5. Contar tipos de plantas distintos en todos los parques
 int ControlParques::contarTipos() {
-    VDinamico<int> tiposUnicos;
-    ListaDEnlazada<Parque>::Iterador it = parks.iterador();
-
-    while (!it.fin()) {
-        vector<Arbol*>& arboles = it.dato().get_contains();
+    vector<int> tiposUnicos;
+    for (auto& parque : parks) {
+        vector<Arbol*>& arboles = parque.get_contains();
         for (unsigned int i = 0; i < arboles.size(); ++i) {
             if (arboles[i] != nullptr) {
                 int tipo = arboles[i]->getTipoEspecie();
                 if (tipo != 0) {
                     bool yaExiste = false;
-                    for (unsigned int j = 0; j < tiposUnicos.get__tlogico() && !yaExiste; ++j) {
+                    for (unsigned int j = 0; j < tiposUnicos.size() && !yaExiste; ++j) {
                         if (tiposUnicos[j] == tipo) {
                             yaExiste = true;
                         }
                     }
                     if (!yaExiste) {
-                        tiposUnicos.insertar(tipo);
+                        tiposUnicos.push_back(tipo);
                     }
                 }
             }
         }
-        it.siguiente();
     }
-    return tiposUnicos.get__tlogico();
+    return tiposUnicos.size();
 }
 
 // 6. Búsqueda por rango (ejercicio por parejas)
