@@ -336,7 +336,7 @@ int ControlParques::contarEspecies(const std::string &nombreParque) {
 
 // 5. Contar tipos de plantas distintos en todos los parques
 int ControlParques::contarTipos() {
-    vector<int> tiposUnicos;
+    vector<int> tiposUnicos;//recorrro el buce de principio a final !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!1!!!!!!!!
     for (auto& parque : parks) {
         vector<Arbol*>& arboles = parque.get_contains();
         for (unsigned int i = 0; i < arboles.size(); ++i) {
