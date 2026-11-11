@@ -274,19 +274,22 @@ std::cout << "\n--- PUNTO 1: BUSQUEDA DE ARBOLES ESPECIFICOS ---\n";
         }
 
 std::cout << "\n--- PUNTO 2: ESPECIE MAS COMUN EN 'PARQUE PRINCESA LEONOR' ---\n";
-        std::string especieMasComun = control.especieMasComunParque("PARQUE PRINCESA LEONOR");
+        Parque *princesa = control.buscarParque("PARQUE PRINCESA LEONOR");
+        std::string especieMasComun = "Ninguna";
+        if (princesa != nullptr && princesa->especieMasComun() != nullptr)
+            especieMasComun = princesa->especieMasComun()->getnombre_comun();
         std::cout << "La especie mas comun es: " << especieMasComun << '\n';
 
 // PUNTO 3
         std::cout << "\n--- PUNTO 3: PARQUES CON AL MENOS UN 'abeto' ---\n";
-        VDinamico<Parque*> parquesAbeto = control.parquesConEspecie("abeto");
-        if (parquesAbeto.get__tlogico() == 0)
+        std::vector<Parque*> parquesAbeto = control.listarParquesArbol("Abeto");
+        if (parquesAbeto.size() == 0)
         {
             std::cout << "No se encontraron parques con la especie 'abeto'.\n";
         }
         else
         {
-            for (unsigned int i = 0; i < parquesAbeto.get__tlogico(); ++i)
+            for (unsigned int i = 0; i < parquesAbeto.size(); ++i)
             {
                 Parque *p = parquesAbeto[i];
                 // USAMOS TUS GETTERS: get_nbre_parque() y get_cod_parque()
@@ -297,11 +300,11 @@ std::cout << "\n--- PUNTO 2: ESPECIE MAS COMUN EN 'PARQUE PRINCESA LEONOR' ---\n
 
         // PUNTO 4
         std::cout << "\n--- PUNTO 4: BUSQUEDA DE PINOS ---\n";
-        VDinamico<Arbol*> pinoResinero = control.buscarArbolesPorEspecie("Pino resinero");
-        std::cout << "Total ejemplares 'Pino resinero': " << pinoResinero.get__tlogico() << '\n';
+        std::vector<Arbol*> pinoResinero = control.buscarArbolNcomun("Pino resinero");
+        std::cout << "Total ejemplares 'Pino resinero': " << pinoResinero.size() << '\n';
 
-        VDinamico<Arbol*> empiezanPorPino = control.buscarArbolesQueEmpiezanPor("Pino");
-        std::cout << "Total ejemplares que empiezan por 'Pino': " << empiezanPorPino.get__tlogico() << '\n';
+        std::vector<Arbol*> empiezanPorPino = control.buscarArbolNcomunComienzo("Pino");
+        std::cout << "Total ejemplares que empiezan por 'Pino': " << empiezanPorPino.size() << '\n';
 
         // PUNTO 5
         std::cout << "\n--- PUNTO 5: ARBOLES EN BARRIOS 43 Y 91 ---\n";
@@ -310,10 +313,10 @@ std::cout << "\n--- PUNTO 2: ESPECIE MAS COMUN EN 'PARQUE PRINCESA LEONOR' ---\n
 
         // TRABAJO POR PAREJAS
         std::cout << "\n--- TRABAJO POR PAREJAS: 'Pino' EN DISTRITO 9 ---\n";
-        VDinamico<Arbol*> pinosDistrito9 = control.buscarArbolesPorEspecieYDistrito("Pino", 9);
-        std::cout << "Resultados encontrados: " << pinosDistrito9.get__tlogico() << "\n\n";
+        std::vector<Arbol*> pinosDistrito9 = control.buscarArbolesPorEspecieYDistrito("Pino", 9);
+        std::cout << "Resultados encontrados: " << pinosDistrito9.size() << "\n\n";
 
-        for (unsigned int i = 0; i < pinosDistrito9.get__tlogico(); ++i)
+        for (unsigned int i = 0; i < pinosDistrito9.size(); ++i)
         {
             Arbol *arbol = pinosDistrito9[i];
 

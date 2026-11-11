@@ -9,36 +9,34 @@
 #include "Arbol.h"
 #include "Parque.h"
 #include "Especie.h"
-#include "VDinamico.h"
 
 class ControlParques {
 private:
     std::list<Parque> parks;
     std::map<std::string, Arbol> trees;
-    std::map<std::string, Especie> species;
+    std::vector<Especie> varieties;
+    std::multimap<std::string, Arbol*> treeName;
 
 public:
     ControlParques(const std::string &fichEspecies,
                    const std::string &fichParques,
                    const std::string &fichArboles);
 
-    // Métodos del Programa de Prueba I & II
+    // Métodos de las prácticas anteriores
     Parque* buscarParque(std::string nombre);
     Arbol* buscarArbol(const std::string &assetnum);
     std::vector<Arbol*> listaArbParque(const std::string &nombreParque);
     Arbol* arbolMasAlto();
     std::vector<Arbol*> buscarArbolesRango(const std::string &asNumMin, const std::string &asNumMax);
-
     unsigned int contarEspecies(const std::string &nombreParque);
     unsigned int contarTipos();
 
-    // Métodos específicos del guión (Puntos 1 a 5 y Trabajo por parejas)
-    std::string especieMasComunParque(const std::string &nombreParque);
-    VDinamico<Parque*> parquesConEspecie(const std::string &nombreComun);
-    VDinamico<Arbol*> buscarArbolesPorEspecie(const std::string &nombreComun);
-    VDinamico<Arbol*> buscarArbolesQueEmpiezanPor(const std::string &prefijo);
+    // Métodos nuevos de la práctica 4
+    std::vector<Parque*> listarParquesArbol(const std::string &nbreComun);
+    std::vector<Arbol*> buscarArbolNcomun(const std::string &nbreComun);
+    std::vector<Arbol*> buscarArbolNcomunComienzo(const std::string &comienzo);
     int contarArbolesBarrio(int numBarrio);
-    VDinamico<Arbol*> buscarArbolesPorEspecieYDistrito(const std::string &nbreComun, int numDistrito);
+    std::vector<Arbol*> buscarArbolesPorEspecieYDistrito(const std::string &nbreComun, int numDistrito);
 };
 
 #endif
