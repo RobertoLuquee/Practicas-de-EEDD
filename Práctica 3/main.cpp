@@ -43,9 +43,10 @@ Arbol leerArbol(const std::string &linea)
         campos[0], // ASSETNUM
         campos[1].empty() ? 0 : std::stoi(campos[1]), // NUM_PARQUE
         campos[2].empty() ? 0 : std::stoi(campos[2]), // NUM_DISTRITO
-        campos[5], // NBRE_BARRIO (¡Cuidado, es el 5, no el 3!)
-        campos[8], // CODIGO_ESPECIE (Es el 8, no el 4)
-        campos[9], // ESPECIE (Es el 9, no el 5)
+        campos[5], // NBRE_BARRIO
+        campos[4].empty() ? 0 : std::stoi(campos[4]),//num_barrio
+        campos[8], // CODIGO_ESPECIE
+        campos[9], // ESPECIE
         campos[6].empty() ? 0.0 : std::stod(campos[6]), // X
         campos[7].empty() ? 0.0 : std::stod(campos[7]), // Y
         leerMedida(campos[10]), // PERIMETRO
@@ -241,6 +242,7 @@ int main()
                       << ". ID: " << arbol->get_assetnum() << endl;
         }
 
+
         std::cout << "\nPROGRAMA DE PRUEBA II\n"
                   << "-------------------\n\n";
 
@@ -249,196 +251,86 @@ int main()
             "./parques.csv",
             "./arboladoMadrid.csv");
 
-        std::cout << "\nEJERCICIO 5: BUSQUEDA DE ARBOLES\n";
-        std::cout << "-------------------------------\n";
+std::cout << "\n--- PUNTO 1: BUSQUEDA DE ARBOLES ESPECIFICOS ---\n";
+        const std::string idsGuion[] = {"6951831", "10152826", "8887777", "6906686"};
 
-        const std::string ids[] = {
-            "9850684", "5702331", "5697360", "0000000"};
-
-        for (const std::string &id : ids)
+        for (const std::string &id : idsGuion)
         {
             Arbol *arbol = control.buscarArbol(id);
 
             if (arbol == nullptr)
             {
-                std::cout << "\nNo existe el arbol con identificador "
-                          << id << '\n';
-                continue;
+                std::cout << "Arbol ID " << id << ": NO EXISTE\n";
             }
-
-            std::cout << "\nIdentificador: " << arbol->get_assetnum()
-                      << "\nCodigo de parque: " << arbol->getNumParque()
-                      << "\nNombre comun: " << arbol->getNbreComun()
-                      << "\nNombre cientifico: " << arbol->getNbreCientifico()
-                      << "\nTipo de planta: " << arbol->getTipo()
-                      << '\n';
-        }
-
-        std::cout << "\nEJERCICIO 6: ARBOLES DEL RETIRO\n";
-        std::cout << "-------------------------------\n";
-
-        VDinamico<Arbol *> arbolesRetiro =
-            control.listaArbParque("JARDINES DEL BUEN RETIRO");
-
-        std::cout << "Numero de arboles: "
-                  << arbolesRetiro.get__tlogico() << '\n';
-
-        for (unsigned int i = 0;
-             i < 10 && i < arbolesRetiro.get__tlogico(); ++i)
-        {
-            Arbol *arbol = arbolesRetiro[i];
-
-            std::cout << "\nIdentificador: " << arbol->get_assetnum()
-                      << "\nNombre comun: " << arbol->getNbreComun()
-                      << "\nNombre cientifico: " << arbol->getNbreCientifico()
-                      << "\nTipo de planta: " << arbol->getTipo()
-                      << '\n';
-        }
-
-        std::cout << "\nEJERCICIO 7: COMPROBACION DE OBJETOS\n";
-        std::cout << "-------------------------------\n";
-
-        unsigned int comprobados = 0;
-        unsigned int correctos = 0;
-
-        for (unsigned int i = 0;
-             i < 10 && i < arbolesRetiro.get__tlogico(); ++i)
-        {
-            Arbol *listado = arbolesRetiro[i];
-            Arbol *encontrado = control.buscarArbol(listado->get_assetnum());
-
-            bool coincide = (encontrado == listado);
-
-            ++comprobados;
-
-            if (coincide)
-                ++correctos;
-
-            std::cout << "Arbol " << listado->get_assetnum()
-                      << ": " << (coincide ? "CORRECTO" : "ERROR")
-                      << '\n';
-        }
-
-        std::cout << "Comprobaciones correctas: "
-                  << correctos << '/' << comprobados << '\n';
-
-        std::cout << "\nEJERCICIO 8: ESPECIES POR PARQUE\n";
-        std::cout << "-------------------------------\n";
-
-        const std::string nombresParques[] = {
-            "JARDINES DEL BUEN RETIRO",
-            "PARQUE DEL OESTE",
-            "QUINTA DE LOS MOLINOS"};
-
-        unsigned int recuentosEspecies[3];
-        unsigned int maximoEspecies = 0;
-
-        for (unsigned int i = 0; i < 3; ++i)
-        {
-            recuentosEspecies[i] = control.contarEspecies(nombresParques[i]);
-
-            std::cout << nombresParques[i] << ": "
-                      << recuentosEspecies[i] << " especies distintas\n";
-
-            if (recuentosEspecies[i] > maximoEspecies)
-                maximoEspecies = recuentosEspecies[i];
-        }
-
-        std::cout << "\nParques con mayor numero de especies distintas:\n";
-
-        for (unsigned int i = 0; i < 3; ++i)
-        {
-            if (recuentosEspecies[i] == maximoEspecies)
-                std::cout << nombresParques[i]
-                          << " (" << maximoEspecies << " especies)\n";
-        }
-
-        std::cout << "\nEJERCICIO 9: TIPOS DE PLANTA POR PARQUE\n";
-        std::cout << "-------------------------------\n";
-
-        for (const std::string &nombre : nombresParques)
-        {
-            Parque *parque = control.buscarParque(nombre);
-
-            if (parque == nullptr)
+            else
             {
-                std::cout << "No existe el parque " << nombre << '\n';
-                continue;
-            }
-
-            std::cout << nombre << ": "
-                      << parque->contarTipos()
-                      << " tipos de planta distintos\n";
-        }
-
-        std::cout << "\nEJERCICIO 10: ESPECIES PRESENTES EN EL RETIRO\n";
-        std::cout << "-------------------------------\n";
-
-        Parque *retiro = control.buscarParque("JARDINES DEL BUEN RETIRO");
-
-        if (retiro == nullptr)
-        {
-            std::cout << "No existe el parque JARDINES DEL BUEN RETIRO\n";
-        }
-        else
-        {
-            const std::string especies[] = {
-                "Pino piñonero", "Olivilla"};
-
-            for (const std::string &nombre : especies)
-            {
-                bool existe = retiro->existeNbreCom(nombre);
-
-                std::cout << nombre << ": "
-                          << (existe ? "PRESENTE" : "AUSENTE")
+                std::cout << "ID: " << arbol->get_assetnum()
+                          << " | Codigo Parque: " << arbol->getNumParque()
+                          << " | Nombre comun: " << arbol->getNbreComun()
+                          << " | Nombre cientifico: " << arbol->getNbreCientifico()
+                          << " | Tipo de planta: " << arbol->getTipo()
                           << '\n';
             }
         }
 
-        std::cout << "\nEJERCICIO 11: TIPOS DE PLANTA EN TODOS LOS PARQUES\n";
-        std::cout << "-------------------------------\n";
+std::cout << "\n--- PUNTO 2: ESPECIE MAS COMUN EN 'PARQUE PRINCESA LEONOR' ---\n";
+        std::string especieMasComun = control.especieMasComunParque("PARQUE PRINCESA LEONOR");
+        std::cout << "La especie mas comun es: " << especieMasComun << '\n';
 
-        std::cout << "Numero de tipos de planta distintos: "
-                  << control.contarTipos() << '\n';
-
-        std::cout << "\nEJERCICIO 12: ARBOL MAS ALTO\n";
-        std::cout << "-------------------------------\n";
-
-        Arbol *masAlto = control.arbolMasAlto();
-
-        if (masAlto == nullptr)
+// PUNTO 3
+        std::cout << "\n--- PUNTO 3: PARQUES CON AL MENOS UN 'abeto' ---\n";
+        VDinamico<Parque*> parquesAbeto = control.parquesConEspecie("abeto");
+        if (parquesAbeto.get__tlogico() == 0)
         {
-            std::cout << "No hay arboles con altura conocida.\n";
+            std::cout << "No se encontraron parques con la especie 'abeto'.\n";
         }
         else
         {
-            std::cout << "Identificador: " << masAlto->get_assetnum()
-                      << "\nAltura: " << masAlto->getAltura() << " m"
-                      << "\nEspecie: " << masAlto->getNbreComun()
-                      << " (" << masAlto->getNbreCientifico() << ")\n";
+            for (unsigned int i = 0; i < parquesAbeto.get__tlogico(); ++i)
+            {
+                Parque *p = parquesAbeto[i];
+                // USAMOS TUS GETTERS: get_nbre_parque() y get_cod_parque()
+                std::cout << "Parque " << i + 1 << ": " << p->get_nbre_parque()
+                          << " (Codigo Parque: " << p->get_cod_parque() << ")\n";
+            }
         }
 
-        // Ejercicio por parejas
-        std::cout << "\nEJERCICIO POR PAREJAS: BUSQUEDA POR INTERVALO\n";
-        std::cout << "-------------------------------\n";
+        // PUNTO 4
+        std::cout << "\n--- PUNTO 4: BUSQUEDA DE PINOS ---\n";
+        VDinamico<Arbol*> pinoResinero = control.buscarArbolesPorEspecie("Pino resinero");
+        std::cout << "Total ejemplares 'Pino resinero': " << pinoResinero.get__tlogico() << '\n';
 
-        VDinamico<Arbol *> resultadoRango =
-            control.buscarArbolesRango("5700000", "5709999");
+        VDinamico<Arbol*> empiezanPorPino = control.buscarArbolesQueEmpiezanPor("Pino");
+        std::cout << "Total ejemplares que empiezan por 'Pino': " << empiezanPorPino.get__tlogico() << '\n';
 
-        std::cout << "Numero de arboles encontrados: "
-                  << resultadoRango.get__tlogico() << '\n';
+        // PUNTO 5
+        std::cout << "\n--- PUNTO 5: ARBOLES EN BARRIOS 43 Y 91 ---\n";
+        std::cout << "Numero de arboles en el barrio 43: " << control.contarArbolesBarrio(43) << '\n';
+        std::cout << "Numero de arboles en el barrio 91: " << control.contarArbolesBarrio(91) << '\n';
 
-        for (unsigned int i = 0;
-             i < 10 && i < resultadoRango.get__tlogico(); ++i)
+        // TRABAJO POR PAREJAS
+        std::cout << "\n--- TRABAJO POR PAREJAS: 'Pino' EN DISTRITO 9 ---\n";
+        VDinamico<Arbol*> pinosDistrito9 = control.buscarArbolesPorEspecieYDistrito("Pino", 9);
+        std::cout << "Resultados encontrados: " << pinosDistrito9.get__tlogico() << "\n\n";
+
+        for (unsigned int i = 0; i < pinosDistrito9.get__tlogico(); ++i)
         {
-            Arbol *arbol = resultadoRango[i];
+            Arbol *arbol = pinosDistrito9[i];
 
-            std::cout << "\nIdentificador: " << arbol->get_assetnum()
-                      << "\nCodigo de parque: " << arbol->getNumParque()
-                      << "\nNombre comun: " << arbol->getNbreComun()
-                      << "\nNombre cientifico: " << arbol->getNbreCientifico()
-                      << "\nTipo de planta: " << arbol->getTipo()
-                      << '\n';
+            // ASEGÚRATE de que Arbol tiene getNbreBarrio(), si no lo tiene, usa el que hayas programado
+            std::cout << "ID (assetnum): " << arbol->get_assetnum()
+                      << " | Barrio: " << arbol->getNbreBarrio();
+
+            Parque *parqueAsociado = arbol->isInto;
+            if (parqueAsociado != nullptr)
+            {
+                // USAMOS TU GETTER: get_nbre_parque()
+                std::cout << " | Parque: " << parqueAsociado->get_nbre_parque() << '\n';
+            }
+            else
+            {
+                std::cout << " | Parque: Sin parque asignado\n";
+            }
         }
     }
     catch (const std::exception &error)
@@ -448,4 +340,4 @@ int main()
     }
 
     return 0;
-};
+}

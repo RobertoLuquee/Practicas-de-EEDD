@@ -18,6 +18,7 @@ private:
     int parque_id;
     int distrito_id;
     std::string barrio;
+    int num_barrio;
     std::string codEspecie;
     std::string nombreEspecie;
     double latitud;
@@ -29,11 +30,12 @@ private:
 
 public:
     // Constructores
+
     Arbol();
     Arbol(std::string id);
-    Arbol(std::string id, std::string parque, std::string distrito, std::string barrio,
+    Arbol(std::string id, std::string parque, std::string distrito, std::string barrio,int num_barrio,
           double latitud, double longitud, float perimetro, float altura);
-    Arbol(std::string id, int parc, int dist, std::string barr, std::string codEsp,
+    Arbol(std::string id, int parc, int dist, std::string barr,int num_barrio, std::string codEsp,
           std::string nomEsp, double lat, double lon, float perim, float alt);
 
     // Getters y Setters
@@ -61,6 +63,18 @@ public:
 
     Parque* getParque();
     void setParque(Parque* p);
-    Parque* isInto;
+    Parque* isInto=nullptr;
+
+    int getNumDistrito() const {
+        return distrito_id; // Cambia 'num_distrito' por el nombre real de tu atributo
+    }
+
+    int getNumBarrio() const {
+        return num_barrio;   // Cambia 'num_barrio' por el nombre real de tu atributo
+    }
+
+    std::string getNbreBarrio() const {
+        return barrio;  // Cambia 'nbre_barrio' por el nombre real de tu atributo
+    }
 };
 #endif //PRACTICA3_ARBOL_H
