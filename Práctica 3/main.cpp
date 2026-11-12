@@ -280,7 +280,6 @@ std::cout << "\n--- PUNTO 2: ESPECIE MAS COMUN EN 'PARQUE PRINCESA LEONOR' ---\n
             especieMasComun = princesa->especieMasComun()->getnombre_comun();
         std::cout << "La especie mas comun es: " << especieMasComun << '\n';
 
-// PUNTO 3
         std::cout << "\n--- PUNTO 3: PARQUES CON AL MENOS UN 'abeto' ---\n";
         std::vector<Parque*> parquesAbeto = control.listarParquesArbol("Abeto");
         if (parquesAbeto.size() == 0)
@@ -292,13 +291,11 @@ std::cout << "\n--- PUNTO 2: ESPECIE MAS COMUN EN 'PARQUE PRINCESA LEONOR' ---\n
             for (unsigned int i = 0; i < parquesAbeto.size(); ++i)
             {
                 Parque *p = parquesAbeto[i];
-                // USAMOS TUS GETTERS: get_nbre_parque() y get_cod_parque()
                 std::cout << "Parque " << i + 1 << ": " << p->get_nbre_parque()
                           << " (Codigo Parque: " << p->get_cod_parque() << ")\n";
             }
         }
 
-        // PUNTO 4
         std::cout << "\n--- PUNTO 4: BUSQUEDA DE PINOS ---\n";
         std::vector<Arbol*> pinoResinero = control.buscarArbolNcomun("Pino resinero");
         std::cout << "Total ejemplares 'Pino resinero': " << pinoResinero.size() << '\n';
@@ -306,7 +303,6 @@ std::cout << "\n--- PUNTO 2: ESPECIE MAS COMUN EN 'PARQUE PRINCESA LEONOR' ---\n
         std::vector<Arbol*> empiezanPorPino = control.buscarArbolNcomunComienzo("Pino");
         std::cout << "Total ejemplares que empiezan por 'Pino': " << empiezanPorPino.size() << '\n';
 
-        // PUNTO 5
         std::cout << "\n--- PUNTO 5: ARBOLES EN BARRIOS 43 Y 91 ---\n";
         std::cout << "Numero de arboles en el barrio 43: " << control.contarArbolesBarrio(43) << '\n';
         std::cout << "Numero de arboles en el barrio 91: " << control.contarArbolesBarrio(91) << '\n';
@@ -320,14 +316,12 @@ std::cout << "\n--- PUNTO 2: ESPECIE MAS COMUN EN 'PARQUE PRINCESA LEONOR' ---\n
         {
             Arbol *arbol = pinosDistrito9[i];
 
-            // ASEGÚRATE de que Arbol tiene getNbreBarrio(), si no lo tiene, usa el que hayas programado
             std::cout << "ID (assetnum): " << arbol->get_assetnum()
                       << " | Barrio: " << arbol->getNbreBarrio();
 
             Parque *parqueAsociado = arbol->isInto;
             if (parqueAsociado != nullptr)
             {
-                // USAMOS TU GETTER: get_nbre_parque()
                 std::cout << " | Parque: " << parqueAsociado->get_nbre_parque() << '\n';
             }
             else
