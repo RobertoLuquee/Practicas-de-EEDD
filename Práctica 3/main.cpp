@@ -13,6 +13,9 @@
 #include "Especie.h"
 #include "AVL.h"
 
+/**  @author Oier Fernandez de Leceta Villalmanzo ofv00003@red.ujaen.es
+      @author Roberto Luque Peña rlp00041@red.ujaen.es */
+
 using namespace std;
 
 float leerMedida(std::string campo)
