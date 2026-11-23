@@ -10,4 +10,6 @@ add_executable(Practica5 main.cpp Especie.cpp
         ControlParques.cpp
         ControlParques.h
         Arbol.cpp
-        Arbol.h)
+        Arbol.h
+        ThashArbol.cpp
+        ThashArbol.h)
