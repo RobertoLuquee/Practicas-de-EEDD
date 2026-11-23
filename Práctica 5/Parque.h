@@ -8,9 +8,9 @@
 #include <vector>
 #include <string>
 
-#include "VDinamico.h"
 #include "Especie.h"
 #include "Arbol.h"
+using namespace std;
 
 /**
  * @brief Clase que representa un parque y gestiona la colección de especies que lo habitan.

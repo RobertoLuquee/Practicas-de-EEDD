@@ -5,12 +5,9 @@ set(CMAKE_CXX_STANDARD 14)
 
 
 add_executable(Practica5 main.cpp Especie.cpp
-        ListaDEnlazada.cpp
         Parque.cpp
         Parque.h
         ControlParques.cpp
         ControlParques.h
-        AVL.h
-        AVL.h
         Arbol.cpp
         Arbol.h)

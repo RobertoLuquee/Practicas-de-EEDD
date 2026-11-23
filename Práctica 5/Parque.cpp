@@ -4,6 +4,7 @@
  
 #include "Parque.h"
 #include <map>
+#include <set>
  
  
  
@@ -82,59 +83,31 @@ Arbol * Parque::arbolMasAlto() {
 }
  
 int Parque::contarEspecies() {
-    VDinamico<std::string> especiesUnicas;
- 
-    vector<Arbol*>::iterator it;
+    std::set<std::string> especiesUnicas;
+
+    std::vector<Arbol*>::iterator it;
     for (it = _contains.begin(); it != _contains.end(); it++) {
-        // Nos aseguramos de que el puntero no sea nulo y tenga especie asociada
         if (*it != nullptr && (*it)->get_especie() != nullptr) {
-            std::string codActual = (*it)->getCodEspecie();
-            bool encontrado = false;
- 
-            // Comprobamos si el código ya está en nuestro vector de únicos
-            for (unsigned int j = 0; j < especiesUnicas.get__tlogico(); ++j) {
-                if (especiesUnicas[j] == codActual) {
-                    encontrado = true;
-                    break;
-                }
-            }
- 
-            // Si no estaba, lo añadimos
-            if (!encontrado) {
-                especiesUnicas.insertar(codActual);
-            }
+            // El set ignora los repetidos automáticamente
+            especiesUnicas.insert((*it)->getCodEspecie());
         }
     }
- 
-    return especiesUnicas.get__tlogico();
+
+    return especiesUnicas.size();
 }
- 
+
  
 int Parque::contarTipos() {
-    VDinamico<int> tiposUnicos;
- 
-    vector<Arbol*>::iterator it;
+    std::set<int> tiposUnicos;
+
+    std::vector<Arbol*>::iterator it;
     for (it = _contains.begin(); it != _contains.end(); it++) {
         if (*it != nullptr && (*it)->get_especie() != nullptr) {
-            int tipoActual = (*it)->getTipoEspecie();
-            bool encontrado = false;
- 
-            // Comprobamos si el tipo ya está en nuestro vector de únicos
-            for (unsigned int j = 0; j < tiposUnicos.get__tlogico(); ++j) {
-                if (tiposUnicos[j] == tipoActual) {
-                    encontrado = true;
-                    break;
-                }
-            }
- 
-            // Si no estaba, lo añadimos
-            if (!encontrado) {
-                tiposUnicos.insertar(tipoActual);
-            }
+            tiposUnicos.insert((*it)->getTipoEspecie());
         }
     }
- 
-    return tiposUnicos.get__tlogico();
+
+    return tiposUnicos.size();
 }
  
     std::string Parque::getNombre() const {
