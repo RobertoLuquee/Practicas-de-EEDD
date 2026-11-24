@@ -6,28 +6,28 @@
 
 
 Arbol::Arbol()
-    : assetnum(""), parque_id(0), distrito_id(0), barrio(""), codEspecie(""),
-      nombreEspecie(""), latitud(0.0), longitud(0.0), perimetro(0.0f),
+    : assetnum(""), parque_id(0),distrito(""), distrito_id(0), barrio(""), codEspecie(""),
+      nombreEspecie(""), coordenadas(0.0), perimetro(0.0f),
       altura(0.0f), especie(nullptr),isInto(nullptr) {}
 
 // Constructor de 1 parámetro
 Arbol::Arbol(std::string id)
-    : assetnum(id), parque_id(0), distrito_id(0), barrio(""), codEspecie(""),
-      nombreEspecie(""), latitud(0.0), longitud(0.0), perimetro(0.0f),
+    : assetnum(id), parque_id(0), distrito(""),distrito_id(0), barrio(""), codEspecie(""),
+      nombreEspecie(""), coordenadas(0.0), perimetro(0.0f),
       altura(0.0f), especie(nullptr) {}
 
 // Constructor de 8 parámetros
-Arbol::Arbol(std::string id, std::string parque, std::string distrito, std::string barrio,int num_barrio,
-          double latitud, double longitud, float perimetro, float altura)
-    : assetnum(id), parque_id(0), distrito_id(0), barrio(barrio),num_barrio(num_barrio), codEspecie(""),
-      nombreEspecie(""), latitud(latitud), longitud(longitud), perimetro(perimetro),
+Arbol::Arbol(std::string id, std::string parque, std::string distrito,int distrito_id, std::string barrio,int num_barrio,
+          double coordenadas, float perimetro, float altura)
+    : assetnum(id), parque_id(0),distrito(""), distrito_id(0), barrio(barrio),num_barrio(num_barrio), codEspecie(""),
+      nombreEspecie(""), coordenadas(coordenadas), perimetro(perimetro),
       altura(altura), especie(nullptr) {}
 
 // Constructor completo de 10 parámetros
-Arbol::Arbol(std::string id, int parc, int dist, std::string barr,int num_barrio, std::string codEsp,
-             std::string nomEsp, double lat, double lon, float perim, float alt)
-    : assetnum(id), parque_id(parc), distrito_id(dist), barrio(barr),num_barrio(num_barrio),
-      codEspecie(codEsp), nombreEspecie(nomEsp), latitud(lat), longitud(lon),
+Arbol::Arbol(std::string id, int parc,std::string distrito, int dist_id, std::string barr,int num_barrio, std::string codEsp,
+       std::string nomEsp, double coord, float perim, float alt)
+    : assetnum(id), parque_id(parc), distrito(distrito),distrito_id(dist_id), barrio(barr),num_barrio(num_barrio),
+      codEspecie(codEsp), nombreEspecie(nomEsp), coordenadas(coord),
       perimetro(perim), altura(alt), especie(nullptr),isInto(nullptr) {}
 
 

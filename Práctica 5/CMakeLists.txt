@@ -12,4 +12,8 @@ add_executable(Practica5 main.cpp Especie.cpp
         Arbol.cpp
         Arbol.h
         ThashArbol.cpp
-        ThashArbol.h)
+        ThashArbol.h
+        CajaNido.cpp
+        CajaNido.h
+        UTM.cpp
+        UTM.h)

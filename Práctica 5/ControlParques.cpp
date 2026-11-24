@@ -342,3 +342,49 @@ std::vector<Arbol*> ControlParques::buscarArbolesPorEspecieYDistrito(const std::
     }
     return resultado;
 }
+unsigned long ControlParques::djb2(const char* str) {
+    unsigned long hash = 5381;
+    int c;
+    while ((c = *str++)) {
+        hash = ((hash << 5) + hash) + c; // Equivale a: hash * 33 + c
+    }
+    return hash;
+}
+
+Arbol* ControlParques::buscarArbol(std::string& assetnum) {
+    unsigned long clave = djb2(assetnum.c_str());
+    return trees.buscar(clave);
+}
+
+std::vector<Arbol*> ControlParques::arbolesCajaDistrito(std::string& ndistrito) {
+    std::vector<Arbol*> resultado;
+    for (auto& caja : nests) {
+        if (caja.estaEnArbol() && caja.getDistrito() == ndistrito) {
+            Arbol* arb = caja.getArbol();
+            if (std::find(resultado.begin(), resultado.end(), arb) == resultado.end()) {
+                resultado.push_back(arb);
+            }
+        }
+    }
+    return resultado;
+}
+
+unsigned int ControlParques::contarCajasEnArbol() {
+    unsigned int contador = 0;
+    for (const auto& caja : nests) {
+        if (caja.estaEnArbol()) {
+            contador++;
+        }
+    }
+    return contador;
+}
+
+std::vector<CajaNido*> ControlParques::cajasEnDistrito(std::string& nbre_distrito) {
+    std::vector<CajaNido*> resultado;
+    for (auto& caja : nests) {
+        if (caja.getDistrito() == nbre_distrito) {
+            resultado.push_back(&caja);
+        }
+    }
+    return resultado;
+}
