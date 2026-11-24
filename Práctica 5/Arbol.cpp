@@ -7,25 +7,25 @@
 
 Arbol::Arbol()
     : assetnum(""), parque_id(0),distrito(""), distrito_id(0), barrio(""), codEspecie(""),
-      nombreEspecie(""), coordenadas(0.0), perimetro(0.0f),
+      nombreEspecie(""), coordenadas(0,0), perimetro(0.0f),
       altura(0.0f), especie(nullptr),isInto(nullptr) {}
 
 // Constructor de 1 parámetro
 Arbol::Arbol(std::string id)
     : assetnum(id), parque_id(0), distrito(""),distrito_id(0), barrio(""), codEspecie(""),
-      nombreEspecie(""), coordenadas(0.0), perimetro(0.0f),
+      nombreEspecie(""), coordenadas(0,0), perimetro(0.0f),
       altura(0.0f), especie(nullptr) {}
 
 // Constructor de 8 parámetros
 Arbol::Arbol(std::string id, std::string parque, std::string distrito,int distrito_id, std::string barrio,int num_barrio,
-          double coordenadas, float perimetro, float altura)
+          UTM coordenadas, float perimetro, float altura)
     : assetnum(id), parque_id(0),distrito(""), distrito_id(0), barrio(barrio),num_barrio(num_barrio), codEspecie(""),
       nombreEspecie(""), coordenadas(coordenadas), perimetro(perimetro),
       altura(altura), especie(nullptr) {}
 
 // Constructor completo de 10 parámetros
 Arbol::Arbol(std::string id, int parc,std::string distrito, int dist_id, std::string barr,int num_barrio, std::string codEsp,
-       std::string nomEsp, double coord, float perim, float alt)
+       std::string nomEsp, UTM coord, float perim, float alt)
     : assetnum(id), parque_id(parc), distrito(distrito),distrito_id(dist_id), barrio(barr),num_barrio(num_barrio),
       codEspecie(codEsp), nombreEspecie(nomEsp), coordenadas(coord),
       perimetro(perim), altura(alt), especie(nullptr),isInto(nullptr) {}

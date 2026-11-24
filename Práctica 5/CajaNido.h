@@ -1,7 +1,8 @@
 //
 // Created by Oier Universidad on 24/11/2026.
 //
-
+#include <string>
+#include "UTM.h"
 #ifndef PRACTICA3_CAJANIDO_H
 #define PRACTICA3_CAJANIDO_H
 
@@ -18,8 +19,12 @@ private:
 
 public:
     CajaNido()=default;
+    CajaNido(std::string dist, std::string barr, std::string ubic, UTM c);
     void setArbol(Arbol* a);
     Arbol* getArbol();
+
+    std::string get_distrito() const;
+
     bool estaEnArbol();
 };
 

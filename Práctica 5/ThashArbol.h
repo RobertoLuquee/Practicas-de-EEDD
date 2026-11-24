@@ -31,6 +31,7 @@ private:
 
 public:
 
+    ThashArbol()=default;
     ThashArbol(int maxElementos, float lambda=0.7);
     ThashArbol(ThashArbol &thash);
     ThashArbol& operator=(ThashArbol &thash);

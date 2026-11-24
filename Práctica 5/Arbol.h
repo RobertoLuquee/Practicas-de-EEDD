@@ -8,6 +8,7 @@
 #include <string>
 #include "Especie.h"
 #include "Parque.h"
+#include "UTM.h"
 
 class Parque;
 class Especie;
@@ -22,7 +23,7 @@ private:
     int num_barrio;
     std::string codEspecie;
     std::string nombreEspecie;
-    double coordenadas;
+    UTM coordenadas;
     float perimetro;
     float altura;
 
@@ -34,9 +35,9 @@ public:
     Arbol();
     Arbol(std::string id);
     Arbol(std::string id, std::string parque, std::string distrito,int distrito_id, std::string barrio,int num_barrio,
-          double coordenadas, float perimetro, float altura);
+          UTM coordenadas, float perimetro, float altura);
     Arbol(std::string id, int parc,std::string distrito, int dist_id, std::string barr,int num_barrio, std::string codEsp,
-          std::string nomEsp, double coord, float perim, float alt);
+          std::string nomEsp, UTM coord, float perim, float alt);
 
     // Getters y Setters
     std::string getAssetnum() const;
@@ -75,6 +76,9 @@ public:
 
     std::string getNbreBarrio() const {
         return barrio;  // Cambia 'nbre_barrio' por el nombre real de tu atributo
+    }
+    UTM getCoord() const {
+        return coordenadas;
     }
 };
 #endif //PRACTICA3_ARBOL_H

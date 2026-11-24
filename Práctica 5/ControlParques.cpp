@@ -63,11 +63,13 @@ TipoPlanta leerTipo(std::string tipo)
 
 ControlParques::ControlParques(const std::string &fichEspecies,
                                const std::string &fichParques,
-                               const std::string &fichArboles)
+                               const std::string &fichArboles,
+                               const std::string &fichCajas)
+: trees(150000, 0.65f)
 {
     std::string linea;
 
-    // 1. Leer el fichero de especies y guardarlas en el vector
+    // 1. Leer el fichero de especies y guardarlas en el map varieties
     std::ifstream fEspecies(fichEspecies);
     if (!fEspecies.is_open())
         throw std::runtime_error("No se puede abrir: " + fichEspecies);
@@ -84,18 +86,11 @@ ControlParques::ControlParques(const std::string &fichEspecies,
         while (campos.size() < 4)
             campos.push_back("");
 
-        varieties.push_back(Especie(campos[0], campos[1], campos[2], leerTipo(campos[3])));
+        varieties.insert(std::make_pair(campos[0], Especie(campos[0], campos[1], campos[2], leerTipo(campos[3]))));
     }
     fEspecies.close();
 
-    // Mapa auxiliar codigo -> especie para enlazar los arboles rapido.
-    // El vector ya no cambia de tamaño, asi que los punteros no se invalidan.
-    std::map<std::string, Especie*> especiePorCodigo;
-    std::vector<Especie>::iterator itVar;
-    for (itVar = varieties.begin(); itVar != varieties.end(); itVar++)
-        especiePorCodigo[itVar->getCodigo()] = &(*itVar);
-
-    // Leo el fichero de parques y los guardo en la lista
+    // 2. Leo el fichero de parques y los guardo en el map parks
     std::ifstream fParques(fichParques);
     if (!fParques.is_open())
         throw std::runtime_error("No se puede abrir: " + fichParques);
@@ -112,17 +107,12 @@ ControlParques::ControlParques(const std::string &fichEspecies,
         if (campos.size() < 2)
             continue;
 
-        parks.push_back(Parque(std::stoi(campos[0]), campos[1]));
+        int cod = std::stoi(campos[0]);
+        parks.insert(std::make_pair(cod, Parque(cod, campos[1])));
     }
     fParques.close();
 
-    // Mapa auxiliar codigo -> parque (los elementos de una list no se mueven)
-    std::map<int, Parque*> parquePorCodigo;
-    std::list<Parque>::iterator itPar;
-    for (itPar = parks.begin(); itPar != parks.end(); itPar++)
-        parquePorCodigo[itPar->get_cod_parque()] = &(*itPar);
-
-    // Leo los arboles, los guardo en el map y hago los enlaces
+    // 3. Leo los arboles, los guardo en la tabla hash y hago los enlaces directamente
     std::ifstream fArboles(fichArboles);
     if (!fArboles.is_open())
         throw std::runtime_error("No se puede abrir: " + fichArboles);
@@ -135,7 +125,6 @@ ControlParques::ControlParques(const std::string &fichEspecies,
         if (linea.empty())
             continue;
 
-
         std::vector<std::string> campos = separarLinea(linea, ';');
         while (campos.size() < 12)
             campos.push_back("");
@@ -147,58 +136,96 @@ ControlParques::ControlParques(const std::string &fichEspecies,
         Arbol arbol(
             campos[0],
             campos[1].empty() ? 0 : std::stoi(campos[1]),
-            campos[2].empty() ? 0 : std::stoi(campos[2]),
             campos[5],
+            campos[2].empty() ? 0 : std::stoi(campos[2]),
+            campos[4], // Si tu constructor espera string barrio y luego int num_barrio, ajústalo al orden de Arbol.h
             campos[4].empty() ? 0 : std::stoi(campos[4]),
             campos[8],
             campos[9],
-            campos[6].empty() ? 0.0 : std::stod(campos[6]),
-            campos[7].empty() ? 0.0 : std::stod(campos[7]),
+            UTM(campos[6].empty() ? 0.0 : std::stod(campos[6]),
+                campos[7].empty() ? 0.0 : std::stod(campos[7])),
             campos[10].empty() ? -1.0f : std::stof(campos[10]),
             campos[11].empty() ? -1.0f : std::stof(campos[11])
         );
 
-        // Insertamos en el map y trabajamos con el arbol que esta DENTRO del map,
-        // no con la variable local (si no, los punteros quedarian colgando)
-        std::pair<std::map<std::string, Arbol>::iterator, bool> resultado =
-            trees.insert(std::make_pair(campos[0], arbol));
-        Arbol &arbolMapa = resultado.first->second;
+        // Enlace arbol -> especie buscando directamente en varieties
+        std::map<std::string, Especie>::iterator itEspecie = varieties.find(campos[8]);
+        if (itEspecie != varieties.end())
+            arbol.setEspecie(&(itEspecie->second));
 
-        // Enlace arbol -> especie
-        std::map<std::string, Especie*>::iterator itEspecie = especiePorCodigo.find(campos[8]);
-        if (itEspecie != especiePorCodigo.end())
-            arbolMapa.setEspecie(itEspecie->second);
+        // Enlace arbol -> parque buscando directamente en parks
+        std::map<int, Parque>::iterator itParque = parks.find(arbol.getNumParque());
+        if (itParque != parks.end())
+            arbol.setParque(&(itParque->second));
 
-        // Enlace parque -> arbol y arbol -> parque (isInto)
-        std::map<int, Parque*>::iterator itParque = parquePorCodigo.find(arbolMapa.getNumParque());
-        if (itParque != parquePorCodigo.end())
+        // Insertamos en la tabla hash y recuperamos el puntero real almacenado
+        unsigned long clave = djb2(campos[0].c_str());
+        if (trees.insertar(clave, arbol))
         {
-            itParque->second->insertarArbol(&arbolMapa);
-            arbolMapa.setParque(itParque->second);
-        }
+            Arbol* arbolHash = trees.buscar(clave);
 
-        // Multimap con clave el nombre comun
-        treeName.insert(std::make_pair(arbolMapa.getNbreComun(), &arbolMapa));
+            // Enlace parque -> arbol
+            if (itParque != parks.end())
+                itParque->second.insertarArbol(arbolHash);
+
+            // Multimap con clave el nombre comun
+            treeName.insert(std::make_pair(arbolHash->getNbreComun(), arbolHash));
+        }
     }
     fArboles.close();
+
+    // 4. Leo las cajas nido y las asocio al arbol mas cercano (< 100)
+    std::ifstream fCajas(fichCajas);
+    if (!fCajas.is_open())
+        throw std::runtime_error("No se puede abrir: " + fichCajas);
+
+    std::getline(fCajas, linea); // cabecera
+    while (std::getline(fCajas, linea))
+    {
+        if (!linea.empty() && linea.back() == '\r')
+            linea.pop_back();
+        if (linea.empty())
+            continue;
+
+        std::vector<std::string> campos = separarLinea(linea, ';');
+        if (campos.size() < 5)
+            continue;
+
+        std::replace(campos[3].begin(), campos[3].end(), ',', '.');
+        std::replace(campos[4].begin(), campos[4].end(), ',', '.');
+
+        UTM posCaja(campos[3].empty() ? 0.0 : std::stod(campos[3]),
+                    campos[4].empty() ? 0.0 : std::stod(campos[4]));
+
+        CajaNido caja(campos[0], campos[1], campos[2], posCaja);
+
+        Arbol* masCercano = nullptr;
+        double minDist2 = 100.0;
+
+        std::multimap<std::string, Arbol*>::iterator it;
+        for (it = treeName.begin(); it != treeName.end(); it++)
+        {
+            double d2 = it->second->getCoord().distancia2(posCaja);
+            if (d2 < minDist2)
+            {
+                minDist2 = d2;
+                masCercano = it->second;
+            }
+        }
+        caja.setArbol(masCercano);
+        nests.push_back(caja);
+    }
+    fCajas.close();
 }
 
 Parque* ControlParques::buscarParque(std::string nombre)
 {
-    std::list<Parque>::iterator it;
+    std::map<int, Parque>::iterator it;
     for (it = parks.begin(); it != parks.end(); it++)
     {
-        if (it->getNombre() == nombre)
-            return &(*it);
+        if (it->second.getNombre() == nombre)
+            return &(it->second);
     }
-    return nullptr;
-}
-
-Arbol* ControlParques::buscarArbol(const std::string &assetnum)
-{
-    std::map<std::string, Arbol>::iterator it = trees.find(assetnum);
-    if (it != trees.end())
-        return &(it->second);
     return nullptr;
 }
 
@@ -216,30 +243,16 @@ Arbol* ControlParques::arbolMasAlto()
     Arbol* masAlto = nullptr;
     float maxAltura = -1.0f;
 
-    std::map<std::string, Arbol>::iterator it;
-    for (it = trees.begin(); it != trees.end(); it++)
+    std::multimap<std::string, Arbol*>::iterator it;
+    for (it = treeName.begin(); it != treeName.end(); it++)
     {
-        if (it->second.getAltura() > maxAltura)
+        if (it->second->getAltura() > maxAltura)
         {
-            maxAltura = it->second.getAltura();
-            masAlto = &(it->second);
+            maxAltura = it->second->getAltura();
+            masAlto = it->second;
         }
     }
     return masAlto;
-}
-
-std::vector<Arbol*> ControlParques::buscarArbolesRango(const std::string &asNumMin, const std::string &asNumMax)
-{
-    std::vector<Arbol*> resultado;
-    std::map<std::string, Arbol>::iterator itLow = trees.lower_bound(asNumMin);
-    std::map<std::string, Arbol>::iterator itUp = trees.upper_bound(asNumMax);
-    std::map<std::string, Arbol>::iterator it;
-
-    for (it = itLow; it != itUp; it++)
-    {
-        resultado.push_back(&(it->second));
-    }
-    return resultado;
 }
 
 unsigned int ControlParques::contarEspecies(const std::string &nombreParque)
@@ -253,14 +266,13 @@ unsigned int ControlParques::contarEspecies(const std::string &nombreParque)
 unsigned int ControlParques::contarTipos()
 {
     std::map<int, bool> tiposUnicos;
-    std::vector<Especie>::iterator it;
+    std::map<std::string, Especie>::iterator it;
     for (it = varieties.begin(); it != varieties.end(); it++)
     {
-        tiposUnicos[it->get_tipo_planta()] = true;
+        tiposUnicos[it->second.get_tipo_planta()] = true;
     }
     return tiposUnicos.size();
 }
-
 
 // Parques que tienen al menos un arbol con ese nombre comun (sin repetir)
 std::vector<Parque*> ControlParques::listarParquesArbol(const std::string &nbreComun)
@@ -315,10 +327,10 @@ std::vector<Arbol*> ControlParques::buscarArbolNcomunComienzo(const std::string 
 int ControlParques::contarArbolesBarrio(int numBarrio)
 {
     int contador = 0;
-    std::map<std::string, Arbol>::iterator it;
-    for (it = trees.begin(); it != trees.end(); it++)
+    std::multimap<std::string, Arbol*>::iterator it;
+    for (it = treeName.begin(); it != treeName.end(); it++)
     {
-        if (it->second.getNumBarrio() == numBarrio)
+        if (it->second->getNumBarrio() == numBarrio)
         {
             contador++;
         }
@@ -342,6 +354,7 @@ std::vector<Arbol*> ControlParques::buscarArbolesPorEspecieYDistrito(const std::
     }
     return resultado;
 }
+
 unsigned long ControlParques::djb2(const char* str) {
     unsigned long hash = 5381;
     int c;
@@ -359,7 +372,7 @@ Arbol* ControlParques::buscarArbol(std::string& assetnum) {
 std::vector<Arbol*> ControlParques::arbolesCajaDistrito(std::string& ndistrito) {
     std::vector<Arbol*> resultado;
     for (auto& caja : nests) {
-        if (caja.estaEnArbol() && caja.getDistrito() == ndistrito) {
+        if (caja.estaEnArbol() && caja.get_distrito() == ndistrito) {
             Arbol* arb = caja.getArbol();
             if (std::find(resultado.begin(), resultado.end(), arb) == resultado.end()) {
                 resultado.push_back(arb);
@@ -371,7 +384,7 @@ std::vector<Arbol*> ControlParques::arbolesCajaDistrito(std::string& ndistrito) 
 
 unsigned int ControlParques::contarCajasEnArbol() {
     unsigned int contador = 0;
-    for (const auto& caja : nests) {
+    for (auto& caja : nests) {
         if (caja.estaEnArbol()) {
             contador++;
         }
@@ -382,7 +395,7 @@ unsigned int ControlParques::contarCajasEnArbol() {
 std::vector<CajaNido*> ControlParques::cajasEnDistrito(std::string& nbre_distrito) {
     std::vector<CajaNido*> resultado;
     for (auto& caja : nests) {
-        if (caja.getDistrito() == nbre_distrito) {
+        if (caja.get_distrito() == nbre_distrito) {
             resultado.push_back(&caja);
         }
     }
