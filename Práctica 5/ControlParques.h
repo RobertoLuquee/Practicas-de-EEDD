@@ -9,18 +9,24 @@
 #include "Arbol.h"
 #include "Parque.h"
 #include "Especie.h"
+#include "CajaNido.h"
+#include "ThashArbol.h"
 
 class ControlParques {
 private:
-    std::list<Parque> parks;
-    std::map<std::string, Arbol> trees;
-    std::vector<Especie> varieties;
+    std::map <int,Parque> parks;
+    ThashArbol trees;
+    std::map<std::string,Especie> varieties;
     std::multimap<std::string, Arbol*> treeName;
+    std::vector <CajaNido> nests;
+
+    unsigned long djb2(const char* str);
 
 public:
     ControlParques(const std::string &fichEspecies,
                    const std::string &fichParques,
-                   const std::string &fichArboles);
+                   const std::string &fichArboles,
+                   const std::string &fichCajas);
 
     // Métodos de las prácticas anteriores
     Parque* buscarParque(std::string nombre);
@@ -37,6 +43,11 @@ public:
     std::vector<Arbol*> buscarArbolNcomunComienzo(const std::string &comienzo);
     int contarArbolesBarrio(int numBarrio);
     std::vector<Arbol*> buscarArbolesPorEspecieYDistrito(const std::string &nbreComun, int numDistrito);
+
+    Arbol* buscarArbol(std::string& assetnum);
+    std::vector<Arbol*> arbolesCajaDistrito(std::string& ndistrito);
+    unsigned int contarCajasEnArbol();
+    std::vector<CajaNido*> cajasEnDistrito(std::string& nbre_distrito);
 };
 
 #endif

@@ -83,7 +83,7 @@ Arbol * Parque::arbolMasAlto() {
  
 int Parque::contarEspecies() {
     VDinamico<std::string> especiesUnicas;
- 
+ //set o map
     vector<Arbol*>::iterator it;
     for (it = _contains.begin(); it != _contains.end(); it++) {
         // Nos aseguramos de que el puntero no sea nulo y tenga especie asociada
@@ -112,7 +112,7 @@ int Parque::contarEspecies() {
  
 int Parque::contarTipos() {
     VDinamico<int> tiposUnicos;
- 
+ //set o map
     vector<Arbol*>::iterator it;
     for (it = _contains.begin(); it != _contains.end(); it++) {
         if (*it != nullptr && (*it)->get_especie() != nullptr) {

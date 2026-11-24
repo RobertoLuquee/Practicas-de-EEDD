@@ -126,7 +126,7 @@ int main()
         // 2. Leer nuevamente los árboles y almacenarlos en el vector.
         cargarVector(ruta, arboles);
 
-        std::cout << "Arboles en el AVL: "
+        std::cout << "Arboles en la STL: "
                   << avl._numelementos() << '\n';
 
         std::cout << "Arboles en el vector: "
@@ -203,13 +203,13 @@ int main()
                 finVector - inicioVector)
                 .count();
 
-        std::cout << "\nEncontrados en AVL: "
+        std::cout << "\nEncontrados en la STL: "
                   << encontradosAVL << '/' << numeroBusquedas;
 
         std::cout << "\nEncontrados en vector: "
                   << encontradosVector << '/' << numeroBusquedas;
 
-        std::cout << "\n\nTiempo AVL: "
+        std::cout << "\n\nTiempo STL: "
                   << tiempoAVL << " ms";
 
         std::cout << "\nTiempo busqueda lineal: "
@@ -223,12 +223,12 @@ int main()
         }
 
         if (tiempoAVL < tiempoVector)
-            std::cout << "El AVL ha sido mas rapido en esta medicion.\n";
+            std::cout << "El STL ha sido mas rapido en esta medicion.\n";
         else
-            std::cout << "El AVL no ha sido mas rapido en esta medicion.\n";
+            std::cout << "El STL no ha sido mas rapido en esta medicion.\n";
 
         // 7. Mostrar la altura.
-        std::cout << "\nAltura del AVL: "
+        std::cout << "\nAltura del STL: "
                   << avl.altura() << '\n';
 
         // 8. Mostrar los 100 primeros árboles en inorden.

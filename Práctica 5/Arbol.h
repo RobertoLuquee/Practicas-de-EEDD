@@ -16,13 +16,13 @@ class Arbol {
 private:
     std::string assetnum;
     int parque_id;
+    std::string distrito;
     int distrito_id;
     std::string barrio;
     int num_barrio;
     std::string codEspecie;
     std::string nombreEspecie;
-    double latitud;
-    double longitud;
+    double coordenadas;
     float perimetro;
     float altura;
 
@@ -33,10 +33,10 @@ public:
 
     Arbol();
     Arbol(std::string id);
-    Arbol(std::string id, std::string parque, std::string distrito, std::string barrio,int num_barrio,
-          double latitud, double longitud, float perimetro, float altura);
-    Arbol(std::string id, int parc, int dist, std::string barr,int num_barrio, std::string codEsp,
-          std::string nomEsp, double lat, double lon, float perim, float alt);
+    Arbol(std::string id, std::string parque, std::string distrito,int distrito_id, std::string barrio,int num_barrio,
+          double coordenadas, float perimetro, float altura);
+    Arbol(std::string id, int parc,std::string distrito, int dist_id, std::string barr,int num_barrio, std::string codEsp,
+          std::string nomEsp, double coord, float perim, float alt);
 
     // Getters y Setters
     std::string getAssetnum() const;

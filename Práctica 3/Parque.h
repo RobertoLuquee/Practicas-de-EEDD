@@ -68,7 +68,7 @@ public:
      * @brief Obtiene el vector dinámico que contiene las especies del parque.
      * @return Referencia al vector de punteros a Especie.
      */
-    vector<Arbol*>& get_contains();
+   // vector<Arbol*>& get_contains();
     /**
      * @brief Añade una nueva especie al parque.
      * @param especie Puntero a la especie que se desea insertar en el vector del parque.

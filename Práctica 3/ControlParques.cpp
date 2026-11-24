@@ -163,6 +163,7 @@ ControlParques::ControlParques(const std::string &fichEspecies,
         std::pair<std::map<std::string, Arbol>::iterator, bool> resultado =
             trees.insert(std::make_pair(campos[0], arbol));
         Arbol &arbolMapa = resultado.first->second;
+        //
 
         // Enlace arbol -> especie
         std::map<std::string, Especie*>::iterator itEspecie = especiePorCodigo.find(campos[8]);
