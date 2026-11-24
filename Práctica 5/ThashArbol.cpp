@@ -56,11 +56,12 @@ ThashArbol::ThashArbol(int maxElementos, float lambda)
     tabla.resize(tam);
 }
 
-//CONSTRUCTOR COPIA
+//constructor copia
 ThashArbol::ThashArbol(ThashArbol &thash)
       : tabla(thash.tabla),tam(thash.tam),numElem(thash.numElem) {
 }
 
+//el operador asignacion de nuestra clase thasharbol
 ThashArbol& ThashArbol::operator=(ThashArbol &thash) {
     if (this != &thash) {
         tabla = thash.tabla;
@@ -70,5 +71,82 @@ ThashArbol& ThashArbol::operator=(ThashArbol &thash) {
     return *this; //Aquí devuelvo el propio puntero
 }
 ThashArbol::~ThashArbol() {
+}
 
+bool ThashArbol::insertar(unsigned long clave, Arbol &tree) {
+    int intento=0;
+    long hueco=-1; //variable con la que guardare la posicion del primer disponible
+
+    //lo que hago con esta funcion es no insertar en el primer hueco disponible
+    //sino que me aseguro de que la clave no está mas adelante
+    while (1) {
+        unsigned long pos= hash(clave,intento);
+        if (tabla[pos].estado==vacia) {
+            if (hueco==-1)
+                hueco=pos;
+            tabla[hueco]=Entrada(clave,tree); //aqui uso el constructor que añadi antes
+            //y ya se encarga de poner el estado=ocupado
+            numElem++;
+            return true;
+        }
+        if (tabla[pos].estado==disponible) {
+            if (hueco==-1)
+                hueco=pos; //aqui me guardo la posicion
+        }else if (tabla[pos].clave==clave) { //repetida asi que devuelvo false
+            return false;
+        }
+        intento++;
+
+        //Creo que el ultimo if no es necesario pq se supone que la exploracion siempre encuentra sitio
+        if (intento>=tam) { //no hay mas huecos
+            if (hueco!=-1) {
+                tabla[hueco]=Entrada(clave,tree);
+                numElem++;
+                return true;
+            }
+            return false;
+        }
+
+    }
+}
+
+Arbol* ThashArbol::buscar(unsigned long clave) {
+    int intento=0;
+    while (1) {
+        unsigned long pos=hash(clave,intento);
+        if (tabla[pos].estado==vacia) {
+            return nullptr;
+        }
+        if (tabla[pos].estado==ocupada && tabla[pos].clave==clave) {
+            return &tabla[pos].dato; //lo hemos encontrado
+        }
+        intento++;
+        if (intento>=tam) { // si ya hemos recorrido toda la tabla
+            return nullptr;
+        }
+    }
+}
+bool ThashArbol::borrar(unsigned long clave) {
+    int intento=0;
+
+    while (1) {
+        unsigned long pos=hash(clave,intento);
+        if (tabla[pos].estado==vacia) {
+            return false;
+        }
+        if (tabla[pos].estado==ocupada && tabla[pos].clave==clave) {
+            tabla[pos].estado=disponible;
+            numElem--;
+            return true;
+        }
+        intento++;
+        if (intento>=tam) {
+            return false;
+        }
+    }
+}
+
+//Creo que no hay forma mas eficiente de hacerlo
+unsigned int ThashArbol::numElementos() const {
+    return numElem;
 }
