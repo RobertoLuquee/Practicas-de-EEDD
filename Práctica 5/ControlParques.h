@@ -52,6 +52,6 @@ public:
     unsigned int getTotalCajas() const { return nests.size(); }
     const std::vector<CajaNido>& getNests() const { return nests; }
     std::vector<Parque*> parquesConCajaNido();
-};
+void mostrarEstadoTabla();};
 
 #endif

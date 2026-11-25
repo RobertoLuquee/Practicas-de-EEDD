@@ -81,16 +81,9 @@ int main() {
         auto fin = chrono::high_resolution_clock::now();
         double msHash = chrono::duration<double, milli>(fin - inicio).count();
 
-        // Tiempo en Lista (si el método sigue disponible en ControlParques)
-        inicio = chrono::high_resolution_clock::now();
-        for (vector<string>::iterator it = ids.begin(); it != ids.end(); ++it) {
-            control.buscarArbolLista(*it);
-        }
-        fin = chrono::high_resolution_clock::now();
-        double msLista = chrono::duration<double, milli>(fin - inicio).count();
+
 
         cout << "Tiempo tabla hash: " << msHash << " ms" << endl;
-        cout << "Tiempo lista: " << msLista << " ms" << endl;
 
         // =========================================================
         // PROGRAMA DE PRUEBA 2: CONSULTAS Y RELACIONES

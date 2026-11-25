@@ -423,3 +423,6 @@ std::vector<Parque*> ControlParques::parquesConCajaNido() {
     }
     return resultado;
 }
+void ControlParques::mostrarEstadoTabla() {
+    trees.mostrarEstadoTabla();
+}
