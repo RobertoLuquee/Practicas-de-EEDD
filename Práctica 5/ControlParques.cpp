@@ -65,7 +65,7 @@ ControlParques::ControlParques(const std::string &fichEspecies,
                                const std::string &fichParques,
                                const std::string &fichArboles,
                                const std::string &fichCajas)
-: trees(150000, 0.68f)
+: trees(150000, 0.65f)
 {
     std::string linea;
 
