@@ -25,6 +25,9 @@ private:
     std::vector<Entrada>tabla;
     unsigned int tam; //lo pongo pq se usa en la fórmula, aunque no me lo pide la practica en si
     unsigned int numElem;
+    unsigned int maxCol;
+    unsigned int contMax10;
+    unsigned long totalCol;
     unsigned long hash(unsigned long clave, int intento);
     bool esPrimo(unsigned int n);
     unsigned int siguientePrimo(unsigned int n);
@@ -40,6 +43,13 @@ public:
     Arbol* buscar(unsigned long clave);
     bool borrar(unsigned long clave);
     unsigned int numElementos() const;
+    //Estos son los que se piden en la primera prueba
+    unsigned int maxColisiones();
+    unsigned int numMax10();
+    float promedioColisiones();
+    float factorCarga();
+    unsigned tamTabla();
+    void mostrarEstadoTabla();
 
 };
 

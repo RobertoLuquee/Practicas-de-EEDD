@@ -2,6 +2,7 @@
 // Created by Roberto Luque Peña on 23/11/2026.
 //
 
+#include <iostream>
 #include "ThashArbol.h"
 /**
  * Función de dispersión: devuelve la posición de la tabla que hay que mirar
@@ -11,6 +12,7 @@
 unsigned long ThashArbol::hash(unsigned long clave, int intento) {
 
     unsigned long i = (unsigned long) intento;
+
     /*
     // Exploración cuadrática
     return (clave + i * i) % tam;
@@ -26,6 +28,7 @@ unsigned long ThashArbol::hash(unsigned long clave, int intento) {
 
 
     // Dispersión doble 2
+
     /*
     unsigned long h1 = clave % tam;
     unsigned long h2 = 1 + ((clave / tam) % (tam - 1));
@@ -47,8 +50,10 @@ unsigned int ThashArbol::siguientePrimo(unsigned int n) {
     return n;
 }
 
+
+
 ThashArbol::ThashArbol(int maxElementos, float lambda)
-    : numElem(0) // Inicializo los arbolesf a 0
+    : numElem(0),maxCol(0),contMax10(0),totalCol(0) // Inicializo los arbolesf a 0
 {
     tam = siguientePrimo((unsigned int)(maxElementos / lambda)); //Aqui uso unsigned int para quitar
     //los decimales, ya que, un tamaño no puede tener decimales.
@@ -58,15 +63,19 @@ ThashArbol::ThashArbol(int maxElementos, float lambda)
 
 //constructor copia
 ThashArbol::ThashArbol(ThashArbol &thash)
-      : tabla(thash.tabla),tam(thash.tam),numElem(thash.numElem) {
+      : tabla(thash.tabla),tam(thash.tam),numElem(thash.numElem)
+    ,maxCol(thash.maxCol),contMax10(thash.contMax10),totalCol(thash.totalCol){
 }
 
 //el operador asignacion de nuestra clase thasharbol
 ThashArbol& ThashArbol::operator=(ThashArbol &thash) {
     if (this != &thash) {
-        tabla = thash.tabla;
-        tam = thash.tam;
-        numElem = thash.numElem;
+        tabla =thash.tabla;
+        tam =thash.tam;
+        numElem =thash.numElem;
+        maxCol=thash.maxCol;
+        contMax10=thash.contMax10;
+        totalCol=thash.totalCol;
     }
     return *this; //Aquí devuelvo el propio puntero
 }
@@ -87,6 +96,12 @@ bool ThashArbol::insertar(unsigned long clave, Arbol &tree) {
             tabla[hueco]=Entrada(clave,tree); //aqui uso el constructor que añadi antes
             //y ya se encarga de poner el estado=ocupado
             numElem++;
+            //Tengo que añadir esto porque si no no se actualizan los nuevos contadores
+            totalCol+=intento;
+            if (intento>maxCol)
+                maxCol=intento;
+            if (intento>10)
+                contMax10++;
             return true;
         }
         if (tabla[pos].estado==disponible) {
@@ -102,6 +117,11 @@ bool ThashArbol::insertar(unsigned long clave, Arbol &tree) {
             if (hueco!=-1) {
                 tabla[hueco]=Entrada(clave,tree);
                 numElem++;
+                totalCol+=intento;
+                if (intento>maxCol)
+                    maxCol=intento;
+                if (intento>10)
+                    contMax10++;
                 return true;
             }
             return false;
@@ -149,4 +169,38 @@ bool ThashArbol::borrar(unsigned long clave) {
 //Creo que no hay forma mas eficiente de hacerlo
 unsigned int ThashArbol::numElementos() const {
     return numElem;
+}
+
+unsigned int ThashArbol::maxColisiones() {
+    return maxCol;
+}
+
+unsigned int ThashArbol::numMax10() {
+    return contMax10;
+}
+
+float ThashArbol::promedioColisiones() {
+    if (numElem==0)
+        return 0;
+    return (float)totalCol/numElem;
+}
+
+float ThashArbol::factorCarga() {
+    return (float)numElem/tam;
+}
+
+unsigned ThashArbol::tamTabla() {
+    return tam;
+}
+
+void ThashArbol::mostrarEstadoTabla() {
+    float factorcarga=factorCarga();
+    int superar10=numMax10();
+    float promedio=promedioColisiones();
+    int maximoCol=maxColisiones();
+    std::cout<<"Tamanio: "<<tam<<std::endl;
+    std::cout<<"Factor de carga: "<<factorcarga<<std::endl;
+    std::cout<<"Veces que se superan las 10 colisiones: "<<superar10<<std::endl;
+    std::cout<<"Maximo de colisiones: "<<maximoCol<<std::endl;
+    std::cout<<"Promedio: "<<promedio<<std::endl;
 }
