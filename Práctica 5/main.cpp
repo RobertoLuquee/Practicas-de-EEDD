@@ -1,186 +1,175 @@
+/**  @author Oier Fernandez de Leceta Villalmanzo ofv00003@red.ujaen.es
+      @author Roberto Luque Peña rlp00041@red.ujaen.es */
 
 #include <algorithm>
 #include <chrono>
 #include <cmath>
 #include <exception>
-#include <fstream>
+#include <iomanip>
 #include <iostream>
-#include <sstream>
-#include <stdexcept>
+#include <random>
 #include <string>
 #include <vector>
-
-#include "ControlParques.h"
-#include "Arbol.h"
-#include "Especie.h"
-#include "CajaNido.h"
-#include "Parque.h"
-
-
-/**  @author Oier Fernandez de Leceta Villalmanzo ofv00003@red.ujaen.es
-      @author Roberto Luque Peña rlp00041@red.ujaen.es */
-
-#include <exception>
-#include <iostream>
-#include <string>
-#include <vector>
- #include <algorithm>
- #include <random>
- #include <chrono>
 //Arreglar caracteres especiales por pantalla
 #ifdef _WIN32
 #include <windows.h>
 #endif
 
 #include "ControlParques.h"
+#include "Arbol.h"
+#include "CajaNido.h"
+#include "Parque.h"
 using namespace std;
 
-// Rutas de los archivos CSV
+//Rutas de los archivos (la configuración de CLion ejecuta el programa
+//desde la carpeta "Práctica 5", que es donde están los CSV)
 const string RUTA_ESPECIES = "arbolado-especies.csv";
 const string RUTA_PARQUES = "parques.csv";
 const string RUTA_ARBOLES = "arboladoMadrid.csv";
 const string RUTA_CAJAS_NIDO = "cajas-nido.csv";
 
+
+/**
+ * @brief Muestra una posición UTM con sus decimales
+ */
+void mostrarCoordenadas(const UTM &coord) {
+    cout << fixed << setprecision(3) << "(" << coord.getX() << ", " << coord.getY() << ")"
+            << defaultfloat << setprecision(6);
+}
+
 int main() {
+    //Arreglar caracteres especiales por pantalla
 #ifdef _WIN32
     SetConsoleOutputCP(CP_UTF8);
     SetConsoleCP(CP_UTF8);
 #endif
-
     try {
-        // Inicialización de ControlParques (carga los 4 CSV y enlaza todo)
+        // Al construir ControlParques se leen todos los ficheros y se
+        // insertan los árboles en la tabla hash
         ControlParques control(
             RUTA_ESPECIES,
             RUTA_PARQUES,
             RUTA_ARBOLES,
-            RUTA_CAJAS_NIDO
-        );
+            RUTA_CAJAS_NIDO);
 
-        // =========================================================
-        // PROGRAMA DE PRUEBA 1: AJUSTE Y RENDIMIENTO DE LA TABLA HASH
-        // =========================================================
-        cout << "\n==========================================" << endl;
-        cout << "PROGRAMA DE PRUEBA 1: AJUSTE DE LA TABLA" << endl;
-        cout << "==========================================" << endl;
-        cout << "ESTADO DE LA TABLA HASH:" << endl;
+        // =====================================================================
+        // PROGRAMA DE PRUEBA 1
+        // =====================================================================
+        cout << "PROGRAMA DE PRUEBA 1: AJUSTE DE LA TABLA"<<endl;
+        cout << "ESTADO DE LA TABLA HASH"<<endl;
         control.mostrarEstadoTabla();
 
         vector<string> ids = control.getIdsArboles();
         shuffle(ids.begin(), ids.end(), mt19937(random_device{}()));
-        if (ids.size() > 2000) {
-            ids.resize(2000);
-        }
+        ids.resize(2000);
 
-        cout << "\nPRUEBA DE RENDIMIENTO (2000 búsquedas):" << endl;
+        cout << "PRUEBA DE RENDIMIENTO (2000 búsquedas)"<<endl;
 
-        // Tiempo en Tabla Hash
+        // Tabla hash
         auto inicio = chrono::high_resolution_clock::now();
         for (vector<string>::iterator it = ids.begin(); it != ids.end(); ++it) {
             control.buscarArbol(*it);
         }
         auto fin = chrono::high_resolution_clock::now();
-        double msHash = chrono::duration<double, milli>(fin - inicio).count();
+        double msHash = chrono::duration<double, milli>(fin -inicio).count();
 
+        // Lista
+        inicio = chrono::high_resolution_clock::now();
+        for (vector<string>::iterator it = ids.begin(); it != ids.end(); ++it) {
+            control.buscarArbolLista(*it);
+        }
+        fin = chrono::high_resolution_clock::now();
+        double msLista = chrono::duration<double, milli>(fin - inicio).count();
 
+        cout << "Tiempo tabla hash: " << msHash << " ms" <<endl;
+        cout << "Tiempo lista: " << msLista << " ms" <<endl;
 
-        cout << "Tiempo tabla hash: " << msHash << " ms" << endl;
+        // =====================================================================
+        // PROGRAMA DE PRUEBA 2
+        // =====================================================================
+        cout << "\nPROGRAMA DE PRUEBA 2\n";
 
-        // =========================================================
-        // PROGRAMA DE PRUEBA 2: CONSULTAS Y RELACIONES
-        // =========================================================
-        cout << "\n==========================================" << endl;
-        cout << "PROGRAMA DE PRUEBA 2: CONSULTAS" << endl;
-        cout << "==========================================" << endl;
-
-        // 1. Buscar assetnum: 6925456, 6635839, 5222166
-        cout << "\n--- ACCION 1: BUSQUEDA DE ARBOLES ESPECIFICOS ---\n";
-        vector<string> idsGuion = {"6925456", "6635839", "5222166"};
-
-        for (string &id : idsGuion) {
-            Arbol *arbol = control.buscarArbol(id);
+        cout << "\nAPARTADO 1: BÚSQUEDA DE ÁRBOLES POR ASSETNUM\n";
+        const string ARBOLES_APARTADO_1[] = {"6925456", "6635839", "5222166"};
+        for (const string &assetnum: ARBOLES_APARTADO_1) {
+            Arbol *arbol = control.buscarArbol(assetnum);
             if (arbol == nullptr) {
-                cout << "Arbol ID " << id << ": NO EXISTE\n";
+                cout << "\tÁrbol " << assetnum << ": no encontrado" << endl;
+                continue;
+            }
+            cout << "\tÁrbol " << assetnum << ": especie " << arbol->getNbreComun()
+                    << " (" << arbol->getNbreCientifico() << "), altura " << arbol->getAltura()
+                    << " m, parque " << arbol->getNumParque() << endl;
+        }
+
+        cout << "\nAPARTADO 2: ÁRBOLES CON CAJA NIDO EN EL DISTRITO CENTRO\n";
+        const string DISTRITO = "CENTRO";
+        vector<Arbol *> arbolesConCaja = control.arbolesCajaDistrito(DISTRITO);
+        cout << "\tÁrboles encontrados: " << arbolesConCaja.size() << endl;
+        for (Arbol *arbol: arbolesConCaja) {
+            cout << "\t" << arbol->getAssetnum() << " - " << arbol->getNbreComun()
+                    << " - " << arbol->getnbredistrito() << endl;
+        }
+
+        cout << "\nAPARTADO 3: CAJAS NIDO ASOCIADAS A UN ÁRBOL\n";
+        unsigned int cajasEnArbol = control.contarCajasEnArbol();
+        cout << "\tCajas nido asociadas a un árbol: " << cajasEnArbol << endl;
+        cout << "\tCajas nido sin asociar: " << control.get_nests().size() - cajasEnArbol << endl;
+
+        cout << "\nAPARTADO 4: CAJAS NIDO EN EL DISTRITO CENTRO\n";
+        vector<CajaNido *> cajasDistrito = control.cajasEnDistrito(DISTRITO);
+        cout << "\tCajas nido encontradas: " << cajasDistrito.size() << endl;
+        for (CajaNido *caja: cajasDistrito) {
+            cout << "\tCaja " << control.idCajaNido(caja) << ": ";
+            if (caja->estaEnArbol()) {
+                cout << "asociada al árbol " << caja->getArbol()->getAssetnum() << endl;
             } else {
-                cout << "ID: " << arbol->get_assetnum()
-                     << " | Especie: " << arbol->getNbreComun()
-                     << " (" << arbol->getNbreCientifico() << ")"
-                     << " | Altura: " << arbol->getAltura() << " m"
-                     << " | Num Parque: " << arbol->getNumParque() << '\n';
+                cout << "sin asociar" << endl;
             }
         }
 
-        // 2. Árboles con caja nido asociada en el distrito "CENTRO"
-        cout << "\n--- ACCION 2: ARBOLES CON CAJA NIDO EN 'CENTRO' ---\n";
-        string distritoCentro = "CENTRO";
-        vector<Arbol*> arbCentro = control.arbolesCajaDistrito(distritoCentro);
-        cout << "Numero de arboles encontrados: " << arbCentro.size() << "\n";
-
-        for (Arbol* a : arbCentro) {
-            cout << "  - ID: " << a->get_assetnum()
-                 << " | Especie: " << a->getNbreComun()
-                 << " | Distrito: " << distritoCentro << "\n";
-        }
-
-        // 3. Total de cajas asociadas y sin asociar
-        cout << "\n--- ACCION 3: CONTEO TOTAL DE CAJAS NIDO ---\n";
-        unsigned int asociadas = control.contarCajasEnArbol();
-        unsigned int sinAsociar = control.getTotalCajas() - asociadas;
-        cout << "Cajas nido asociadas a un arbol: " << asociadas << "\n";
-        cout << "Cajas nido sin asociar: " << sinAsociar << "\n";
-
-        // 4. Todas las cajas nido ubicadas en el distrito "CENTRO"
-        cout << "\n--- ACCION 4: CAJAS NIDO EN DISTRITO 'CENTRO' ---\n";
-        vector<CajaNido*> cajasCentro = control.cajasEnDistrito(distritoCentro);
-        cout << "Numero de cajas encontradas en CENTRO: " << cajasCentro.size() << "\n";
-
-        for (unsigned int i = 0; i < cajasCentro.size(); ++i) {
-            CajaNido* c = cajasCentro[i];
-            cout << "  - Caja " << i + 1 << ": ";
-            if (c->estaEnArbol())
-                cout << "Asociada al arbol ID: " << c->getArbol()->get_assetnum() << "\n";
-            else
-                cout << "No asociada a ningun arbol\n";
-        }
-
-        // 5. Cajas de las líneas {70, 75, 80, 85, 90} del fichero
-        cout << "\n--- ACCION 5: COMPROBACION LINEAS {70, 75, 80, 85, 90} ---\n";
-        vector<int> lineas = {70, 75, 80, 85, 90};
-        const vector<CajaNido>& todasCajas = control.getNests();
-
-        for (int numLinea : lineas) {
-            unsigned int idx = numLinea - 2;
-            if (idx < todasCajas.size()) {
-                const CajaNido& c = todasCajas[idx];
-                cout << "Linea " << numLinea
-                     << " | UTM Caja: (" << c.get_coord().getX() << ", " << c.get_coord().getY() << ")";
-
-                if (c.estaEnArbol()) {
-                    Arbol* a = c.getArbol();
-                    double dist2 = c.get_coord().distancia2(a->getCoord());
-                    double distMetros = sqrt(dist2);
-
-                    cout << " | Arbol ID: " << a->get_assetnum()
-                         << " | UTM Arbol: (" << a->getCoord().getX() << ", " << a->getCoord().getY() << ")"
-                         << " | Distancia: " << distMetros << " m (d^2 = " << dist2
-                         << " -> " << (dist2 < 100.0 ? "CUMPLE < 100" : "NO CUMPLE") << ")\n";
-                } else {
-                    cout << " | Sin arbol asociado\n";
-                }
+        cout << "\nAPARTADO 5: DETALLE DE CINCO CAJAS NIDO\n";
+        const unsigned int CAJAS_APARTADO_5[] = {70, 75, 80, 85, 90};
+        for (unsigned int linea: CAJAS_APARTADO_5) {
+            CajaNido *caja = control.buscarCajaNido(linea);
+            if (caja == nullptr) {
+                cout << "\tCaja de la línea " << linea << " no encontrada" << endl << endl;
+                continue;
             }
+            cout << "\t" << "caja de la línea " << linea << endl;
+            cout << "\t" << "coordenadas de la caja: ";
+            mostrarCoordenadas(caja->getCoord());
+            cout << endl;
+            if (caja->estaEnArbol()) {
+                Arbol *arbol = caja->getArbol();
+                double distancia2 = caja->getCoord().distancia2(arbol->getCoord());
+                cout << "\t" << "identificador del árbol: " << arbol->getAssetnum() << endl;
+                cout << "\t" << "coordenadas del árbol: ";
+                mostrarCoordenadas(arbol->getCoord());
+                cout << endl;
+                cout << "\t" << "distancia: " << fixed << setprecision(2) << sqrt(distancia2) << " m"
+                        << " (al cuadrado " << distancia2 << ")" << defaultfloat << setprecision(6) << endl;
+                cout << "\t" << (distancia2 < 100 ? "cumple" : "NO cumple")
+                        << " la condición de estar a menos de 10 metros" << endl;
+            } else {
+                cout << "\t" << "sin árbol asociado: no hay ninguno a menos de 10 metros" << endl;
+            }
+            cout << endl;
         }
 
-        // 6. Todos los parques que tengan al menos alguna caja nido
-        cout << "\n--- ACCION 6: PARQUES CON AL MENOS UNA CAJA NIDO ---\n";
-        vector<Parque*> parquesCajas = control.parquesConCajaNido();
-        cout << "Total parques con cajas nido: " << parquesCajas.size() << "\n";
-
-        for (Parque* p : parquesCajas) {
-            cout << "  - Codigo: " << p->get_cod_parque()
-                 << " | Nombre: " << p->get_nbre_parque() << "\n";
+        cout << "APARTADO 6: PARQUES CON ALGUNA CAJA NIDO\n";
+        vector<Parque *> parquesConCaja = control.parquesConCajaNido();
+        cout << "\tParques encontrados: " << parquesConCaja.size() << endl;
+        for (Parque *pq: parquesConCaja) {
+            cout << "\t" << pq->get_cod_parque() << " - " << pq->get_nbre_parque() << endl;
         }
 
+        //Solo parejas: redispersión forzada a una tabla un 30 % más grande. Si no se trabaja en pareja, borrar
+        cout << "\nREDISPERSIÓN DE LA TABLA\n";
+        control.redispersar(static_cast<unsigned>(control.tamTabla() * 1.3));
+        control.mostrarEstadoTabla();
     } catch (const std::exception &error) {
-        std::cerr << "\nError: " << error.what() << endl;
+        std::cerr << "\nError: " << error.what() << '\n';
         return 1;
     }
 

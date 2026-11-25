@@ -77,6 +77,9 @@ public:
     std::string getNbreBarrio() const {
         return barrio;  // Cambia 'nbre_barrio' por el nombre real de tu atributo
     }
+    std::string getnbredistrito() const {
+        return distrito;
+    }
     UTM getCoord() const {
         return coordenadas;
     }

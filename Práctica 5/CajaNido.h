@@ -31,6 +31,7 @@ public:
     std::string getUbicacion() const { return ubicacion; }
 
     UTM get_coord() const;
+    UTM getCoord() const { return coord; } // nombre que usa el main de la profesora
 
     bool estaEnArbol() const;
 };

@@ -163,6 +163,7 @@ ControlParques::ControlParques(const std::string &fichEspecies,
         if (trees.insertar(clave, arbol))
         {
             idsArboles.push_back(campos[0]);//guardar el assetnum
+            listaArboles.push_back(arbol);//copia en la lista para la prueba de rendimiento
             Arbol* arbolHash = trees.buscar(clave);
 
             // Enlace parque -> arbol
@@ -199,7 +200,13 @@ ControlParques::ControlParques(const std::string &fichEspecies,
         UTM posCaja(campos[3].empty() ? 0.0 : std::stod(campos[3]),
                     campos[4].empty() ? 0.0 : std::stod(campos[4]));
 
-        CajaNido caja(campos[0], campos[1], campos[2], posCaja);
+        // El distrito viene como "01.CENTRO": quitamos el numero y el punto para quedarnos con "CENTRO"
+        std::string distrito = campos[0];
+        std::size_t punto = distrito.find('.');
+        if (punto != std::string::npos)
+            distrito = distrito.substr(punto + 1);
+
+        CajaNido caja(distrito, campos[1], campos[2], posCaja);
 
         Arbol* masCercano = nullptr;
         double minDist2 = 100.0;
@@ -373,12 +380,21 @@ unsigned long ControlParques::djb2(const char* str) {
     return hash;
 }
 
-Arbol* ControlParques::buscarArbol(std::string& assetnum) {
+Arbol* ControlParques::buscarArbol(const std::string& assetnum) {
     unsigned long clave = djb2(assetnum.c_str());
     return trees.buscar(clave);
 }
 
-std::vector<Arbol*> ControlParques::arbolesCajaDistrito(std::string& ndistrito) {
+// Busqueda secuencial en la lista (solo para comparar tiempos con la tabla hash)
+Arbol* ControlParques::buscarArbolLista(const std::string &assetnum) {
+    for (std::list<Arbol>::iterator it = listaArboles.begin(); it != listaArboles.end(); ++it) {
+        if (it->get_assetnum() == assetnum)
+            return &(*it);
+    }
+    return nullptr;
+}
+
+std::vector<Arbol*> ControlParques::arbolesCajaDistrito(const std::string& ndistrito) {
     std::vector<Arbol*> resultado;
     for (auto& caja : nests) {
         if (caja.estaEnArbol() && caja.get_distrito() == ndistrito) {
@@ -401,7 +417,7 @@ unsigned int ControlParques::contarCajasEnArbol() {
     return contador;
 }
 
-std::vector<CajaNido*> ControlParques::cajasEnDistrito(std::string& nbre_distrito) {
+std::vector<CajaNido*> ControlParques::cajasEnDistrito(const std::string& nbre_distrito) {
     std::vector<CajaNido*> resultado;
     for (auto& caja : nests) {
         if (caja.get_distrito() == nbre_distrito) {
@@ -425,4 +441,28 @@ std::vector<Parque*> ControlParques::parquesConCajaNido() {
 }
 void ControlParques::mostrarEstadoTabla() {
     trees.mostrarEstadoTabla();
+}
+
+// Redispersa la tabla de arboles a un nuevo tamaño (el siguiente primo a tam)
+void ControlParques::redispersar(unsigned tam) {
+    trees.redispersar(tam);
+}
+
+
+// Tamaño actual de la tabla hash de arboles
+unsigned ControlParques::tamTabla() {
+    return trees.tamTabla();
+}
+
+// Devuelve la linea del fichero cajas-nido.csv en la que esta la caja.
+// La linea 1 es la cabecera, asi que la caja nests[0] esta en la linea 2.
+unsigned int ControlParques::idCajaNido(CajaNido* caja) {
+    return static_cast<unsigned int>(caja - &nests[0]) + 2;
+}
+
+// Devuelve la caja que ocupa esa linea del fichero (o nullptr si no existe)
+CajaNido* ControlParques::buscarCajaNido(unsigned int linea) {
+    if (linea < 2 || linea - 2 >= nests.size())
+        return nullptr;
+    return &nests[linea - 2];
 }

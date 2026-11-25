@@ -53,7 +53,7 @@ public:
     unsigned tamTabla();
     void mostrarEstadoTabla();
     void redispersar(unsigned tam);
-    unsigned int getNumRedispersiones() const { return numRedispersiones; }
+    unsigned int getNumRedispersiones() const;
 };
 
 

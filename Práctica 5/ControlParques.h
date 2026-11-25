@@ -19,6 +19,7 @@ private:
     std::map<std::string,Especie> varieties;
     std::multimap<std::string, Arbol*> treeName;
     std::vector <CajaNido> nests;
+    std::list<Arbol> listaArboles;
 
     unsigned long djb2(const char* str);
     std::vector<std::string> idsArboles;
@@ -45,13 +46,20 @@ public:
     int contarArbolesBarrio(int numBarrio);
     std::vector<Arbol*> buscarArbolesPorEspecieYDistrito(const std::string &nbreComun, int numDistrito);
     const std::vector<std::string>& getIdsArboles() const { return idsArboles; }
-    Arbol* buscarArbol(std::string& assetnum);
-    std::vector<Arbol*> arbolesCajaDistrito(std::string& ndistrito);
+    std::vector<Arbol*> arbolesCajaDistrito(const std::string& ndistrito);
     unsigned int contarCajasEnArbol();
-    std::vector<CajaNido*> cajasEnDistrito(std::string& nbre_distrito);
+    std::vector<CajaNido*> cajasEnDistrito(const std::string& nbre_distrito);
     unsigned int getTotalCajas() const { return nests.size(); }
     const std::vector<CajaNido>& getNests() const { return nests; }
+    const std::vector<CajaNido>& get_nests() const { return nests; } // nombre que usa el main de la profesora
+    unsigned int idCajaNido(CajaNido* caja);      // linea del fichero en la que esta la caja
+    CajaNido* buscarCajaNido(unsigned int linea); // caja que esta en esa linea del fichero
+    unsigned tamTabla();
     std::vector<Parque*> parquesConCajaNido();
-void mostrarEstadoTabla();};
+    void mostrarEstadoTabla();
+    Arbol* buscarArbolLista(const std::string &assetnum);//recorre listaArboles para comparar tiempos
+    // Parte de parejas
+    void redispersar(unsigned tam);
+};
 
 #endif

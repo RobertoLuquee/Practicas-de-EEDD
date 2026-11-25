@@ -245,3 +245,8 @@ void ThashArbol::redispersar(unsigned nuevoTamDeseado) {
     }
     numRedispersiones++;
 }
+// Cambia el lambda maximo. Si el factor de carga actual lo supera,
+// se redispersa a una tabla un 30% mas grande hasta quedar por debajo.
+    unsigned int ThashArbol::getNumRedispersiones()const{
+    return numRedispersiones;
+}
