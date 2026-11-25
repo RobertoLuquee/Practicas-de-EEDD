@@ -31,11 +31,13 @@ private:
     unsigned long hash(unsigned long clave, int intento);
     bool esPrimo(unsigned int n);
     unsigned int siguientePrimo(unsigned int n);
+    float lambdaMax;
+    unsigned int numRedispersiones;
 
 public:
 
     ThashArbol()=default;
-    ThashArbol(int maxElementos, float lambda=0.7);
+    ThashArbol(int maxElementos, float lambda=0.65 );
     ThashArbol(ThashArbol &thash);
     ThashArbol& operator=(ThashArbol &thash);
     ~ThashArbol();
@@ -50,7 +52,8 @@ public:
     float factorCarga();
     unsigned tamTabla();
     void mostrarEstadoTabla();
-
+    void redispersar(unsigned tam);
+    unsigned int getNumRedispersiones() const { return numRedispersiones; }
 };
 
 

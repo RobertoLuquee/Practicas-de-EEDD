@@ -17,7 +17,7 @@ void CajaNido::setArbol(Arbol* a) {
 }
 
 // Devuelve un puntero al árbol asociado, o nullptr si no tiene ninguno
-Arbol* CajaNido::getArbol() {
+Arbol* CajaNido::getArbol() const {
     return itsTree;
 }
 
@@ -30,6 +30,6 @@ UTM CajaNido::get_coord() const {
 }
 
 // Devuelve true si la caja nido tiene un árbol asociado y false en caso contrario
-bool CajaNido::estaEnArbol() {
+bool CajaNido::estaEnArbol() const {
     return itsTree != nullptr;
 }

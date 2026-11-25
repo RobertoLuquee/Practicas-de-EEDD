@@ -53,36 +53,40 @@ unsigned int ThashArbol::siguientePrimo(unsigned int n) {
 
 
 ThashArbol::ThashArbol(int maxElementos, float lambda)
-    : numElem(0),maxCol(0),contMax10(0),totalCol(0) // Inicializo los arbolesf a 0
+    : numElem(0), maxCol(0), contMax10(0), totalCol(0),
+      lambdaMax(lambda), numRedispersiones(0)
 {
-    tam = siguientePrimo((unsigned int)(maxElementos / lambda)); //Aqui uso unsigned int para quitar
-    //los decimales, ya que, un tamaño no puede tener decimales.
-    //Ademas, aqui es donde se usa la formula de la teoria: t=n/lambda
+    tam = siguientePrimo((unsigned int)(maxElementos / lambda));
     tabla.resize(tam);
 }
 
-//constructor copia
 ThashArbol::ThashArbol(ThashArbol &thash)
-      : tabla(thash.tabla),tam(thash.tam),numElem(thash.numElem)
-    ,maxCol(thash.maxCol),contMax10(thash.contMax10),totalCol(thash.totalCol){
+    : tabla(thash.tabla), tam(thash.tam), numElem(thash.numElem),
+      maxCol(thash.maxCol), contMax10(thash.contMax10), totalCol(thash.totalCol),
+      lambdaMax(thash.lambdaMax), numRedispersiones(thash.numRedispersiones)
+{
 }
 
-//el operador asignacion de nuestra clase thasharbol
 ThashArbol& ThashArbol::operator=(ThashArbol &thash) {
     if (this != &thash) {
-        tabla =thash.tabla;
-        tam =thash.tam;
-        numElem =thash.numElem;
-        maxCol=thash.maxCol;
-        contMax10=thash.contMax10;
-        totalCol=thash.totalCol;
+        tabla = thash.tabla;
+        tam = thash.tam;
+        numElem = thash.numElem;
+        maxCol = thash.maxCol;
+        contMax10 = thash.contMax10;
+        totalCol = thash.totalCol;
+        lambdaMax = thash.lambdaMax;
+        numRedispersiones = thash.numRedispersiones;
     }
-    return *this; //Aquí devuelvo el propio puntero
+    return *this;
 }
 ThashArbol::~ThashArbol() {
 }
 
 bool ThashArbol::insertar(unsigned long clave, Arbol &tree) {
+    if (static_cast<float>(numElem + 1) / static_cast<float>(tam) > lambdaMax) {
+        redispersar(static_cast<unsigned int>(tam * 1.3f));
+    }
     int intento=0;
     long hueco=-1; //variable con la que guardare la posicion del primer disponible
 
@@ -203,4 +207,41 @@ void ThashArbol::mostrarEstadoTabla() {
     std::cout<<"Veces que se superan las 10 colisiones: "<<superar10<<std::endl;
     std::cout<<"Maximo de colisiones: "<<maximoCol<<std::endl;
     std::cout<<"Promedio: "<<promedio<<std::endl;
+    std::cout << "Numero de redispersiones: " << numRedispersiones << std::endl;
+}
+void ThashArbol::redispersar(unsigned nuevoTamDeseado) {
+    unsigned int nuevoTam = siguientePrimo(nuevoTamDeseado);
+    std::vector<Entrada> tablaAntigua = tabla;
+
+    this->tam = nuevoTam; // Crucial: hash() usa el atributo miembro 'tam'
+    tabla.clear();
+    tabla.resize(nuevoTam);
+    numElem = 0;
+    totalCol = 0;
+    maxCol = 0;
+    contMax10 = 0;
+
+    for (unsigned int i = 0; i < tablaAntigua.size(); ++i) {
+        if (tablaAntigua[i].estado == ocupada) {
+            unsigned long clave = tablaAntigua[i].clave;
+            Arbol &dato = tablaAntigua[i].dato;
+
+            int intento = 0;
+            while (intento < (int)nuevoTam) {
+                unsigned long pos = hash(clave, intento);
+                if (tabla[pos].estado != ocupada) {
+                    tabla[pos] = Entrada(clave, dato);
+                    numElem++;
+                    totalCol += intento;
+                    if ((unsigned int)intento > maxCol)
+                        maxCol = intento;
+                    if (intento > 10)
+                        contMax10++;
+                    break;
+                }
+                intento++;
+            }
+        }
+    }
+    numRedispersiones++;
 }
