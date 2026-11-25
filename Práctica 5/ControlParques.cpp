@@ -65,7 +65,7 @@ ControlParques::ControlParques(const std::string &fichEspecies,
                                const std::string &fichParques,
                                const std::string &fichArboles,
                                const std::string &fichCajas)
-: trees(150000, 0.65f)
+: trees(150000, 0.68f)
 {
     std::string linea;
 
@@ -400,4 +400,11 @@ std::vector<CajaNido*> ControlParques::cajasEnDistrito(std::string& nbre_distrit
         }
     }
     return resultado;
+}
+unsigned int ControlParques::tamTabla() {
+    return trees.tamTabla();
+}
+
+void ControlParques::mostrarEstadoTabla() {
+    trees.mostrarEstadoTabla();
 }

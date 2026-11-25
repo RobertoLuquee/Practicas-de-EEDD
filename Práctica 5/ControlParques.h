@@ -49,6 +49,8 @@ public:
     std::vector<Arbol*> arbolesCajaDistrito(std::string& ndistrito);
     unsigned int contarCajasEnArbol();
     std::vector<CajaNido*> cajasEnDistrito(std::string& nbre_distrito);
+    unsigned int tamTabla();
+    void mostrarEstadoTabla();
 };
 
 #endif
