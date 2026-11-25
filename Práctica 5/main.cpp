@@ -1,84 +1,48 @@
-
 #include <algorithm>
 #include <chrono>
+#include <cmath>
 #include <exception>
 #include <fstream>
 #include <iostream>
 #include <sstream>
 #include <stdexcept>
 #include <string>
+#include <vector>
 
 #include "ControlParques.h"
 #include "Arbol.h"
 #include "Especie.h"
+#include "CajaNido.h"
+#include "Parque.h"
 
 /**  @author Oier Fernandez de Leceta Villalmanzo ofv00003@red.ujaen.es
       @author Roberto Luque Peña rlp00041@red.ujaen.es */
 
 using namespace std;
 
-float leerMedida(std::string campo)
-{
-    std::replace(campo.begin(), campo.end(), ',', '.');
-
-    return campo.empty() ? -1.0f : std::stof(campo);
-}
-
-Arbol leerArbol(const std::string &linea)
-{
-    std::stringstream registro(linea);
-    std::string campos[12];
-
-    for (unsigned int i = 0; i < 12; ++i)
-    {
-        if (!std::getline(registro, campos[i], ';'))
-        {
-            if (i != 11 || linea.empty() || linea.back() != ';')
-                throw std::runtime_error("Registro de arbol incompleto");
-        }
-    }
-
-    std::replace(campos[6].begin(), campos[6].end(), ',', '.');
-    std::replace(campos[7].begin(), campos[7].end(), ',', '.');
-
-    return Arbol(
-        campos[0], // ASSETNUM
-        campos[1].empty() ? 0 : std::stoi(campos[1]), // NUM_PARQUE
-        campos[2].empty() ? 0 : std::stoi(campos[2]), // NUM_DISTRITO
-        campos[5], // NBRE_BARRIO
-        campos[4].empty() ? 0 : std::stoi(campos[4]),//num_barrio
-        campos[8], // CODIGO_ESPECIE
-        campos[9], // ESPECIE
-        campos[6].empty() ? 0.0 : std::stod(campos[6]), // X
-        campos[7].empty() ? 0.0 : std::stod(campos[7]), // Y
-        leerMedida(campos[10]), // PERIMETRO
-        leerMedida(campos[11])  // ALTURA_TOTAL
-    );
-}
-
-
-
 int main()
 {
     try
     {
-
-
-        std::cout << "\nPROGRAMA DE PRUEBA II\n"
-                  << "-------------------\n\n";
+        std::cout << "\nPROGRAMA DE PRUEBA II (PRACTICA 5)\n"
+                  << "----------------------------------\n\n";
 
         ControlParques control(
-            "./arbolado-especies.csv",
-            "./parques.csv",
-            "./arboladoMadrid.csv");
+                    "./arbolado-especies.csv",
+                    "./parques.csv",
+                    "./arboladoMadrid.csv",
+                    "./cajas-nido.csv"
+                );
 
-std::cout << "\n--- PUNTO 1: BUSQUEDA DE ARBOLES ESPECIFICOS ---\n";
-        const std::string idsGuion[] = {"6951831", "10152826", "8887777", "6906686"};
+       // ---------------------------------------------------------
+        // 1. Buscar assetnum: 6925456, 6635839, 5222166
+        // ---------------------------------------------------------
+        std::cout << "\n--- ACCION 1: BUSQUEDA DE ARBOLES ESPECIFICOS ---\n";
+        std::vector<std::string> idsGuion = {"6925456", "6635839", "5222166"};
 
-        for (const std::string &id : idsGuion)
+        for (std::string &id : idsGuion)
         {
             Arbol *arbol = control.buscarArbol(id);
-
             if (arbol == nullptr)
             {
                 std::cout << "Arbol ID " << id << ": NO EXISTE\n";
@@ -86,69 +50,100 @@ std::cout << "\n--- PUNTO 1: BUSQUEDA DE ARBOLES ESPECIFICOS ---\n";
             else
             {
                 std::cout << "ID: " << arbol->get_assetnum()
-                          << " | Codigo Parque: " << arbol->getNumParque()
-                          << " | Nombre comun: " << arbol->getNbreComun()
-                          << " | Nombre cientifico: " << arbol->getNbreCientifico()
-                          << " | Tipo de planta: " << arbol->getTipo()
-                          << '\n';
+                          << " | Especie: " << arbol->getNbreComun()
+                          << " (" << arbol->getNbreCientifico() << ")"
+                          << " | Altura: " << arbol->getAltura() << " m"
+                          << " | Num Parque: " << arbol->getNumParque() << '\n';
             }
         }
 
-std::cout << "\n--- PUNTO 2: ESPECIE MAS COMUN EN 'PARQUE PRINCESA LEONOR' ---\n";
-        Parque *princesa = control.buscarParque("PARQUE PRINCESA LEONOR");
-        std::string especieMasComun = "Ninguna";
-        if (princesa != nullptr && princesa->especieMasComun() != nullptr)
-            especieMasComun = princesa->especieMasComun()->getnombre_comun();
-        std::cout << "La especie mas comun es: " << especieMasComun << '\n';
+        // ---------------------------------------------------------
+        // 2. Árboles con caja nido asociada en el distrito "CENTRO"
+        // ---------------------------------------------------------
+        std::cout << "\n--- ACCION 2: ARBOLES CON CAJA NIDO EN 'CENTRO' ---\n";
+        std::string distritoCentro = "CENTRO";
+        std::vector<Arbol*> arbCentro = control.arbolesCajaDistrito(distritoCentro);
+        std::cout << "Numero de arboles encontrados: " << arbCentro.size() << "\n";
 
-        std::cout << "\n--- PUNTO 3: PARQUES CON AL MENOS UN 'abeto' ---\n";
-        std::vector<Parque*> parquesAbeto = control.listarParquesArbol("Abeto");
-        if (parquesAbeto.size() == 0)
+        for (Arbol* a : arbCentro)
         {
-            std::cout << "No se encontraron parques con la especie 'abeto'.\n";
-        }
-        else
-        {
-            for (unsigned int i = 0; i < parquesAbeto.size(); ++i)
-            {
-                Parque *p = parquesAbeto[i];
-                std::cout << "Parque " << i + 1 << ": " << p->get_nbre_parque()
-                          << " (Codigo Parque: " << p->get_cod_parque() << ")\n";
-            }
+            std::cout << "  - ID: " << a->get_assetnum()
+                      << " | Especie: " << a->getNbreComun()
+                      << " | Distrito: " << distritoCentro << "\n";
         }
 
-        std::cout << "\n--- PUNTO 4: BUSQUEDA DE PINOS ---\n";
-        std::vector<Arbol*> pinoResinero = control.buscarArbolNcomun("Pino resinero");
-        std::cout << "Total ejemplares 'Pino resinero': " << pinoResinero.size() << '\n';
+        // ---------------------------------------------------------
+        // 3. Total de cajas asociadas y sin asociar
+        // ---------------------------------------------------------
+        std::cout << "\n--- ACCION 3: CONTEO TOTAL DE CAJAS NIDO ---\n";
+        unsigned int asociadas = control.contarCajasEnArbol();
+        unsigned int sinAsociar = control.getTotalCajas() - asociadas;
+        std::cout << "Cajas nido asociadas a un arbol: " << asociadas << "\n";
+        std::cout << "Cajas nido sin asociar: " << sinAsociar << "\n";
 
-        std::vector<Arbol*> empiezanPorPino = control.buscarArbolNcomunComienzo("Pino");
-        std::cout << "Total ejemplares que empiezan por 'Pino': " << empiezanPorPino.size() << '\n';
+        // ---------------------------------------------------------
+        // 4. Todas las cajas nido ubicadas en el distrito "CENTRO"
+        // ---------------------------------------------------------
+        std::cout << "\n--- ACCION 4: CAJAS NIDO EN DISTRITO 'CENTRO' ---\n";
+        std::vector<CajaNido*> cajasCentro = control.cajasEnDistrito(distritoCentro);
+        std::cout << "Numero de cajas encontradas en CENTRO: " << cajasCentro.size() << "\n";
 
-        std::cout << "\n--- PUNTO 5: ARBOLES EN BARRIOS 43 Y 91 ---\n";
-        std::cout << "Numero de arboles en el barrio 43: " << control.contarArbolesBarrio(43) << '\n';
-        std::cout << "Numero de arboles en el barrio 91: " << control.contarArbolesBarrio(91) << '\n';
-
-        // TRABAJO POR PAREJAS
-        std::cout << "\n--- TRABAJO POR PAREJAS: 'Pino' EN DISTRITO 9 ---\n";
-        std::vector<Arbol*> pinosDistrito9 = control.buscarArbolesPorEspecieYDistrito("Pino", 9);
-        std::cout << "Resultados encontrados: " << pinosDistrito9.size() << "\n\n";
-
-        for (unsigned int i = 0; i < pinosDistrito9.size(); ++i)
+        for (unsigned int i = 0; i < cajasCentro.size(); ++i)
         {
-            Arbol *arbol = pinosDistrito9[i];
-
-            std::cout << "ID (assetnum): " << arbol->get_assetnum()
-                      << " | Barrio: " << arbol->getNbreBarrio();
-
-            Parque *parqueAsociado = arbol->isInto;
-            if (parqueAsociado != nullptr)
-            {
-                std::cout << " | Parque: " << parqueAsociado->get_nbre_parque() << '\n';
-            }
+            CajaNido* c = cajasCentro[i];
+            std::cout << "  - Caja " << i + 1 << ": ";
+            if (c->estaEnArbol())
+                std::cout << "Asociada al arbol ID: " << c->getArbol()->get_assetnum() << "\n";
             else
+                std::cout << "No asociada a ningun arbol\n";
+        }
+
+        // ---------------------------------------------------------
+        // 5. Cajas de las líneas {70, 75, 80, 85, 90} del fichero
+        // ---------------------------------------------------------
+        // La línea 1 es la cabecera y la línea 2 es nests[0] -> índice = línea - 2
+        std::cout << "\n--- ACCION 5: COMPROBACION LINEAS {70, 75, 80, 85, 90} ---\n";
+        std::vector<int> lineas = {70, 75, 80, 85, 90};
+        const std::vector<CajaNido>& todasCajas = control.getNests();
+
+        for (int numLinea : lineas)
+        {
+            unsigned int idx = numLinea - 2;
+            if (idx < todasCajas.size())
             {
-                std::cout << " | Parque: Sin parque asignado\n";
+                const CajaNido& c = todasCajas[idx];
+                std::cout << "Linea " << numLinea
+                          << " | UTM Caja: (" << c.get_coord().getX() << ", " << c.get_coord().getY() << ")";
+
+                if (c.estaEnArbol())
+                {
+                    Arbol* a = c.getArbol();
+                    double dist2 = c.get_coord().distancia2(a->getCoord());
+                    double distMetros = std::sqrt(dist2);
+
+                    std::cout << " | Arbol ID: " << a->get_assetnum()
+                              << " | UTM Arbol: (" << a->getCoord().getX() << ", " << a->getCoord().getY() << ")"
+                              << " | Distancia: " << distMetros << " m (d^2 = " << dist2
+                              << " -> " << (dist2 < 100.0 ? "CUMPLE < 100" : "NO CUMPLE") << ")\n";
+                }
+                else
+                {
+                    std::cout << " | Sin arbol asociado\n";
+                }
             }
+        }
+
+        // ---------------------------------------------------------
+        // 6. Todos los parques que tengan al menos alguna caja nido
+        // ---------------------------------------------------------
+        std::cout << "\n--- ACCION 6: PARQUES CON AL MENOS UNA CAJA NIDO ---\n";
+        std::vector<Parque*> parquesCajas = control.parquesConCajaNido();
+        std::cout << "Total parques con cajas nido: " << parquesCajas.size() << "\n";
+
+        for (Parque* p : parquesCajas)
+        {
+            std::cout << "  - Codigo: " << p->get_cod_parque()
+                      << " | Nombre: " << p->get_nbre_parque() << "\n";
         }
     }
     catch (const std::exception &error)

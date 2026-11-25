@@ -86,7 +86,7 @@ ControlParques::ControlParques(const std::string &fichEspecies,
         while (campos.size() < 4)
             campos.push_back("");
 
-        varieties.insert(std::make_pair(campos[0], Especie(campos[0], campos[1], campos[2], leerTipo(campos[3]))));
+        auto resEsp = varieties.insert({campos[0], Especie(campos[0], campos[1], campos[2], leerTipo(campos[3]))});
     }
     fEspecies.close();
 
@@ -108,7 +108,7 @@ ControlParques::ControlParques(const std::string &fichEspecies,
             continue;
 
         int cod = std::stoi(campos[0]);
-        parks.insert(std::make_pair(cod, Parque(cod, campos[1])));
+        auto resParq = parks.insert({cod, Parque(cod, campos[1])});
     }
     fParques.close();
 
@@ -136,9 +136,9 @@ ControlParques::ControlParques(const std::string &fichEspecies,
         Arbol arbol(
             campos[0],
             campos[1].empty() ? 0 : std::stoi(campos[1]),
-            campos[5],
+            campos[3],//5
             campos[2].empty() ? 0 : std::stoi(campos[2]),
-            campos[4], // Si tu constructor espera string barrio y luego int num_barrio, ajústalo al orden de Arbol.h
+            campos[5],//4
             campos[4].empty() ? 0 : std::stoi(campos[4]),
             campos[8],
             campos[9],
@@ -162,6 +162,7 @@ ControlParques::ControlParques(const std::string &fichEspecies,
         unsigned long clave = djb2(campos[0].c_str());
         if (trees.insertar(clave, arbol))
         {
+            idsArboles.push_back(campos[0]);//guardar el assetnum
             Arbol* arbolHash = trees.buscar(clave);
 
             // Enlace parque -> arbol
@@ -173,6 +174,7 @@ ControlParques::ControlParques(const std::string &fichEspecies,
         }
     }
     fArboles.close();
+
 
     // 4. Leo las cajas nido y las asocio al arbol mas cercano (< 100)
     std::ifstream fCajas(fichCajas);
@@ -216,6 +218,13 @@ ControlParques::ControlParques(const std::string &fichEspecies,
         nests.push_back(caja);
     }
     fCajas.close();
+    unsigned int cajasAsociadas = contarCajasEnArbol();
+    unsigned int cajasSinAsociar = nests.size() - cajasAsociadas;
+
+    std::cout << "Total de arboles cargados: " << trees.numElementos() << std::endl;
+    std::cout << "Total de cajas nido procesadas: " << nests.size() << std::endl;
+    std::cout << "Cajas nido asociadas a un arbol: " << cajasAsociadas << std::endl;
+    std::cout << "Cajas nido sin asociar: " << cajasSinAsociar << std::endl;
 }
 
 Parque* ControlParques::buscarParque(std::string nombre)
@@ -397,6 +406,19 @@ std::vector<CajaNido*> ControlParques::cajasEnDistrito(std::string& nbre_distrit
     for (auto& caja : nests) {
         if (caja.get_distrito() == nbre_distrito) {
             resultado.push_back(&caja);
+        }
+    }
+    return resultado;
+}
+
+std::vector<Parque*> ControlParques::parquesConCajaNido() {
+    std::vector<Parque*> resultado;
+    for (auto& caja : nests) {
+        if (caja.estaEnArbol()) {
+            Parque* p = caja.getArbol()->getParque();
+            if (p != nullptr && std::find(resultado.begin(), resultado.end(), p) == resultado.end()) {
+                resultado.push_back(p);
+            }
         }
     }
     return resultado;

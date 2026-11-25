@@ -21,7 +21,7 @@ private:
     std::vector <CajaNido> nests;
 
     unsigned long djb2(const char* str);
-
+    std::vector<std::string> idsArboles;
 public:
     ControlParques(const std::string &fichEspecies,
                    const std::string &fichParques,
@@ -44,11 +44,14 @@ public:
     std::vector<Arbol*> buscarArbolNcomunComienzo(const std::string &comienzo);
     int contarArbolesBarrio(int numBarrio);
     std::vector<Arbol*> buscarArbolesPorEspecieYDistrito(const std::string &nbreComun, int numDistrito);
-
+    const std::vector<std::string>& getIdsArboles() const { return idsArboles; }
     Arbol* buscarArbol(std::string& assetnum);
     std::vector<Arbol*> arbolesCajaDistrito(std::string& ndistrito);
     unsigned int contarCajasEnArbol();
     std::vector<CajaNido*> cajasEnDistrito(std::string& nbre_distrito);
+    unsigned int getTotalCajas() const { return nests.size(); }
+    const std::vector<CajaNido>& getNests() const { return nests; }
+    std::vector<Parque*> parquesConCajaNido();
 };
 
 #endif

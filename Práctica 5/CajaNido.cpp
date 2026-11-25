@@ -4,6 +4,10 @@
 
 #include "CajaNido.h"
 
+std::string CajaNido::get_barrio() const {
+    return barrio;
+}
+
 CajaNido::CajaNido(std::string dist, std::string barr, std::string ubic, UTM c)
     : distrito(dist), barrio(barr), ubicacion(ubic), coord(c), itsTree(nullptr) {}
 
@@ -19,6 +23,10 @@ Arbol* CajaNido::getArbol() {
 
 std::string CajaNido::get_distrito() const {
     return distrito;
+}
+
+UTM CajaNido::get_coord() const {
+    return coord;
 }
 
 // Devuelve true si la caja nido tiene un árbol asociado y false en caso contrario
