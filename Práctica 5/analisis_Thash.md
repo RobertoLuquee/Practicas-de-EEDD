@@ -25,5 +25,12 @@ empeora todas las métricas, por lo que compensa usar λ = 0.65.
 
 
 ## Comparación de tiempos dados en milisegundos
-Tiempo en realizar las búsquedas en la Tabla Hash:
-Tiempo en realizar las búsquedas en la Lista:
+Tiempo en realizar las búsquedas en la Tabla Hash: 0.239542 ms
+Tiempo en realizar las búsquedas en la Lista: 3571.53ms
+
+Explicación:
+Esto se debe a la complejidad de cada búsqueda:              
+    - Tabla hash: O(1). Con la clave djb2(assetnum) se calcula directamente la posición del árbol. Según nuestro análisis,  
+      el promedio es de solo 0,46 colisiones por inserción, así que casi siempre se encuentra al primer o segundo intento.
+    - Lista: O(n). Hay que recorrerla secuencialmente desde el principio hasta encontrar el árbol.                                                   
+Por tanto, para búsquedas por identificador la tabla hash es claramente la estructura adecuad

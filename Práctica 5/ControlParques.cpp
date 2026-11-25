@@ -158,6 +158,10 @@ ControlParques::ControlParques(const std::string &fichEspecies,
         if (itParque != parks.end())
             arbol.setParque(&(itParque->second));
 
+    //ESTO ES LO QUE AÑADO PARA LA PRUEBA DE RENDIMIENTO
+        idsArboles.push_back(campos[0]);
+        listaArboles.push_back(arbol);
+
         // Insertamos en la tabla hash y recuperamos el puntero real almacenado
         unsigned long clave = djb2(campos[0].c_str());
         if (trees.insertar(clave, arbol))
@@ -364,7 +368,7 @@ unsigned long ControlParques::djb2(const char* str) {
     return hash;
 }
 
-Arbol* ControlParques::buscarArbol(std::string& assetnum) {
+Arbol* ControlParques::buscarArbol(const std::string& assetnum) {
     unsigned long clave = djb2(assetnum.c_str());
     return trees.buscar(clave);
 }
@@ -407,4 +411,17 @@ unsigned int ControlParques::tamTabla() {
 
 void ControlParques::mostrarEstadoTabla() {
     trees.mostrarEstadoTabla();
+}
+
+std::vector<std::string> ControlParques::getIdsArboles() {
+    return idsArboles;
+}
+
+Arbol* ControlParques::buscarArbolLista(const std::string
+  &assetnum) {
+    for (std::list<Arbol>::iterator it = listaArboles.begin(); it != listaArboles.end(); ++it) {
+        if (it->getAssetnum() == assetnum)
+            return &(*it);   // dirección del árbol dentro de la lista
+    }
+    return nullptr;
 }

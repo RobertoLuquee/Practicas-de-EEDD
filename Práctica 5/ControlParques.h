@@ -22,6 +22,10 @@ private:
 
     unsigned long djb2(const char* str);
 
+    std::vector<std::string> idsArboles;
+    std::list<Arbol>listaArboles;
+
+
 public:
     ControlParques(const std::string &fichEspecies,
                    const std::string &fichParques,
@@ -45,12 +49,13 @@ public:
     int contarArbolesBarrio(int numBarrio);
     std::vector<Arbol*> buscarArbolesPorEspecieYDistrito(const std::string &nbreComun, int numDistrito);
 
-    Arbol* buscarArbol(std::string& assetnum);
     std::vector<Arbol*> arbolesCajaDistrito(std::string& ndistrito);
     unsigned int contarCajasEnArbol();
     std::vector<CajaNido*> cajasEnDistrito(std::string& nbre_distrito);
     unsigned int tamTabla();
     void mostrarEstadoTabla();
+    std::vector<std::string> getIdsArboles();//devuelve el vector para que el main ppueda elegir loss 2000 arboles
+    Arbol* buscarArbolLista(const std::string &assetnum);//es la que me ayuda a recorrer listaArboles
 };
 
 #endif
