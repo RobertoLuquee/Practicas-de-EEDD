@@ -57,7 +57,8 @@ ThashArbol::ThashArbol(int maxElementos, float lambda)
       lambdaMax(lambda), numRedispersiones(0)
 {
     tam = siguientePrimo((unsigned int)(maxElementos / lambda));
-    tabla.resize(tam);
+    tabla.resize(tam); //Nuestro vector emmpieza con 0 elementos, pero con el resize tiene tam casillas
+                        //sí que es verdad que estan todas vacías, pero ya podemos acceder con tabla[pos]
 }
 
 ThashArbol::ThashArbol(ThashArbol &thash)
@@ -213,9 +214,9 @@ void ThashArbol::redispersar(unsigned nuevoTamDeseado) {
     unsigned int nuevoTam = siguientePrimo(nuevoTamDeseado);
     std::vector<Entrada> tablaAntigua = tabla;
 
-    this->tam = nuevoTam; // Crucial: hash() usa el atributo miembro 'tam'
-    tabla.clear();
-    tabla.resize(nuevoTam);
+    this->tam = nuevoTam; // Es importante, hash() usa el atributo miembro tam
+    tabla.clear(); // me ayuda para dejar el vector con 0 elementos
+    tabla.resize(nuevoTam); // crea nuevoTam casillas vacias
     numElem = 0;
     totalCol = 0;
     maxCol = 0;
@@ -245,8 +246,7 @@ void ThashArbol::redispersar(unsigned nuevoTamDeseado) {
     }
     numRedispersiones++;
 }
-// Cambia el lambda maximo. Si el factor de carga actual lo supera,
-// se redispersa a una tabla un 30% mas grande hasta quedar por debajo.
+
     unsigned int ThashArbol::getNumRedispersiones()const{
     return numRedispersiones;
 }

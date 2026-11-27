@@ -52,9 +52,9 @@ int main() {
             RUTA_ARBOLES,
             RUTA_CAJAS_NIDO);
 
-        // =====================================================================
+
         // PROGRAMA DE PRUEBA 1
-        // =====================================================================
+
         cout << "PROGRAMA DE PRUEBA 1: AJUSTE DE LA TABLA"<<endl;
         cout << "ESTADO DE LA TABLA HASH"<<endl;
         control.mostrarEstadoTabla();
@@ -84,9 +84,7 @@ int main() {
         cout << "Tiempo tabla hash: " << msHash << " ms" <<endl;
         cout << "Tiempo lista: " << msLista << " ms" <<endl;
 
-        // =====================================================================
         // PROGRAMA DE PRUEBA 2
-        // =====================================================================
         cout << "\nPROGRAMA DE PRUEBA 2\n";
 
         cout << "\nAPARTADO 1: BÚSQUEDA DE ÁRBOLES POR ASSETNUM\n";
