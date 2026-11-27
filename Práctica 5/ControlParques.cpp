@@ -396,9 +396,9 @@ Arbol* ControlParques::buscarArbolLista(const std::string &assetnum) {
 
 std::vector<Arbol*> ControlParques::arbolesCajaDistrito(const std::string& ndistrito) {
     std::vector<Arbol*> resultado;
-    for (auto& caja : nests) {
-        if (caja.estaEnArbol() && caja.get_distrito() == ndistrito) {
-            Arbol* arb = caja.getArbol();
+    for (std::vector<CajaNido>::iterator it = nests.begin(); it != nests.end(); ++it) {
+        if (it->estaEnArbol() && it->get_distrito() == ndistrito) {
+            Arbol* arb = it->getArbol();
             if (std::find(resultado.begin(), resultado.end(), arb) == resultado.end()) {
                 resultado.push_back(arb);
             }
@@ -409,8 +409,8 @@ std::vector<Arbol*> ControlParques::arbolesCajaDistrito(const std::string& ndist
 
 unsigned int ControlParques::contarCajasEnArbol() {
     unsigned int contador = 0;
-    for (auto& caja : nests) {
-        if (caja.estaEnArbol()) {
+    for (std::vector<CajaNido>::iterator it = nests.begin(); it != nests.end(); ++it) {
+        if (it->estaEnArbol()) {
             contador++;
         }
     }
@@ -419,9 +419,9 @@ unsigned int ControlParques::contarCajasEnArbol() {
 
 std::vector<CajaNido*> ControlParques::cajasEnDistrito(const std::string& nbre_distrito) {
     std::vector<CajaNido*> resultado;
-    for (auto& caja : nests) {
-        if (caja.get_distrito() == nbre_distrito) {
-            resultado.push_back(&caja);
+    for (std::vector<CajaNido>::iterator it = nests.begin(); it != nests.end(); ++it) {
+        if (it->get_distrito() == nbre_distrito) {
+            resultado.push_back(&(*it));
         }
     }
     return resultado;
@@ -429,9 +429,9 @@ std::vector<CajaNido*> ControlParques::cajasEnDistrito(const std::string& nbre_d
 
 std::vector<Parque*> ControlParques::parquesConCajaNido() {
     std::vector<Parque*> resultado;
-    for (auto& caja : nests) {
-        if (caja.estaEnArbol()) {
-            Parque* p = caja.getArbol()->getParque();
+    for (std::vector<CajaNido>::iterator it = nests.begin(); it != nests.end(); ++it) {
+        if (it->estaEnArbol()) {
+            Parque* p = it->getArbol()->getParque();
             if (p != nullptr && std::find(resultado.begin(), resultado.end(), p) == resultado.end()) {
                 resultado.push_back(p);
             }

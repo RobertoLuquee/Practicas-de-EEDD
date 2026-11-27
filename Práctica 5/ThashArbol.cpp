@@ -145,7 +145,7 @@ Arbol* ThashArbol::buscar(unsigned long clave) {
         if (tabla[pos].estado==ocupada && tabla[pos].clave==clave) {
             return &tabla[pos].dato; //lo hemos encontrado
         }
-        intento++;
+        intento++; // comprueba que no sales
         if (intento>=tam) { // si ya hemos recorrido toda la tabla
             return nullptr;
         }
